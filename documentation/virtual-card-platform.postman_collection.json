@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "536d5fe8-fc60-42b7-be11-c3dd8e6447c8",
+		"name": "Virtual Card Platform API",
+		"description": "API for Virtual Card Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5057289"
+	},
+	"item": [
+		{
+			"name": "Create Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"const id = response.id;\r",
+							"pm.collectionVariables.set('cardId', id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"cardholderName\": \"Alice\",\n  \"initialBalance\": 100.00\n}"
+				},
+				"url": {
+					"raw": "{{host}}/cards",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"cards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spend from Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 10.00\n}"
+				},
+				"url": {
+					"raw": "{{host}}/cards/{{cardId}}/spend",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"cards",
+						"{{cardId}}",
+						"spend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Topup Card",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 50.00\n}"
+				},
+				"url": {
+					"raw": "{{host}}/cards/{{cardId}}/topup",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"cards",
+						"{{cardId}}",
+						"topup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Card Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/cards/{{cardId}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"cards",
+						"{{cardId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transactions History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/cards/{{cardId}}/transactions",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"cards",
+						"{{cardId}}",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "cardId",
+			"value": ""
+		},
+		{
+			"key": "host",
+			"value": "http://localhost:8080",
+			"type": "default"
+		}
+	]
+}
