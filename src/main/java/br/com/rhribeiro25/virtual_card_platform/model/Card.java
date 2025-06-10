@@ -35,11 +35,10 @@ public class Card {
     @PrePersist
     protected void onCreate() {
         this.createdAt = new Timestamp(System.currentTimeMillis());
-    }
-
-    public Card() {
         this.status = CardStatus.ACTIVE;
     }
+
+    public Card() {}
 
     private Card(Builder builder) {
         this.id = builder.id;

@@ -3,7 +3,6 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,8 +18,6 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final CardService cardService;
-
 
     @Value("${card.duplicateTransaction}")
     private String duplicateTransactionMessage;
@@ -28,9 +25,8 @@ public class TransactionService {
     @Value("${card.transactionRangeMinutes}")
     private int rangeTimeTransaction;
 
-    public TransactionService(TransactionRepository transactionRepository, CardService cardService) {
+    public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
-        this.cardService = cardService;
     }
 
     public Transaction create(Transaction transaction){
@@ -58,7 +54,6 @@ public class TransactionService {
     }
 
     public Page<Transaction> getTransactionsByCardId(UUID cardId, Pageable pageable) {
-        cardService.getCardById(cardId);
         return transactionRepository.findByCardId(cardId, pageable);
     }
 }

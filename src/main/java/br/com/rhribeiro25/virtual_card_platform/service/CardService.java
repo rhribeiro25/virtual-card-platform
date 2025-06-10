@@ -2,20 +2,21 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.Exception.NotFoundException;
+import br.com.rhribeiro25.virtual_card_platform.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.UUID;
 
 @Service
@@ -49,12 +50,7 @@ public class CardService {
     }
 
     @Transactional
-    public Card create(String cardholderName, BigDecimal initialBalance) {
-        Card card = new Card.Builder()
-                .cardholderName(cardholderName)
-                .balance(initialBalance)
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .build();
+    public Card create(Card card) {
         try {
             return cardRepository.save(card);
         } catch (OptimisticLockException e) {
@@ -92,12 +88,7 @@ public class CardService {
             throw new BadRequestException(conflictMessage);
         }
 
-        transactionService.create(new Transaction.Builder()
-                .card(card)
-                .type(TransactionType.SPEND)
-                .amount(amount)
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .build());
+        transactionService.create(TransactionMapper.toEntity(amount, card));
 
         return card;
     }
@@ -112,12 +103,7 @@ public class CardService {
         card.setBalance(card.getBalance().add(amount));
         cardRepository.save(card);
 
-        transactionService.create(new Transaction.Builder()
-                .card(card)
-                .type(TransactionType.TOPUP)
-                .amount(amount)
-                .createdAt(new Timestamp(System.currentTimeMillis()))
-                .build());
+        transactionService.create(TransactionMapper.toEntity(amount, card));
 
         try {
             return cardRepository.save(card);
@@ -130,5 +116,12 @@ public class CardService {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(notFoundMessage));
     }
+
+    public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
+        getCardById(cardId);
+        return transactionService.getTransactionsByCardId(cardId, pageable);
+    }
+
+
 
 }
