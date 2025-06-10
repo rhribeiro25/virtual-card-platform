@@ -18,4 +18,5 @@ public class MessageUtil {
     public static String getMessage(String code, Object... args) {
         return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
+
 }

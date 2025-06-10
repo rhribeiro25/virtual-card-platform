@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,25 +18,23 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
     @Query("""
-        SELECT t FROM Transaction t\s
-        WHERE t.amount = :amount\s
-          AND t.cardId = :cardId
-          AND t.timestamp BETWEEN :startTime AND :endTime
-   \s""")
+    SELECT t FROM Transaction t
+    WHERE t.amount = :amount
+      AND t.card.id = :cardId
+      AND t.createdAt BETWEEN :start AND :end
+""")
     Optional<Transaction> findDuplicateTransaction(
             @Param("amount") BigDecimal amount,
             @Param("cardId") UUID cardId,
-            @Param("startTime") LocalDateTime startTime,
-            @Param("endTime") LocalDateTime endTime
+            @Param("start") Timestamp start,
+            @Param("end") Timestamp end
     );
 
-    @Query("""
-    SELECT COUNT(t) FROM Transaction t
-    WHERE t.card.id = :cardId
-      AND t.type = 'SPEND'
-      AND t.createdAt >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
-""")
-    long countRecentSpends(@Param("cardId") UUID cardId);
+    @Query("SELECT COUNT(t) FROM Transaction t " +
+            "WHERE t.card.id = :cardId " +
+            "AND t.type = br.com.rhribeiro25.virtual_card_platform.model.TransactionType.SPEND " +
+            "AND t.createdAt >= :since")
+    long countRecentSpends(@Param("cardId") UUID cardId, @Param("since") Timestamp since);
 
     Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
 }

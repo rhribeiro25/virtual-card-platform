@@ -9,6 +9,7 @@ import br.com.rhribeiro25.virtual_card_platform.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.service.CardService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,14 +32,14 @@ public class CardController {
     }
 
     @PostMapping
-    public ResponseEntity<CardResponse> createCard(@RequestBody CardRequest request) {
+    public ResponseEntity<CardResponse> createCard(@Valid @RequestBody CardRequest request) {
         Card card = cardService.create(CardMapper.toEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CardMapper.toResponse(card));
     }
 
     @PostMapping("/{id}/spend")
-    public ResponseEntity<?> spend(@PathVariable UUID id, @RequestBody TransactionRequest request) {
+    public ResponseEntity<?> spend(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
         try {
             Card card = cardService.spend(id, request.amount());
             return ResponseEntity.ok(CardMapper.toResponse(card));
@@ -48,7 +49,7 @@ public class CardController {
     }
 
     @PostMapping("/{id}/topup")
-    public ResponseEntity<CardResponse> topUp(@PathVariable UUID id, @RequestBody TransactionRequest request) {
+    public ResponseEntity<CardResponse> topUp(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
         Card card = cardService.topUp(id, request.amount());
         return ResponseEntity.ok(CardMapper.toResponse(card));
     }

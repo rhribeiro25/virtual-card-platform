@@ -2,7 +2,6 @@ package br.com.rhribeiro25.virtual_card_platform.Exception;
 
 import br.com.rhribeiro25.virtual_card_platform.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +16,7 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(ChangeSetPersister.NotFoundException exception, HttpServletRequest request) {
+    public ErrorResponse handleNotFound(NotFoundException exception, HttpServletRequest request) {
         return new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.name(),
@@ -27,11 +26,11 @@ public class ExceptionsHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleBadRequest(ChangeSetPersister.NotFoundException exception, HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException exception, HttpServletRequest request) {
         return new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.name(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 exception.getMessage(),
                 request.getServletPath()
         );

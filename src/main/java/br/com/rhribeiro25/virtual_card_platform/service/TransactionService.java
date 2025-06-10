@@ -4,12 +4,13 @@ import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.repository.TransactionRepository;
-import org.springframework.beans.factory.annotation.Value;
+import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,12 +19,6 @@ import java.util.UUID;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-
-    @Value("${card.duplicateTransaction}")
-    private String duplicateTransactionMessage;
-
-    @Value("${card.transactionRangeMinutes}")
-    private int rangeTimeTransaction;
 
     public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
@@ -34,23 +29,34 @@ public class TransactionService {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount) {
+        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage("card.transactionRangeMinutes"));
+
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime tenMinutesAgo = now.minusMinutes(rangeTimeTransaction);
+        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);
+
+        Timestamp start = Timestamp.valueOf(rangeStart);
+        Timestamp end = Timestamp.valueOf(now);
 
         Optional<?> existingTransaction = transactionRepository.findDuplicateTransaction(
                 amount,
                 card.getId(),
-                tenMinutesAgo,
-                now
+                start,
+                end
         );
 
         if (existingTransaction.isPresent()) {
+            String duplicateTransactionMessage = MessageUtil.getMessage("card.duplicateTransaction");
             throw new BadRequestException(duplicateTransactionMessage);
         }
     }
 
     public long countRecentSpends(UUID cardId) {
-        return transactionRepository.countRecentSpends(cardId);
+        int spendRecentMinutes = Integer.parseInt(MessageUtil.getMessage("card.spend.recent.minutes"));
+
+        return transactionRepository.countRecentSpends(
+                cardId,
+                Timestamp.valueOf(LocalDateTime.now().minusMinutes(spendRecentMinutes))
+        );
     }
 
     public Page<Transaction> getTransactionsByCardId(UUID cardId, Pageable pageable) {

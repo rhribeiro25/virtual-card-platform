@@ -6,11 +6,11 @@ import br.com.rhribeiro25.virtual_card_platform.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,24 +25,6 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TransactionService transactionService;
 
-    @Value("${card.conflict}")
-    private String conflictMessage;
-
-    @Value("${card.notFound}")
-    private String notFoundMessage;
-
-    @Value("${card.insufficientBalance}")
-    private String insufficientBalanceMessage;
-
-    @Value("${card.spend.limitPerMinute}")
-    private int spendLimitPerMinute;
-
-    @Value("${card.spend.rateLimit}")
-    private String spendRateLimitMessage;
-
-    @Value("${card.blocked.message}")
-    private String cardBlockedMessage;
-
     @Autowired
     public CardService(CardRepository cardRepository, TransactionService transactionService) {
         this.cardRepository = cardRepository;
@@ -54,7 +36,7 @@ public class CardService {
         try {
             return cardRepository.save(card);
         } catch (OptimisticLockException e) {
-            throw new BadRequestException(conflictMessage);
+            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
         }
     }
 
@@ -62,33 +44,32 @@ public class CardService {
     public Card spend(UUID cardId, BigDecimal amount) {
 
         long recentSpends = transactionService.countRecentSpends(cardId);
+        int spendLimitPerMinute = Integer.parseInt(MessageUtil.getMessage("card.spend.limitPerMinute"));
 
         if (recentSpends >= spendLimitPerMinute) {
             throw new BadRequestException(MessageUtil.getMessage("card.spend.rateLimit", spendLimitPerMinute));
         }
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(notFoundMessage));
+                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
 
         if (card.getStatus() == CardStatus.BLOCKED) {
-            throw new BadRequestException(cardBlockedMessage);
+            throw new BadRequestException(MessageUtil.getMessage("card.blocked.message"));
         }
 
         transactionService.isDuplicateTransaction(card, amount);
 
         if (card.getBalance().compareTo(amount) < 0) {
-            throw new BadRequestException(insufficientBalanceMessage);
+            throw new BadRequestException(MessageUtil.getMessage("card.insufficientBalance"));
         }
-
         card.setBalance(card.getBalance().subtract(amount));
-
         try {
             cardRepository.save(card);
         } catch (OptimisticLockException e) {
-            throw new BadRequestException(conflictMessage);
+            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
         }
 
-        transactionService.create(TransactionMapper.toEntity(amount, card));
+        transactionService.create(TransactionMapper.toEntity(amount, card, TransactionType.SPEND));
 
         return card;
     }
@@ -96,32 +77,30 @@ public class CardService {
     @Transactional
     public Card topUp(UUID cardId, BigDecimal amount) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(notFoundMessage));
+                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
 
         transactionService.isDuplicateTransaction(card, amount);
 
         card.setBalance(card.getBalance().add(amount));
         cardRepository.save(card);
 
-        transactionService.create(TransactionMapper.toEntity(amount, card));
+        transactionService.create(TransactionMapper.toEntity(amount, card, TransactionType.TOPUP));
 
         try {
             return cardRepository.save(card);
         } catch (OptimisticLockException e) {
-            throw new BadRequestException(conflictMessage);
+            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
         }
     }
 
     public Card getCardById(UUID cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(notFoundMessage));
+                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
     }
 
     public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
         getCardById(cardId);
         return transactionService.getTransactionsByCardId(cardId, pageable);
     }
-
-
 
 }
