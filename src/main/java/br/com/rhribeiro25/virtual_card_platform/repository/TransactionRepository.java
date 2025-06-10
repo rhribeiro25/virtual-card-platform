@@ -1,6 +1,8 @@
 package br.com.rhribeiro25.virtual_card_platform.repository;
 
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,4 +36,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
       AND t.createdAt >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
 """)
     long countRecentSpends(@Param("cardId") UUID cardId);
+
+    Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
 }

@@ -3,8 +3,11 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,7 +18,9 @@ import java.util.UUID;
 @Service
 public class TransactionService {
 
-    private final TransactionRepository repository;
+    private final TransactionRepository transactionRepository;
+    private final CardService cardService;
+
 
     @Value("${card.duplicateTransaction}")
     private String duplicateTransactionMessage;
@@ -23,19 +28,20 @@ public class TransactionService {
     @Value("${card.transactionRangeMinutes}")
     private int rangeTimeTransaction;
 
-    public TransactionService(TransactionRepository repository) {
-        this.repository = repository;
+    public TransactionService(TransactionRepository transactionRepository, CardService cardService) {
+        this.transactionRepository = transactionRepository;
+        this.cardService = cardService;
     }
 
     public Transaction create(Transaction transaction){
-        return repository.save(transaction);
+        return transactionRepository.save(transaction);
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime tenMinutesAgo = now.minusMinutes(rangeTimeTransaction);
 
-        Optional<?> existingTransaction = repository.findDuplicateTransaction(
+        Optional<?> existingTransaction = transactionRepository.findDuplicateTransaction(
                 amount,
                 card.getId(),
                 tenMinutesAgo,
@@ -48,6 +54,11 @@ public class TransactionService {
     }
 
     public long countRecentSpends(UUID cardId) {
-        return repository.countRecentSpends(cardId);
+        return transactionRepository.countRecentSpends(cardId);
+    }
+
+    public Page<Transaction> getTransactionsByCardId(UUID cardId, Pageable pageable) {
+        cardService.getCardById(cardId);
+        return transactionRepository.findByCardId(cardId, pageable);
     }
 }

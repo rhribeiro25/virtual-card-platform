@@ -7,12 +7,15 @@ import br.com.rhribeiro25.virtual_card_platform.dto.TransactionResponse;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.service.CardService;
+import br.com.rhribeiro25.virtual_card_platform.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,10 +23,12 @@ import java.util.UUID;
 public class CardController {
 
     private final CardService cardService;
+    private final TransactionService transactionService;
 
     @Autowired
-    public CardController(CardService cardService) {
+    public CardController(CardService cardService, TransactionService transactionService) {
         this.cardService = cardService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping
@@ -56,11 +61,25 @@ public class CardController {
     }
 
     @GetMapping("/{id}/transactions")
-    public ResponseEntity<List<TransactionResponse>> getTransactions(@PathVariable UUID id) {
-        List<Transaction> transactions = cardService.getCardById(id).getTransactions();
-        List<TransactionResponse> response = transactions.stream()
-                .map(tx -> new TransactionResponse(tx.getId(), tx.getCard().getId(), tx.getType().name(), tx.getAmount(), tx.getCreatedAt()))
-                .toList();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<TransactionResponse>> getTransactions(
+            @PathVariable UUID id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Transaction> transactionsPage = transactionService.getTransactionsByCardId(id, pageable);
+
+        Page<TransactionResponse> responsePage = transactionsPage.map(tx ->
+                new TransactionResponse(
+                        tx.getId(),
+                        tx.getCard().getId(),
+                        tx.getType().name(),
+                        tx.getAmount(),
+                        tx.getCreatedAt()
+                )
+        );
+
+        return ResponseEntity.ok(responsePage);
     }
 }
