@@ -6,6 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,12 @@ public class CardService {
     @Value("${card.insufficientBalance}")
     private String insufficientBalanceMessage;
 
+    @Value("${card.spend.limitPerMinute}")
+    private int spendLimitPerMinute;
+
+    @Value("${card.spend.rateLimit}")
+    private String spendRateLimitMessage;
+
     @Autowired
     public CardService(CardRepository cardRepository, TransactionService transactionService) {
         this.cardRepository = cardRepository;
@@ -53,6 +60,13 @@ public class CardService {
 
     @Transactional
     public Card spend(UUID cardId, BigDecimal amount) {
+
+        long recentSpends = transactionService.countRecentSpends(cardId);
+
+        if (recentSpends >= spendLimitPerMinute) {
+            throw new BadRequestException(MessageUtil.getMessage("card.spend.rateLimit", spendLimitPerMinute));
+        }
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(notFoundMessage));
 

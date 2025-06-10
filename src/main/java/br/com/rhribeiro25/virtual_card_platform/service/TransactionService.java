@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -44,5 +45,9 @@ public class TransactionService {
         if (existingTransaction.isPresent()) {
             throw new BadRequestException(duplicateTransactionMessage);
         }
+    }
+
+    public long countRecentSpends(UUID cardId) {
+        return repository.countRecentSpends(cardId);
     }
 }

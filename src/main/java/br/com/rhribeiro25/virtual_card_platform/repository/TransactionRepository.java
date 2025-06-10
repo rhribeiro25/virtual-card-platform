@@ -26,4 +26,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );
+
+    @Query("""
+    SELECT COUNT(t) FROM Transaction t
+    WHERE t.card.id = :cardId
+      AND t.type = 'SPEND'
+      AND t.createdAt >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+""")
+    long countRecentSpends(@Param("cardId") UUID cardId);
 }
