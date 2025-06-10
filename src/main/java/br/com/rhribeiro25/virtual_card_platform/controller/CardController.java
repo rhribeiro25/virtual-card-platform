@@ -28,7 +28,7 @@ public class CardController {
 
     @PostMapping
     public ResponseEntity<CardResponse> createCard(@RequestBody CardRequest request) {
-        Card card = cardService.createCard(request.cardholderName(), request.initialBalance());
+        Card card = cardService.create(request.cardholderName(), request.initialBalance());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new CardResponse(card.getId(), card.getCardholderName(), card.getBalance(), card.getCreatedAt()));
     }
@@ -51,13 +51,13 @@ public class CardController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CardResponse> getCard(@PathVariable UUID id) {
-        Card card = cardService.getCard(id);
+        Card card = cardService.getCardById(id);
         return ResponseEntity.ok(new CardResponse(card.getId(), card.getCardholderName(), card.getBalance(), card.getCreatedAt()));
     }
 
     @GetMapping("/{id}/transactions")
     public ResponseEntity<List<TransactionResponse>> getTransactions(@PathVariable UUID id) {
-        List<Transaction> transactions = cardService.getCard(id).getTransactions();
+        List<Transaction> transactions = cardService.getCardById(id).getTransactions();
         List<TransactionResponse> response = transactions.stream()
                 .map(tx -> new TransactionResponse(tx.getId(), tx.getCard().getId(), tx.getType().name(), tx.getAmount(), tx.getCreatedAt()))
                 .toList();
