@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public void isDuplicateTransaction(Card card, BigDecimal amount) {
+    public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
         int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage("card.transactionRangeMinutes"));
 
         LocalDateTime now = LocalDateTime.now();
@@ -41,7 +42,8 @@ public class TransactionService {
                 amount,
                 card.getId(),
                 start,
-                end
+                end,
+                type
         );
 
         if (existingTransaction.isPresent()) {

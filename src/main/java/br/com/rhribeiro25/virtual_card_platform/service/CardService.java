@@ -57,7 +57,7 @@ public class CardService {
             throw new BadRequestException(MessageUtil.getMessage("card.blocked.message"));
         }
 
-        transactionService.isDuplicateTransaction(card, amount);
+        transactionService.isDuplicateTransaction(card, amount, TransactionType.SPEND);
 
         if (card.getBalance().compareTo(amount) < 0) {
             throw new BadRequestException(MessageUtil.getMessage("card.insufficientBalance"));
@@ -79,7 +79,7 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
 
-        transactionService.isDuplicateTransaction(card, amount);
+        transactionService.isDuplicateTransaction(card, amount, TransactionType.TOPUP);
 
         card.setBalance(card.getBalance().add(amount));
         cardRepository.save(card);
