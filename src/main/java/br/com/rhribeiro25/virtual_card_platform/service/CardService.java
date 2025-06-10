@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.model.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
@@ -38,6 +39,9 @@ public class CardService {
     @Value("${card.spend.rateLimit}")
     private String spendRateLimitMessage;
 
+    @Value("${card.blocked.message}")
+    private String cardBlockedMessage;
+
     @Autowired
     public CardService(CardRepository cardRepository, TransactionService transactionService) {
         this.cardRepository = cardRepository;
@@ -69,6 +73,10 @@ public class CardService {
 
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(notFoundMessage));
+
+        if (card.getStatus() == CardStatus.BLOCKED) {
+            throw new BadRequestException(cardBlockedMessage);
+        }
 
         transactionService.isDuplicateTransaction(card, amount);
 

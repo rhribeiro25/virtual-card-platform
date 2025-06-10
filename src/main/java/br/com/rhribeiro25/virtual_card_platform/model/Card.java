@@ -20,6 +20,9 @@ public class Card {
     @Column(nullable = false)
     private BigDecimal balance;
 
+    @Enumerated(EnumType.STRING)
+    private CardStatus status;
+
     @Column(nullable = false, updatable = false)
     private Timestamp createdAt;
 
@@ -35,6 +38,7 @@ public class Card {
     }
 
     public Card() {
+        this.status = CardStatus.ACTIVE;
     }
 
     private Card(Builder builder) {
@@ -43,6 +47,7 @@ public class Card {
         this.balance = builder.balance;
         this.createdAt = builder.createdAt;
         this.transactions = builder.transactions;
+        this.status = builder.status;
     }
 
     public UUID getId() {
@@ -63,6 +68,14 @@ public class Card {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public CardStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CardStatus status) {
+        this.status = status;
     }
 
     public Timestamp getCreatedAt() {
@@ -86,6 +99,7 @@ public class Card {
         private UUID id;
         private String cardholderName;
         private BigDecimal balance;
+        private CardStatus status;
         private Timestamp createdAt;
         private List<Transaction> transactions;
 
@@ -101,6 +115,11 @@ public class Card {
 
         public Builder balance(BigDecimal balance) {
             this.balance = balance;
+            return this;
+        }
+
+        public Builder status(CardStatus status) {
+            this.status = status;
             return this;
         }
 
