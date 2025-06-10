@@ -26,6 +26,9 @@ public class Card {
     @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
+    @Version
+    private Long version;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = new Timestamp(System.currentTimeMillis());

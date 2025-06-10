@@ -11,9 +11,4 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface CardRepository extends JpaRepository<Card, UUID> {
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select c from Card c where c.id = :id")
-    Card lockById(@Param("id") UUID id);
-}
+public interface CardRepository extends JpaRepository<Card, UUID> {}

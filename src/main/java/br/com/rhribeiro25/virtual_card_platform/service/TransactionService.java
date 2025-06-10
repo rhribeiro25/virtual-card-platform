@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,8 +15,12 @@ import java.util.Optional;
 public class TransactionService {
 
     private final TransactionRepository repository;
-    private final String DUPLICATE_TRANSACTION_MESSAGE = "Duplicate transaction detected!";
-    private final int RANGE_TIME_TRANSACTION = 10;
+
+    @Value("${card.duplicateTransaction}")
+    private String duplicateTransactionMessage;
+
+    @Value("${card.transactionRangeMinutes}")
+    private int rangeTimeTransaction;
 
     public TransactionService(TransactionRepository repository) {
         this.repository = repository;
@@ -27,7 +32,7 @@ public class TransactionService {
 
     public void isDuplicateTransaction(Card card, BigDecimal amount) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime tenMinutesAgo = now.minusMinutes(RANGE_TIME_TRANSACTION);
+        LocalDateTime tenMinutesAgo = now.minusMinutes(rangeTimeTransaction);
 
         Optional<?> existingTransaction = repository.findDuplicateTransaction(
                 amount,
@@ -37,7 +42,7 @@ public class TransactionService {
         );
 
         if (existingTransaction.isPresent()) {
-            throw new BadRequestException(DUPLICATE_TRANSACTION_MESSAGE);
+            throw new BadRequestException(duplicateTransactionMessage);
         }
     }
 }

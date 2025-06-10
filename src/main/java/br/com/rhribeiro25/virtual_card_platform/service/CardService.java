@@ -6,7 +6,9 @@ import br.com.rhribeiro25.virtual_card_platform.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
+import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,14 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TransactionService transactionService;
 
-    private final String CARD_SELECTED_NOT_FOUND_MESSAGE = "Selected card not found!\nPlease verify your card information and try again.";
-    private final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient balance. Please verify your account and try again.";
+    @Value("${card.conflict}")
+    private String conflictMessage;
+
+    @Value("${card.notFound}")
+    private String notFoundMessage;
+
+    @Value("${card.insufficientBalance}")
+    private String insufficientBalanceMessage;
 
     @Autowired
     public CardService(CardRepository cardRepository, TransactionService transactionService) {
@@ -36,24 +44,31 @@ public class CardService {
                 .balance(initialBalance)
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        return cardRepository.save(card);
+        try {
+            return cardRepository.save(card);
+        } catch (OptimisticLockException e) {
+            throw new BadRequestException(conflictMessage);
+        }
     }
 
     @Transactional
     public Card spend(UUID cardId, BigDecimal amount) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CARD_SELECTED_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(notFoundMessage));
 
         transactionService.isDuplicateTransaction(card, amount);
 
-        cardRepository.lockById(card.getId());
-
         if (card.getBalance().compareTo(amount) < 0) {
-            throw new BadRequestException(INSUFFICIENT_BALANCE_MESSAGE);
+            throw new BadRequestException(insufficientBalanceMessage);
         }
 
         card.setBalance(card.getBalance().subtract(amount));
-        cardRepository.save(card);
+
+        try {
+            cardRepository.save(card);
+        } catch (OptimisticLockException e) {
+            throw new BadRequestException(conflictMessage);
+        }
 
         transactionService.create(new Transaction.Builder()
                 .card(card)
@@ -68,11 +83,9 @@ public class CardService {
     @Transactional
     public Card topUp(UUID cardId, BigDecimal amount) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CARD_SELECTED_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(notFoundMessage));
 
         transactionService.isDuplicateTransaction(card, amount);
-
-        cardRepository.lockById(card.getId());
 
         card.setBalance(card.getBalance().add(amount));
         cardRepository.save(card);
@@ -84,12 +97,16 @@ public class CardService {
                 .createdAt(new Timestamp(System.currentTimeMillis()))
                 .build());
 
-        return card;
+        try {
+            return cardRepository.save(card);
+        } catch (OptimisticLockException e) {
+            throw new BadRequestException(conflictMessage);
+        }
     }
 
     public Card getCardById(UUID cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CARD_SELECTED_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(notFoundMessage));
     }
 
 }
