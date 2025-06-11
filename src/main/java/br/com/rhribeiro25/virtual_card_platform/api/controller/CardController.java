@@ -40,12 +40,8 @@ public class CardController {
 
     @PostMapping("/{id}/spend")
     public ResponseEntity<?> spend(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
-        try {
-            Card card = cardUsecase.spend(id, request.amount());
-            return ResponseEntity.ok(CardMapper.toResponse(card));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        Card card = cardUsecase.spend(id, request.amount());
+        return ResponseEntity.ok(CardMapper.toResponse(card));
     }
 
     @PostMapping("/{id}/topup")
