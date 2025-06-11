@@ -33,9 +33,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query("SELECT COUNT(t) FROM Transaction t " +
             "WHERE t.card.id = :cardId " +
-            "AND t.type = br.com.rhribeiro25.virtual_card_platform.model.TransactionType.SPEND " +
+            "AND t.type = :type " +
             "AND t.createdAt >= :since")
-    long countRecentSpends(@Param("cardId") UUID cardId, @Param("since") Timestamp since);
+    long countRecentTransactions(@Param("cardId") UUID cardId,
+                           @Param("type") TransactionType type,
+                           @Param("since") Timestamp since);
 
     Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
 }

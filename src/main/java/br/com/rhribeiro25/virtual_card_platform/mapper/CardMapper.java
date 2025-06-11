@@ -17,6 +17,7 @@ public class CardMapper {
         return new CardResponse(
                 card.getId(),
                 card.getCardholderName(),
+                card.getStatus(),
                 card.getBalance(),
                 card.getCreatedAt()
         );

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,11 +25,15 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final TransactionService transactionService;
+    private final List<TransactionValidation> validations;
 
     @Autowired
-    public CardService(CardRepository cardRepository, TransactionService transactionService) {
+    public CardService(CardRepository cardRepository,
+                       TransactionService transactionService,
+                       List<TransactionValidation> validations) {
         this.cardRepository = cardRepository;
         this.transactionService = transactionService;
+        this.validations = validations;
     }
 
     @Transactional
@@ -43,26 +48,13 @@ public class CardService {
     @Transactional
     public Card spend(UUID cardId, BigDecimal amount) {
 
-        long recentSpends = transactionService.countRecentSpends(cardId);
-        int spendLimitPerMinute = Integer.parseInt(MessageUtil.getMessage("card.spend.limitPerMinute"));
-
-        if (recentSpends >= spendLimitPerMinute) {
-            throw new BadRequestException(MessageUtil.getMessage("card.spend.rateLimit", spendLimitPerMinute));
-        }
-
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
 
-        if (card.getStatus() == CardStatus.BLOCKED) {
-            throw new BadRequestException(MessageUtil.getMessage("card.blocked.message"));
-        }
+        validations.forEach(v -> v.validate(card, amount, TransactionType.SPEND));
 
-        transactionService.isDuplicateTransaction(card, amount, TransactionType.SPEND);
-
-        if (card.getBalance().compareTo(amount) < 0) {
-            throw new BadRequestException(MessageUtil.getMessage("card.insufficientBalance"));
-        }
         card.setBalance(card.getBalance().subtract(amount));
+
         try {
             cardRepository.save(card);
         } catch (OptimisticLockException e) {
@@ -76,10 +68,11 @@ public class CardService {
 
     @Transactional
     public Card topUp(UUID cardId, BigDecimal amount) {
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
 
-        transactionService.isDuplicateTransaction(card, amount, TransactionType.TOPUP);
+        validations.forEach(v -> v.validate(card, amount, TransactionType.TOPUP));
 
         card.setBalance(card.getBalance().add(amount));
         cardRepository.save(card);

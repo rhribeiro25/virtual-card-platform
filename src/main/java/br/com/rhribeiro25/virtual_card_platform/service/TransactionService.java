@@ -52,11 +52,12 @@ public class TransactionService {
         }
     }
 
-    public long countRecentSpends(UUID cardId) {
+    public long countRecentSpends(UUID cardId, TransactionType transactionType) {
         int spendRecentMinutes = Integer.parseInt(MessageUtil.getMessage("card.spend.recent.minutes"));
 
-        return transactionRepository.countRecentSpends(
+        return transactionRepository.countRecentTransactions(
                 cardId,
+                transactionType,
                 Timestamp.valueOf(LocalDateTime.now().minusMinutes(spendRecentMinutes))
         );
     }

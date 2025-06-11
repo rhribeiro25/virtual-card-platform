@@ -1,5 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.dto;
 
+import br.com.rhribeiro25.virtual_card_platform.model.CardStatus;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -7,6 +9,7 @@ import java.util.UUID;
 public record CardResponse(
         UUID id,
         String cardholderName,
+        CardStatus status,
         BigDecimal balance,
         Timestamp createdAt
 ) {}
