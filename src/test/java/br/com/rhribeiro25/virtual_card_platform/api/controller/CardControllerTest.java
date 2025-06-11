@@ -1,10 +1,13 @@
 package br.com.rhribeiro25.virtual_card_platform.api.controller;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.api.dto.CardRequest;
 import br.com.rhribeiro25.virtual_card_platform.api.dto.TransactionRequest;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.TransactionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +23,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,12 +46,18 @@ class CardControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private CardRepository cardRepository;
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private CardController cardController;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private Card card;
+
+    @Autowired
+    private CardUsecase cardUsecase;
 
     @BeforeEach
     void setup() {
@@ -54,7 +65,8 @@ class CardControllerTest {
                 .cardholderName("Renan")
                 .balance(BigDecimal.valueOf(200))
                 .build();
-        card = cardRepository.save(card);
+        card = cardUsecase.create(card);
+
     }
 
     @Test
@@ -127,7 +139,7 @@ class CardControllerTest {
     @DisplayName("Should fail SPEND when card is blocked")
     void spendShouldFailWhenCardIsBlocked() throws Exception {
         card.setStatus(CardStatus.BLOCKED);
-        cardRepository.save(card);
+        cardUsecase.create(card);
 
         performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT)
                 .andExpect(status().isBadRequest());
@@ -175,10 +187,63 @@ class CardControllerTest {
     @DisplayName("Should fail TOPUP when card is blocked")
     void topupShouldFailWhenCardIsBlocked() throws Exception {
         card.setStatus(CardStatus.BLOCKED);
-        cardRepository.save(card);
+        cardUsecase.create(card);
 
         performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT)
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return card By ID Successfully")
+    void shouldReturnCardByIdSuccessfully() throws Exception {
+
+        UUID cardId = card.getId();
+        String expectedName = card.getCardholderName();
+
+        mvc.perform(get(BASE_PATH + "/" + cardId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardholderName").value(expectedName));
+    }
+
+    @Test
+    @DisplayName("Should return card By ID Not Found")
+    void shouldReturnNotFoundWhenCardDoesNotExist() throws Exception {
+
+        UUID nonexistentId = UUID.randomUUID();
+
+        mvc.perform(get(BASE_PATH + "/" + nonexistentId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return paginated transactions for valid card")
+    void shouldReturnTransactionsSuccessfully() throws Exception {
+
+        Transaction transaction = new Transaction.Builder()
+                .card(card)
+                .amount(BigDecimal.valueOf(50))
+                .type(TransactionType.SPEND)
+                .build();
+
+        transactionRepository.save(transaction);
+
+        mvc.perform(get(BASE_PATH + "/" + card.getId() + "/transactions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].amount").value("50.0"))
+                .andExpect(jsonPath("$.content[0].type").value("SPEND"));
+    }
+
+    @Test
+    @DisplayName("Should return empty transaction page when none exist")
+    void shouldReturnEmptyTransactionList() throws Exception {
+        mvc.perform(get(BASE_PATH + "/" + card.getId() + "/transactions")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty());
     }
 
     private ResultActions performTransactionPost(UUID id, String endpoint, BigDecimal amount) throws Exception {

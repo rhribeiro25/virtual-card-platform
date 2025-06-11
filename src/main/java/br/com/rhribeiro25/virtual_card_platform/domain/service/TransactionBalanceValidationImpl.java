@@ -12,9 +12,6 @@ import java.math.BigDecimal;
 public class TransactionBalanceValidationImpl implements TransactionValidation {
     @Override
     public void validate(Card card, BigDecimal amount, TransactionType transactionType) {
-        if (amount.signum() <= 0)
-            throw new BadRequestException(MessageUtil.getMessage("Invalid.transaction.amount"));
-
         if (transactionType == TransactionType.SPEND && card.getBalance().compareTo(amount) < 0)
             throw new BadRequestException(MessageUtil.getMessage("card.insufficientBalance"));
     }

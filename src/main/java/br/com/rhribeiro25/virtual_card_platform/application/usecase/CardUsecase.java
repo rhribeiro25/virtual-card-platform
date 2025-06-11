@@ -1,14 +1,13 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
-import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -42,8 +40,8 @@ public class CardUsecase {
     public Card create(Card card) {
         try {
             return cardRepository.save(card);
-        } catch (OptimisticLockException e) {
-            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
+        } catch (Exception e) {
+            throw new OptimisticLockException(MessageUtil.getMessage("card.conflict"));
         }
     }
 

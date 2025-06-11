@@ -3,11 +3,11 @@ package br.com.rhribeiro25.virtual_card_platform.application.template;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
-import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -35,8 +35,8 @@ public abstract class TransactionTemplate {
     private void saveCard(Card card) {
         try {
             cardRepository.save(card);
-        } catch (OptimisticLockException e) {
-            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
+        } catch (Exception e) {
+            throw new OptimisticLockException(MessageUtil.getMessage("card.conflict"));
         }
     }
 
