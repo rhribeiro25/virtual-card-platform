@@ -33,7 +33,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"cardholderName\": \"Alice\",\n  \"initialBalance\": 100.00\n}"
+					"raw": "{\n  \"cardholderName\": \"Renan Ribeiro\",\n  \"initialBalance\": \"100.00\"\n}"
 				},
 				"url": {
 					"raw": "{{host}}/cards",
@@ -59,7 +59,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"amount\": 10.00\n}"
+					"raw": "{\n  \"amount\": 10\n}"
 				},
 				"url": {
 					"raw": "{{host}}/cards/{{cardId}}/spend",
@@ -87,7 +87,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"amount\": 50.00\n}"
+					"raw": "{\n  \"amount\": 1\n}"
 				},
 				"url": {
 					"raw": "{{host}}/cards/{{cardId}}/topup",
@@ -127,7 +127,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{host}}/cards/{{cardId}}/transactions",
+					"raw": "{{host}}/cards/{{cardId}}/transactions?page=0&size=3",
 					"host": [
 						"{{host}}"
 					],
@@ -135,6 +135,16 @@
 						"cards",
 						"{{cardId}}",
 						"transactions"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "3"
+						}
 					]
 				}
 			},

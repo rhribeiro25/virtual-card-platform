@@ -5,7 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionService;
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public abstract class TransactionTemplate {
     protected CardRepository cardRepository;
 
     @Autowired
-    protected TransactionService transactionService;
+    protected TransactionUsecase transactionUsecase;
 
     public final Card process(Card card, BigDecimal amount) {
         validate(card, amount);
@@ -41,6 +41,6 @@ public abstract class TransactionTemplate {
     }
 
     private void createTransaction(Card card, BigDecimal amount) {
-        transactionService.create(TransactionMapper.toEntity(amount, card, getType()));
+        transactionUsecase.create(TransactionMapper.toEntity(amount, card, getType()));
     }
 }

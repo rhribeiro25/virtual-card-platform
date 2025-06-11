@@ -8,7 +8,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.mapper.CardMapper;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardService;
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,16 +24,16 @@ import java.util.UUID;
 @RequestMapping("/cards")
 public class CardController {
 
-    private final CardService cardService;
+    private final CardUsecase cardUsecase;
 
     @Autowired
-    public CardController(CardService cardService ) {
-        this.cardService = cardService;
+    public CardController(CardUsecase cardUsecase) {
+        this.cardUsecase = cardUsecase;
     }
 
     @PostMapping
     public ResponseEntity<CardResponse> createCard(@Valid @RequestBody CardRequest request) {
-        Card card = cardService.create(CardMapper.toEntity(request));
+        Card card = cardUsecase.create(CardMapper.toEntity(request));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CardMapper.toResponse(card));
     }
@@ -41,7 +41,7 @@ public class CardController {
     @PostMapping("/{id}/spend")
     public ResponseEntity<?> spend(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
         try {
-            Card card = cardService.spend(id, request.amount());
+            Card card = cardUsecase.spend(id, request.amount());
             return ResponseEntity.ok(CardMapper.toResponse(card));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -50,13 +50,13 @@ public class CardController {
 
     @PostMapping("/{id}/topup")
     public ResponseEntity<CardResponse> topUp(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
-        Card card = cardService.topUp(id, request.amount());
+        Card card = cardUsecase.topUp(id, request.amount());
         return ResponseEntity.ok(CardMapper.toResponse(card));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CardResponse> getCard(@PathVariable UUID id) {
-        Card card = cardService.getCardById(id);
+        Card card = cardUsecase.getCardById(id);
         return ResponseEntity.ok(CardMapper.toResponse(card));
     }
 
@@ -68,7 +68,7 @@ public class CardController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Transaction> transactionsPage = cardService.getTransactionsByValidCardId(id, pageable);
+        Page<Transaction> transactionsPage = cardUsecase.getTransactionsByValidCardId(id, pageable);
 
         Page<TransactionResponse> responsePage = transactionsPage.map(TransactionMapper::toResponse);
 

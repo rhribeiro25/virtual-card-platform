@@ -17,11 +17,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class TransactionService {
+public class TransactionUsecase {
 
     private final TransactionRepository transactionRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionUsecase(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
 

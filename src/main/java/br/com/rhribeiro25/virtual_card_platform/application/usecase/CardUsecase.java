@@ -21,23 +21,20 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class CardService {
+public class CardUsecase {
 
     private final CardRepository cardRepository;
-    private final TransactionService transactionService;
-    private final List<TransactionValidation> validations;
+    private final TransactionUsecase transactionUsecase;
     private final SpendTransactionProcessor spendProcessor;
     private final TopUpTransactionProcessor topUpProcessor;
 
     @Autowired
-    public CardService(CardRepository cardRepository,
-                       TransactionService transactionService,
-                       List<TransactionValidation> validations,
+    public CardUsecase(CardRepository cardRepository,
+                       TransactionUsecase transactionUsecase,
                        SpendTransactionProcessor spendProcessor,
                        TopUpTransactionProcessor topUpProcessor) {
         this.cardRepository = cardRepository;
-        this.transactionService = transactionService;
-        this.validations = validations;
+        this.transactionUsecase = transactionUsecase;
         this.spendProcessor = spendProcessor;
         this.topUpProcessor = topUpProcessor;
     }
@@ -72,7 +69,7 @@ public class CardService {
 
     public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
         getCardById(cardId);
-        return transactionService.getTransactionsByCardId(cardId, pageable);
+        return transactionUsecase.getTransactionsByCardId(cardId, pageable);
     }
 
 }
