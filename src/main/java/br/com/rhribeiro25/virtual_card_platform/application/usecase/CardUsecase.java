@@ -1,6 +1,5 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionValidation;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
