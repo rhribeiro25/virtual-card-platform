@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.shared.mapper;
 
-import br.com.rhribeiro25.virtual_card_platform.dto.TransactionResponse;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.TransactionResponse;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;

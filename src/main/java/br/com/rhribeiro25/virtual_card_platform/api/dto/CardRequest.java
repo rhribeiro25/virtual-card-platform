@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.dto;
+package br.com.rhribeiro25.virtual_card_platform.api.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

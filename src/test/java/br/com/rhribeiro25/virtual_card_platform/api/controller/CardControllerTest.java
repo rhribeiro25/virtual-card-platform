@@ -2,8 +2,8 @@ package br.com.rhribeiro25.virtual_card_platform.api.controller;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.dto.CardRequest;
-import br.com.rhribeiro25.virtual_card_platform.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.CardRequest;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

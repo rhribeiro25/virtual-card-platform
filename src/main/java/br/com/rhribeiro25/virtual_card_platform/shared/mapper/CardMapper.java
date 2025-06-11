@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.shared.mapper;
 
-import br.com.rhribeiro25.virtual_card_platform.dto.CardRequest;
-import br.com.rhribeiro25.virtual_card_platform.dto.CardResponse;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.CardRequest;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.CardResponse;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 
 public class CardMapper {

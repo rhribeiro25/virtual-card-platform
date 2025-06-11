@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.shared.Exception;
 
-import br.com.rhribeiro25.virtual_card_platform.dto.ErrorResponse;
+import br.com.rhribeiro25.virtual_card_platform.api.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
