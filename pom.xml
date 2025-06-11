@@ -100,18 +100,28 @@
 				<version>0.8.11</version>
 				<executions>
 					<execution>
+						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
 					<execution>
 						<id>report</id>
-						<phase>verify</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>**/VirtualCardPlatformApplication.class</exclude>
+						<exclude>**/domain/model/**</exclude>
+						<exclude>**/shared/mapper/**</exclude>
+						<exclude>**/api/dto/**</exclude>
+						<exclude>**/shared/Exception/**</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
