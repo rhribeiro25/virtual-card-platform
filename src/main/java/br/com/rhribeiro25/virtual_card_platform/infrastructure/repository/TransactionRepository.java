@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.repository;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

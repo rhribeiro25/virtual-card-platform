@@ -2,6 +2,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
