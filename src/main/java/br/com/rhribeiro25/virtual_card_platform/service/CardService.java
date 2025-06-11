@@ -2,11 +2,8 @@ package br.com.rhribeiro25.virtual_card_platform.service;
 
 import br.com.rhribeiro25.virtual_card_platform.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.Exception.NotFoundException;
-import br.com.rhribeiro25.virtual_card_platform.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.model.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.model.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.repository.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.utils.MessageUtil;
 import jakarta.persistence.OptimisticLockException;
@@ -26,14 +23,20 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TransactionService transactionService;
     private final List<TransactionValidation> validations;
+    private final SpendTransactionProcessor spendProcessor;
+    private final TopUpTransactionProcessor topUpProcessor;
 
     @Autowired
     public CardService(CardRepository cardRepository,
                        TransactionService transactionService,
-                       List<TransactionValidation> validations) {
+                       List<TransactionValidation> validations,
+                       SpendTransactionProcessor spendProcessor,
+                       TopUpTransactionProcessor topUpProcessor) {
         this.cardRepository = cardRepository;
         this.transactionService = transactionService;
         this.validations = validations;
+        this.spendProcessor = spendProcessor;
+        this.topUpProcessor = topUpProcessor;
     }
 
     @Transactional
@@ -47,43 +50,16 @@ public class CardService {
 
     @Transactional
     public Card spend(UUID cardId, BigDecimal amount) {
-
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
-
-        validations.forEach(v -> v.validate(card, amount, TransactionType.SPEND));
-
-        card.setBalance(card.getBalance().subtract(amount));
-
-        try {
-            cardRepository.save(card);
-        } catch (OptimisticLockException e) {
-            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
-        }
-
-        transactionService.create(TransactionMapper.toEntity(amount, card, TransactionType.SPEND));
-
-        return card;
+        return spendProcessor.process(card, amount);
     }
 
     @Transactional
     public Card topUp(UUID cardId, BigDecimal amount) {
-
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
-
-        validations.forEach(v -> v.validate(card, amount, TransactionType.TOPUP));
-
-        card.setBalance(card.getBalance().add(amount));
-        cardRepository.save(card);
-
-        transactionService.create(TransactionMapper.toEntity(amount, card, TransactionType.TOPUP));
-
-        try {
-            return cardRepository.save(card);
-        } catch (OptimisticLockException e) {
-            throw new BadRequestException(MessageUtil.getMessage("card.conflict"));
-        }
+        return topUpProcessor.process(card, amount);
     }
 
     public Card getCardById(UUID cardId) {
