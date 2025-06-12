@@ -31,11 +31,11 @@ jobs:
       - name: 📄 Generate coverage report (Jacoco)
         run: mvn jacoco:report
 
-      # Optional: Upload coverage to Codecov (requires token)
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v4
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: 📤 Upload JaCoCo HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
 
       - name: 🚨 Check code quality with SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
