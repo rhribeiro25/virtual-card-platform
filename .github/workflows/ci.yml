@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Maven in Docker
 
 on:
   push:
@@ -8,41 +8,37 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    container:
+      image: maven:3.9.6-eclipse-temurin-17
+      options: --user root
 
     steps:
       - name: 🧾 Checkout code
         uses: actions/checkout@v4
 
-      - name: ☕️ Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
-
-      - name: 📦 Build with Maven
+      - name: 📦 Build with Maven inside container
         run: mvn clean install --no-transfer-progress
 
       - name: ✅ Run tests
         run: mvn test
 
-      - name: 📄 Generate coverage report (Jacoco)
+      - name: 📄 Generate JaCoCo coverage report
         run: mvn jacoco:report
 
-      - name: 📤 Upload JaCoCo HTML report
+      - name: 📤 Upload JaCoCo HTML report (as downloadable artifact)
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: 📁 Move JaCoCo HTML to docs
+      - name: 📁 Move JaCoCo HTML to docs folder (for GitHub Pages)
         run: |
           mkdir -p docs
           cp -r target/site/jacoco/* docs/
 
-      - name: 🚀 Deploy GitHub Pages
+      - name: 🚀 Deploy GitHub Pages with report
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,5 +47,5 @@ jobs:
       - name: 🚨 Check code quality with SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
-      - name: ✅ Successfully finished
-        run: echo "Build and tests completed successfully ✅"
+      - name: ✅ Build finished
+        run: echo "Build and report published successfully ✅"
