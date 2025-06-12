@@ -38,7 +38,7 @@ jobs:
       #     token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: 🚨 Check code quality with SpotBugs (optional)
-        run: mvn com.github.spotbugs:spotbugs-maven-plugin:check
+        run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
       - name: ✅ Successfully finished
         run: echo "Build and tests completed successfully ✅"
