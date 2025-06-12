@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CardController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">virtual-card-platform</a> &gt; <a href="index.source.html" class="el_package">br.com.rhribeiro25.virtual_card_platform.api.controller</a> &gt; <span class="el_source">CardController.java</span></div><h1>CardController.java</h1><pre class="source lang-java linenums">package br.com.rhribeiro25.virtual_card_platform.api.controller;
+
+import br.com.rhribeiro25.virtual_card_platform.api.dto.*;
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.shared.mapper.CardMapper;
+import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/cards&quot;)
+public class CardController {
+
+    private final CardUsecase cardUsecase;
+
+    @Autowired
+<span class="fc" id="L33">    public CardController(CardUsecase cardUsecase) {</span>
+<span class="fc" id="L34">        this.cardUsecase = cardUsecase;</span>
+<span class="fc" id="L35">    }</span>
+
+    @PostMapping
+    @Operation(summary = &quot;Create a new card&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Card created successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = CardResponse.class))),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 400,
+                  &quot;error&quot;: &quot;Bad Request&quot;,
+                  &quot;message&quot;: &quot;Initial balance must be zero or positive&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Card not found&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 404,
+                  &quot;error&quot;: &quot;Not Found&quot;,
+                  &quot;message&quot;: &quot;Selected card not found! Please verify your card information and try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Conflict&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 409,
+                  &quot;error&quot;: &quot;Conflict&quot;,
+                  &quot;message&quot;: &quot;Conflict detected: The card was modified by another transaction. Please try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 500,
+                  &quot;error&quot;: &quot;Internal Server Error&quot;,
+                  &quot;message&quot;: &quot;Unexpected error occurred. Please contact support.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;)))
+    })
+    public ResponseEntity&lt;CardResponse&gt; createCard(@Valid @RequestBody CardRequest request) {
+<span class="fc" id="L88">        Card card = cardUsecase.create(CardMapper.toEntity(request));</span>
+<span class="fc" id="L89">        return ResponseEntity.status(HttpStatus.CREATED).body(CardMapper.toResponse(card));</span>
+    }
+
+    @PostMapping(&quot;/{id}/spend&quot;)
+    @Operation(summary = &quot;Spend from a card&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Spend successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = CardResponse.class))),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 400,
+                  &quot;error&quot;: &quot;Bad Request&quot;,
+                  &quot;message&quot;: &quot;Initial balance must be zero or positive&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Card not found&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 404,
+                  &quot;error&quot;: &quot;Not Found&quot;,
+                  &quot;message&quot;: &quot;Selected card not found! Please verify your card information and try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Conflict&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 409,
+                  &quot;error&quot;: &quot;Conflict&quot;,
+                  &quot;message&quot;: &quot;Conflict detected: The card was modified by another transaction. Please try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 500,
+                  &quot;error&quot;: &quot;Internal Server Error&quot;,
+                  &quot;message&quot;: &quot;Unexpected error occurred. Please contact support.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;)))
+    })
+    public ResponseEntity&lt;?&gt; spend(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
+<span class="fc" id="L143">        Card card = cardUsecase.spend(id, request.amount());</span>
+<span class="fc" id="L144">        return ResponseEntity.ok(CardMapper.toResponse(card));</span>
+    }
+
+    @PostMapping(&quot;/{id}/topup&quot;)
+    @Operation(summary = &quot;Top-up a card&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Topup successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = CardResponse.class))),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 400,
+                  &quot;error&quot;: &quot;Bad Request&quot;,
+                  &quot;message&quot;: &quot;Initial balance must be zero or positive&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Card not found&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 404,
+                  &quot;error&quot;: &quot;Not Found&quot;,
+                  &quot;message&quot;: &quot;Selected card not found! Please verify your card information and try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Conflict&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 409,
+                  &quot;error&quot;: &quot;Conflict&quot;,
+                  &quot;message&quot;: &quot;Conflict detected: The card was modified by another transaction. Please try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 500,
+                  &quot;error&quot;: &quot;Internal Server Error&quot;,
+                  &quot;message&quot;: &quot;Unexpected error occurred. Please contact support.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;)))
+    })
+    public ResponseEntity&lt;CardResponse&gt; topUp(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
+<span class="fc" id="L198">        Card card = cardUsecase.topUp(id, request.amount());</span>
+<span class="fc" id="L199">        return ResponseEntity.ok(CardMapper.toResponse(card));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Get card by ID&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Find by ID successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = CardResponse.class))),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 400,
+                  &quot;error&quot;: &quot;Bad Request&quot;,
+                  &quot;message&quot;: &quot;Card ID is required to perform this operation.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Card not found&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 404,
+                  &quot;error&quot;: &quot;Not Found&quot;,
+                  &quot;message&quot;: &quot;Selected card not found! Please verify your card information and try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Conflict&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 409,
+                  &quot;error&quot;: &quot;Conflict&quot;,
+                  &quot;message&quot;: &quot;Conflict detected!&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 500,
+                  &quot;error&quot;: &quot;Internal Server Error&quot;,
+                  &quot;message&quot;: &quot;Unexpected error occurred. Please contact support.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;)))
+    })
+    public ResponseEntity&lt;CardResponse&gt; getCard(@PathVariable UUID id) {
+<span class="fc" id="L253">        Card card = cardUsecase.getCardById(id);</span>
+<span class="fc" id="L254">        return ResponseEntity.ok(CardMapper.toResponse(card));</span>
+    }
+
+    @GetMapping(&quot;/{id}/transactions&quot;)
+    @Operation(summary = &quot;Get transactions by card ID&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Find all transactions successfully&quot;,
+                    content = @Content(schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid request&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 400,
+                  &quot;error&quot;: &quot;Bad Request&quot;,
+                  &quot;message&quot;: &quot;Card ID is required to perform this operation.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Transactions not found&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 404,
+                  &quot;error&quot;: &quot;Not Found&quot;,
+                  &quot;message&quot;: &quot;Transactions not found! Please verify your card information and try again.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Conflict&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 409,
+                  &quot;error&quot;: &quot;Conflict&quot;,
+                  &quot;message&quot;: &quot;Conflict detected!&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;))),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = &quot;&quot;&quot;
+                {
+                  &quot;timestamp&quot;: &quot;2025-06-12T00:00:00Z&quot;,
+                  &quot;status&quot;: 500,
+                  &quot;error&quot;: &quot;Internal Server Error&quot;,
+                  &quot;message&quot;: &quot;Unexpected error occurred. Please contact support.&quot;,
+                  &quot;path&quot;: &quot;/cards&quot;
+                }
+                &quot;&quot;&quot;)))
+    })
+    public ResponseEntity&lt;Page&lt;TransactionResponse&gt;&gt; getTransactions(
+            @PathVariable UUID id,
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;10&quot;) int size) {
+
+<span class="fc" id="L312">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="fc" id="L313">        Page&lt;Transaction&gt; transactionsPage = cardUsecase.getTransactionsByValidCardId(id, pageable);</span>
+<span class="fc" id="L314">        Page&lt;TransactionResponse&gt; responsePage = transactionsPage.map(TransactionMapper::toResponse);</span>
+<span class="fc" id="L315">        return ResponseEntity.ok(responsePage);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

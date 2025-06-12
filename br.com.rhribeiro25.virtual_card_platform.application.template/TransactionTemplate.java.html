@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">virtual-card-platform</a> &gt; <a href="index.source.html" class="el_package">br.com.rhribeiro25.virtual_card_platform.application.template</a> &gt; <span class="el_source">TransactionTemplate.java</span></div><h1>TransactionTemplate.java</h1><pre class="source lang-java linenums">package br.com.rhribeiro25.virtual_card_platform.application.template;
+
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
+import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+
+<span class="fc" id="L14">public abstract class TransactionTemplate {</span>
+
+    @Autowired
+    protected CardRepository cardRepository;
+
+    @Autowired
+    protected TransactionUsecase transactionUsecase;
+
+    public final Card process(Card card, BigDecimal amount) {
+<span class="fc" id="L23">        validate(card, amount);</span>
+<span class="fc" id="L24">        updateBalance(card, amount);</span>
+<span class="fc" id="L25">        saveCard(card);</span>
+<span class="fc" id="L26">        createTransaction(card, amount);</span>
+<span class="fc" id="L27">        return card;</span>
+    }
+
+    protected abstract void validate(Card card, BigDecimal amount);
+    protected abstract void updateBalance(Card card, BigDecimal amount);
+    protected abstract TransactionType getType();
+
+    private void saveCard(Card card) {
+        try {
+<span class="fc" id="L36">            cardRepository.save(card);</span>
+<span class="fc" id="L37">        } catch (Exception e) {</span>
+<span class="fc" id="L38">            throw new OptimisticLockException(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
+<span class="fc" id="L39">        }</span>
+<span class="fc" id="L40">    }</span>
+
+    private void createTransaction(Card card, BigDecimal amount) {
+<span class="fc" id="L43">        transactionUsecase.create(TransactionMapper.toEntity(amount, card, getType()));</span>
+<span class="fc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">virtual-card-platform</a> &gt; <a href="index.source.html" class="el_package">br.com.rhribeiro25.virtual_card_platform.shared.utils</a> &gt; <span class="el_source">MessageUtil.java</span></div><h1>MessageUtil.java</h1><pre class="source lang-java linenums">package br.com.rhribeiro25.virtual_card_platform.shared.utils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MessageUtil {
+
+    private static MessageSource messageSource;
+
+    @Autowired
+<span class="fc" id="L14">    public MessageUtil(MessageSource messageSource) {</span>
+<span class="fc" id="L15">        MessageUtil.messageSource = messageSource;</span>
+<span class="fc" id="L16">    }</span>
+
+    public static String getMessage(String code, Object... args) {
+<span class="fc" id="L19">        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());</span>
+    }
+
+    public static void setMessageSource(MessageSource source) {
+<span class="fc" id="L23">        messageSource = source;</span>
+<span class="fc" id="L24">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
