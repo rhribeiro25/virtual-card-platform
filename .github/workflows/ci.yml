@@ -37,6 +37,17 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
+      - name: 📁 Move JaCoCo HTML to docs
+        run: |
+          mkdir -p docs
+          cp -r target/site/jacoco/* docs/
+
+      - name: 🚀 Deploy GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+
       - name: 🚨 Check code quality with SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
