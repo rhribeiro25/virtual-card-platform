@@ -41,7 +41,7 @@ jobs:
       - name: 🚀 Deploy GitHub Pages with report
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.virtual_card_platform }}
+          github_token: ${{ secrets.PUBLIC_REPOS }}
           publish_dir: ./docs
 
       - name: 🚨 Check code quality with SpotBugs (optional)
