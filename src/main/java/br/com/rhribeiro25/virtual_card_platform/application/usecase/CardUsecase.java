@@ -9,6 +9,9 @@ import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundExcepti
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,16 +29,14 @@ public class CardUsecase {
     private final TopUpTransactionProcessor topUpProcessor;
 
     @Autowired
-    public CardUsecase(CardRepository cardRepository,
-                       TransactionUsecase transactionUsecase,
-                       SpendTransactionProcessor spendProcessor,
-                       TopUpTransactionProcessor topUpProcessor) {
+    public CardUsecase(CardRepository cardRepository, TransactionUsecase transactionUsecase, SpendTransactionProcessor spendProcessor, TopUpTransactionProcessor topUpProcessor) {
         this.cardRepository = cardRepository;
         this.transactionUsecase = transactionUsecase;
         this.spendProcessor = spendProcessor;
         this.topUpProcessor = topUpProcessor;
     }
 
+    @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", allEntries = true)})
     @Transactional
     public Card create(Card card) {
         try {
@@ -45,25 +46,26 @@ public class CardUsecase {
         }
     }
 
+    @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", key = "#cardId")})
     @Transactional
     public Card spend(UUID cardId, BigDecimal amount) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
         return spendProcessor.process(card, amount);
     }
 
+    @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", key = "#cardId")})
     @Transactional
     public Card topUp(UUID cardId, BigDecimal amount) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
         return topUpProcessor.process(card, amount);
     }
 
+    @Cacheable(value = "CardById", key = "#cardId")
     public Card getCardById(UUID cardId) {
-        return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
+        return cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
     }
 
+    @Cacheable(value = "TransactionsByValidCardId", key = "#cardId ?: 'all'")
     public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
         getCardById(cardId);
         return transactionUsecase.getTransactionsByCardId(cardId, pageable);
