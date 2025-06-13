@@ -26,7 +26,7 @@
 
 - **Collection Postman para testes manuais:**
 
-  👉 [`Baixar collection Postman`](resources/static/docs/postman-collection.json)
+  👉 [`Baixar collection Postman`](resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
 - Camadas bem definidas: `Controller → Service (UseCase) → Repository`
