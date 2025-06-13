@@ -91,7 +91,7 @@ Returns the full transaction history for a card.
 
 ---
 
-## ▶️ Setup Essentials & Runtime Requirements
+## ▶️ Setup Essentials
 
 - **Java 17+** – Required language version
 - **Maven 3.8+** – Dependency management and build tool
