@@ -1,95 +1,194 @@
-# 📝 Virtual Card Platform
+# 🎫 Virtual Card Platform - Backend API
 
-## 🛡 Regras de Negócio
+## 💼 Problem Overview
 
-- O saldo do cartão nunca pode ser inferior a zero. Validações aplicadas no controller evitam valores negativos ou zero.
-- Impedida qualquer transação de gasto com saldo insuficiente.
-- Cada transação é validada quanto à duplicidade: por padrão, transações de mesmo valor em um período de 10 minutos para o mesmo cartão são bloqueadas. O tempo é configurável via `application.properties`.
-- Transações são bloqueadas se o cartão estiver `BLOCKED`.
-- Antes de qualquer operação, é verificado se o cartão existe, retornando 404 se não existir.
-- Implementada regra de **rate limit**: no máximo 5 gastos por minuto por cartão.
+You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
 
-## ⚙️ Requisitos Técnicos
+- Create virtual cards
+- Add funds (top-up)
+- Spend funds from the cards
 
-- **Java 17** com **Spring Boot**
-- **Banco em memória H2** com versionamento usando **Flyway**
-- **Spring Data JPA**
-- **Cache** em memória com `@Cacheable` e `@CacheEvict`
-- **Cobertura de testes** unitários e de integração 100% com **JUnit + Mockito**
-- **Jacoco Report publicado automaticamente via GitHub Pages**:
-
-  👉 [`Acessar Cobertura de Testes`](https://rhribeiro25.github.io/virtual-card-platform)
-
-- **Swagger UI disponível para exploração da API REST**:
-
-  👉 [`Acessar Swagger com a aplicação rodando`](http://localhost:8080/swagger-ui.html)
-
-- **Collection Postman para testes manuais:**
-
-  👉 [`Acessar o arquivo`](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
-
-- Capacidade de acessar o banco de dados H2 em memória para visualização e testes:
-
-  👉 [`Acessar o h2-console com a aplicação rodando`](http://localhost:8080/h2-console)  
-> JDBC URL: `jdbc:h2:mem:virtual_card_platform`  
-> Usuário: `sa` | Senha: `123456`
-
-- Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
-- Camadas bem definidas: `Controller → Service (UseCase) → Repository`
-- Uso de **DTOs**, **MapStruct-like mappers**, e boas práticas REST (HTTP 200, 201, 400, 404, 409, 500)
-- Design Patterns aplicados:
-  - **Template Method** (para transações): padroniza o fluxo de processamento (validação → atualização → persistência → auditoria), permitindo personalização por tipo de transação (gasto ou recarga).
-  - **Facade**: `CardUsecase` atua como fachada simplificando o uso de regras complexas por trás de uma interface coesa, escondendo detalhes internos dos controllers.
-  - **Builder**: aplicado em `Card` e `Transaction` para criar objetos complexos de forma imutável e legível.
-
-## 🌟 Bônus Implementados
-
-- Paginação no histórico de transações
-- Status do cartão (`ACTIVE`, `BLOCKED`) e regras aplicadas
-- Campo de versão (`@Version`) no modelo de cartão
-- Limite de até 5 gastos por minuto por cartão
-- Integração com **Swagger** para documentação interativa da API
-- **Cache** para otimização de consultas (évito de queries repetidas)
-- Integração com **CI via GitHub Actions**, incluindo build, testes e publicação automática de relatório Jacoco
-- Controle de versão do banco de dados com **Flyway**, garantindo consistência entre ambientes
-- Observabilidade com **logs estruturados e suporte a traçamento distribuído**, prontos para integração com ferramentas como ELK, OpenTelemetry, Grafana, entre outras
-
-## 🔍 Modelagem e Decisão de Projeto
-
-### Uso de objeto `Card` nas transações:
-
-A modelagem segue o padrão de **fortalecer o modelo de domínio**, usando relação direta entre `Transaction` e `Card`, em vez de apenas um `cardId`. Isso permite:
-
-- Garantir integridade referencial
-- Facilitar o uso de validações em tempo de execução com o objeto completo
-- Melhor extensibilidade futura, com acesso a propriedades do cartão (ex: status, nome, versão) diretamente
-- Aplicar lógicas de negócio baseadas no estado do objeto sem necessidade de buscar dados adicionais
-
-> Esta decisão foi tomada para atender a requisitos técnicos e fortalecer a integridade e expressividade do domínio, **sem ferir nenhuma regra de negócio** estabelecida no enunciado ou na modelagem esperada.
-
-## ⚖️ Trade-offs
-
-- Não foi implementado autenticação e autorização (Spring Security)
-- Banco em memória H2 foi usado para facilitar testes e execução local
-
-## 🚀 Melhorias Futuras
-
-- Autenticação JWT com Spring Security
-- Integração com Redis para cache distribuído
-- Uso de PostgreSQL e Docker Compose para dev local
-- Kafka para comunicação entre microsserviços
-- Gateway e Circuit Breaker
-- Observabilidade com logs estruturados e traçamento distribuído (OpenTelemetry, ELK, etc.)
-- Publicação em ambiente cloud (CD)
-
-## 📙 Estratégia de Aprendizado
-
-- **Cursos em plataformas de ensino** para aprofundar o conhecimento em Spring, testes, arquitetura limpa e boas práticas
-- **Documentação oficial** como principal referência para uso correto e atualizado das tecnologias
-- **Desenvolvimento prático com troubleshooting** para consolidar o aprendizado por meio da resolução de problemas reais, criando projetos completos e debugando erros em execução
+The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
 
 ---
 
-> Desenvolvido por Renan Henrique Ribeiro\
+## ✅ Core Requirements
+
+### 📘 Entities
+
+**Card**
+
+- `id: UUID`
+- `cardholderName: String`
+- `balance: BigDecimal`
+- `createdAt: Timestamp`
+
+**Transaction**
+
+- `id: UUID`
+- `cardId: UUID` (foreign key)
+- `type: ENUM { SPEND, TOPUP }`
+- `amount: BigDecimal`
+- `createdAt: Timestamp`
+
+---
+
+### 🔌 API Endpoints
+
+#### `POST /cards`
+
+Creates a new virtual card.
+
+```json
+{
+  "cardholderName": "Alice",
+  "initialBalance": 100.00
+}
+```
+
+#### `POST /cards/{id}/spend`
+
+Spends from a card.
+
+- Returns `400 Bad Request` if balance is insufficient.
+- Must prevent double-spending via race condition handling.
+
+```json
+{
+  "amount": 30.00
+}
+```
+
+#### `POST /cards/{id}/topup`
+
+Adds funds to an existing card.
+
+```json
+{
+  "amount": 50.00
+}
+```
+
+#### `GET /cards/{id}`
+
+Retrieves card details including current balance.
+
+#### `GET /cards/{id}/transactions`
+
+Returns the full transaction history for a card.
+
+---
+
+## 🛡 Business Rules
+
+- A card's balance **can never go below zero**
+- Transactions must ensure **atomicity and consistency** (e.g., no double spend)
+- Spending from **non-existent or deleted cards** is forbidden
+- Transactions are blocked if the card is `BLOCKED`
+- Cards must exist; otherwise, return `404 Not Found`
+- A card can have a **maximum of 5 SPEND transactions per minute**
+- Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
+
+---
+
+## ⚙ Technical Requirements
+
+- **Java 17** with **Spring Boot**
+
+- In-memory **H2 database** with versioning via **Flyway**
+
+- **Spring Data JPA**
+
+- In-memory **cache** using `@Cacheable` and `@CacheEvict`
+
+- 100% **test coverage** (unit and integration) with **JUnit + Mockito**
+
+- **Jacoco** test coverage report published via GitHub Pages:
+
+  👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
+
+- **Swagger UI** available for REST API exploration:
+
+  👉 [Swagger Interface (localhost)](http://localhost:8080/swagger-ui.html)
+
+- **Postman Collection** for manual testing:
+
+  👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+
+- H2 database accessible during execution:
+
+  👉 [H2 Console](http://localhost:8080/h2-console)\
+> JDBC URL: `jdbc:h2:mem:virtual_card_platform`\
+> User: `sa` | Password: `123456`
+
+- Transaction safety using `@Transactional` and **optimistic locking** via `@Version`
+
+- Proper layering: `Controller → Service (UseCase) → Repository`
+
+- Use of **DTOs**, **MapStruct-like mappers**, and REST best practices (HTTP 200, 201, 400, 404, 409, 500)
+
+- Design patterns:
+
+  - **Template Method** for transaction execution
+  - **Facade** via `CardUsecase` to encapsulate logic
+  - **Builder** for creating immutable entities
+
+---
+
+## 🌟 Bonus Implementations
+
+- Pagination support in transaction history
+- Card status (`ACTIVE`, `BLOCKED`) with enforcement
+- Version field (`@Version`) to enable optimistic concurrency
+- Rate limiting: max 5 `SPEND` transactions/minute/card
+- Swagger API documentation
+- Caching to avoid repeated queries
+- CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
+- **Flyway** DB versioning for environment consistency
+- Observability with structured logs and tracing support (ELK, OpenTelemetry, Grafana-ready)
+
+---
+
+## 🔍 Domain Modeling & Design Decisions
+
+### `Transaction` linked directly to `Card` entity:
+
+Using a rich domain model with full `Card` object instead of just `cardId` enables:
+
+- Referential integrity and cascaded validations
+- Easy access to card status and metadata
+- Easier extension for rules based on card state
+
+> This design improves expressiveness and consistency without violating business constraints.
+
+---
+
+## ⚖ Trade-offs
+
+- Security (e.g., JWT) not implemented to focus on core logic
+- H2 in-memory DB used for speed and ease of local testing
+
+---
+
+## 🚀 Future Improvements
+
+- JWT authentication via Spring Security
+- Redis cache for horizontal scalability
+- PostgreSQL + Docker Compose setup
+- Kafka for event-driven architecture
+- API Gateway and circuit breakers
+- Cloud deployment with monitoring and alerting
+
+---
+
+## 📙 Learning Strategy
+
+- Practical development with hands-on debugging
+- Official documentation as a primary reference
+- Courses and online resources for frameworks and architecture
+
+---
+
+> Developed by Renan Henrique Ribeiro\
 > [GitHub](https://github.com/rhribeiro25) · [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
 
