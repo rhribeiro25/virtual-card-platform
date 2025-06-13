@@ -12,15 +12,10 @@
 ## ⚙️ Requisitos Técnicos
 
 - **Java 17** com **Spring Boot**
-
 - **Banco em memória H2** com versionamento usando **Flyway**
-
 - **Spring Data JPA**
-
 - **Cache** em memória com `@Cacheable` e `@CacheEvict`
-
 - **Cobertura de testes** unitários e de integração 100% com **JUnit + Mockito**
-
 - **Jacoco Report publicado automaticamente via GitHub Pages**:
 
   👉 [`Acessar Cobertura de Testes`](https://rhribeiro25.github.io/virtual-card-platform)
@@ -31,21 +26,15 @@
 
 - **Collection Postman para testes manuais:**
 
-  👉 [📥 **Baixar collection Postman**](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+  👉 <a href="https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json" download>📥 <b>Baixar collection Postman</b></a>
 
 - Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
-
 - Camadas bem definidas: `Controller → Service (UseCase) → Repository`
-
 - Uso de **DTOs**, **MapStruct-like mappers**, e boas práticas REST (HTTP 200, 201, 400, 404, 409, 500)
-
 - Design Patterns aplicados:
-
   - **Template Method** (para transações): padroniza o fluxo de processamento (validação → atualização → persistência → auditoria), permitindo personalização por tipo de transação (gasto ou recarga).
   - **Facade**: `CardUsecase` atua como fachada simplificando o uso de regras complexas por trás de uma interface coesa, escondendo detalhes internos dos controllers.
   - **Builder**: aplicado em `Card` e `Transaction` para criar objetos complexos de forma imutável e legível.
-
-
 
 ## 🌟 Bônus Implementados
 
