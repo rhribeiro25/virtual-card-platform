@@ -91,10 +91,11 @@ Returns the full transaction history for a card.
 
 ---
 
-## 🛠 Technical Requirements
+## ▶️ Setup Essentials & Runtime Requirements
 
-- **Java 17**
-- **Maven**
+- **Java 17+** – Required language version
+- **Maven 3.8+** – Dependency management and build tool
+- **Default port: 8080**
 
 ---
 
