@@ -113,7 +113,7 @@ Returns the full transaction history for a card.
 
 - **Postman Collection** for manual testing:
 
-  👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+  👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - H2 database accessible during execution:
 
