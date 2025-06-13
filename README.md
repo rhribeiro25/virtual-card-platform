@@ -82,10 +82,6 @@ A modelagem segue o padrão de **fortalecer o modelo de domínio**, usando rela�
 - Observabilidade com logs estruturados e traçamento distribuído (OpenTelemetry, ELK, etc.)
 - Publicação em ambiente cloud (CD)
 
-## 📁 Repositório do Projeto
-
-👉 [`Acessar projeto no GitHub`](https://github.com/rhribeiro25/virtual-card-platform)
-
 ## 📙 Estratégia de Aprendizado
 
 - **Cursos em plataformas de ensino** para aprofundar o conhecimento em Spring, testes, arquitetura limpa e boas práticas
