@@ -12,10 +12,15 @@
 ## ⚙️ Requisitos Técnicos
 
 - **Java 17** com **Spring Boot**
+
 - **Banco em memória H2** com versionamento usando **Flyway**
+
 - **Spring Data JPA**
+
 - **Cache** em memória com `@Cacheable` e `@CacheEvict`
+
 - **Cobertura de testes** unitários e de integração 100% com **JUnit + Mockito**
+
 - **Jacoco Report publicado automaticamente via GitHub Pages**:
 
   👉 [`Acessar Cobertura de Testes`](https://rhribeiro25.github.io/virtual-card-platform)
@@ -26,15 +31,21 @@
 
 - **Collection Postman para testes manuais:**
 
-  👉 [`Baixar collection Postman`](resources/static/docs/virtual-card-platform.postman_collection.json)
+  👉 [`Baixar collection Postman`](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
+
 - Camadas bem definidas: `Controller → Service (UseCase) → Repository`
+
 - Uso de **DTOs**, **MapStruct-like mappers**, e boas práticas REST (HTTP 200, 201, 400, 404, 409, 500)
+
 - Design Patterns aplicados:
+
   - **Template Method** (para transações): padroniza o fluxo de processamento (validação → atualização → persistência → auditoria), permitindo personalização por tipo de transação (gasto ou recarga).
   - **Facade**: `CardUsecase` atua como fachada simplificando o uso de regras complexas por trás de uma interface coesa, escondendo detalhes internos dos controllers.
   - **Builder**: aplicado em `Card` e `Transaction` para criar objetos complexos de forma imutável e legível.
+
+
 
 ## 🌟 Bônus Implementados
 
@@ -46,7 +57,7 @@
 - **Cache** para otimização de consultas (évito de queries repetidas)
 - Integração com **CI via GitHub Actions**, incluindo build, testes e publicação automática de relatório Jacoco
 - Controle de versão do banco de dados com **Flyway**, garantindo consistência entre ambientes
-- Observabilidade com **logs estruturados**, com suporte a **traçamento distribuído**, prontos para integração com ferramentas como ELK, OpenTelemetry, Grafana, entre outras
+- Observabilidade com **logs estruturados e suporte a traçamento distribuído**, prontos para integração com ferramentas como ELK, OpenTelemetry, Grafana, entre outras
 
 ## 🔍 Modelagem e Decisão de Projeto
 
@@ -76,9 +87,9 @@ A modelagem segue o padrão de **fortalecer o modelo de domínio**, usando rela�
 - Observabilidade com logs estruturados e traçamento distribuído (OpenTelemetry, ELK, etc.)
 - Publicação em ambiente cloud (CD)
 
-📁 Repositório do Projeto
+## 📁 Repositório do Projeto
 
-👉 Acessar projeto no GitHub
+👉 [`Acessar projeto no GitHub`](https://github.com/rhribeiro25/virtual-card-platform)
 
 ## 📙 Estratégia de Aprendizado
 
@@ -88,6 +99,6 @@ A modelagem segue o padrão de **fortalecer o modelo de domínio**, usando rela�
 
 ---
 
-> Desenvolvido por Renan Henrique Ribeiro  
+> Desenvolvido por Renan Henrique Ribeiro\
 > [GitHub](https://github.com/rhribeiro25) · [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
 
