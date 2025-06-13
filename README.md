@@ -117,7 +117,7 @@ Returns the full transaction history for a card.
 
 - H2 database accessible during execution:
 
-  👉 [H2 Console](http://localhost:8080/h2-console)\
+  👉 [H2 Console](http://localhost:8080/h2-console)
 > JDBC URL: `jdbc:h2:mem:virtual_card_platform`\
 > User: `sa` | Password: `123456`
 
