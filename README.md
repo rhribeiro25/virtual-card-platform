@@ -12,15 +12,10 @@
 ## ⚙️ Requisitos Técnicos
 
 - **Java 17** com **Spring Boot**
-
 - **Banco em memória H2** com versionamento usando **Flyway**
-
 - **Spring Data JPA**
-
 - **Cache** em memória com `@Cacheable` e `@CacheEvict`
-
 - **Cobertura de testes** unitários e de integração 100% com **JUnit + Mockito**
-
 - **Jacoco Report publicado automaticamente via GitHub Pages**:
 
   👉 [`Acessar Cobertura de Testes`](https://rhribeiro25.github.io/virtual-card-platform)
@@ -31,21 +26,18 @@
 
 - **Collection Postman para testes manuais:**
 
-  👉 [`Acessar o arquivo`](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+  👉 [`Acessar o arquivo`](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - Capacidade de acessar o banco de dados H2 em memória para visualização e testes:
 
-  👉 [`Acessar o h2-console com a aplicação rodand`](http://localhost:8080/h2-console)  
-> JDBC URL: `jdbc:h2:mem:virtual_card_platform`
+  👉 [`Acessar o h2-console com a aplicação rodando`](http://localhost:8080/h2-console)  
+> JDBC URL: `jdbc:h2:mem:virtual_card_platform`  
+> Usuário: `sa` | Senha: `123456`
 
 - Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
-
 - Camadas bem definidas: `Controller → Service (UseCase) → Repository`
-
 - Uso de **DTOs**, **MapStruct-like mappers**, e boas práticas REST (HTTP 200, 201, 400, 404, 409, 500)
-
 - Design Patterns aplicados:
-
   - **Template Method** (para transações): padroniza o fluxo de processamento (validação → atualização → persistência → auditoria), permitindo personalização por tipo de transação (gasto ou recarga).
   - **Facade**: `CardUsecase` atua como fachada simplificando o uso de regras complexas por trás de uma interface coesa, escondendo detalhes internos dos controllers.
   - **Builder**: aplicado em `Card` e `Transaction` para criar objetos complexos de forma imutável e legível.
