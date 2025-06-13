@@ -91,9 +91,14 @@ Returns the full transaction history for a card.
 
 ---
 
-## ⚙ Technical Requirements
+## 🛠 Technical Requirements
 
-- **Java 17** with **Spring Boot**
+- **Java 17**
+- **Maven**
+
+---
+
+## ⚙ Implementations
 
 - In-memory **H2 database** with versioning via **Flyway**
 
@@ -145,11 +150,10 @@ Returns the full transaction history for a card.
 - Caching to avoid repeated queries
 - CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
 - **Flyway** DB versioning for environment consistency
-- Observability with structured logs and tracing support (ELK, OpenTelemetry, Grafana-ready)
 
 ---
 
-## 🔍 Domain Modeling & Design Decisions
+🧠 Technical Design Decisions
 
 ### `Transaction` linked directly to `Card` entity:
 
@@ -178,6 +182,7 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - Kafka for event-driven architecture
 - API Gateway and circuit breakers
 - Cloud deployment with monitoring and alerting
+- Observability with structured logs and tracing support (ELK, OpenTelemetry, Grafana-ready)
 
 ---
 
@@ -190,5 +195,5 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 ---
 
 > Developed by Renan Henrique Ribeiro\
-> [GitHub](https://github.com/rhribeiro25) · [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
+> [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
 
