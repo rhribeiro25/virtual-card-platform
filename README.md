@@ -31,7 +31,7 @@
 
 - **Collection Postman para testes manuais:**
 
-  👉 [`Baixar collection Postman`](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+  👉 [📥 **Baixar collection Postman**](https://github.com/rhribeiro25/virtual-card-platform/raw/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - Segurança transacional com `@Transactional` e **concorrência otimista** via campo `@Version`
 
