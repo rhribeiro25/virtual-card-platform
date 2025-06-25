@@ -1,13 +1,13 @@
-package br.com.rhribeiro25.virtual_card_platform.api.controller;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.controller;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.api.dto.CardRequest;
-import br.com.rhribeiro25.virtual_card_platform.api.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.CardRequest;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

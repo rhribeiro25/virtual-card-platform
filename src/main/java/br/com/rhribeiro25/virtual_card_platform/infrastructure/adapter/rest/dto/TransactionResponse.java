@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.api.dto;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

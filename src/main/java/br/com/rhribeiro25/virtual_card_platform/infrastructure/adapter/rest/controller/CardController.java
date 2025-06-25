@@ -1,9 +1,9 @@
-package br.com.rhribeiro25.virtual_card_platform.api.controller;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.controller;
 
-import br.com.rhribeiro25.virtual_card_platform.api.dto.*;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.*;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.CardMapper;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import io.swagger.v3.oas.annotations.Operation;
