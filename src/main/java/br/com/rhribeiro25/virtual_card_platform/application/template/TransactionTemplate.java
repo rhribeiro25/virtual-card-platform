@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionU
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BusinessException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
@@ -20,7 +21,7 @@ public abstract class TransactionTemplate {
     @Autowired
     protected TransactionUsecase transactionUsecase;
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = BusinessException.class)
     public final Card process(Card card, BigDecimal amount) {
         validate(card, amount);
         updateBalance(card, amount);
@@ -30,7 +31,9 @@ public abstract class TransactionTemplate {
     }
 
     protected abstract void validate(Card card, BigDecimal amount);
+
     protected abstract void updateBalance(Card card, BigDecimal amount);
+
     protected abstract TransactionType getType();
 
     private void saveCard(Card card) {

@@ -12,7 +12,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class ExceptionsHandler {
+public class GlobalExceptionsHandler {
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ErrorResponse handleInternalError(InternalServerErrorException exception, HttpServletRequest request) {
+        return new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                exception.getMessage(),
+                request.getServletPath()
+        );
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ErrorResponse handleBusinessException(BusinessException ex, HttpServletRequest request) {
+        return new ErrorResponse(
+                ex.getStatus().value(),
+                ex.getStatus().name(),
+                ex.getMessage(),
+                request.getServletPath()
+        );
+    }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

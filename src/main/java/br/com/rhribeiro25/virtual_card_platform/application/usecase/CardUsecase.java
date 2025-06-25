@@ -5,6 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransa
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
@@ -37,7 +38,7 @@ public class CardUsecase {
     }
 
     @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", allEntries = true)})
-    @Transactional
+    @Transactional(rollbackFor = InternalServerErrorException.class)
     public Card create(Card card) {
         try {
             return cardRepository.save(card);
@@ -47,14 +48,14 @@ public class CardUsecase {
     }
 
     @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", key = "#cardId")})
-    @Transactional
+    @Transactional(rollbackFor = InternalServerErrorException.class)
     public Card spend(UUID cardId, BigDecimal amount) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
         return spendProcessor.process(card, amount);
     }
 
     @Caching(evict = {@CacheEvict(cacheNames = "TransactionsByValidCardId", allEntries = true), @CacheEvict(cacheNames = "CardById", key = "#cardId")})
-    @Transactional
+    @Transactional(rollbackFor = InternalServerErrorException.class)
     public Card topUp(UUID cardId, BigDecimal amount) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtil.getMessage("card.notFound")));
         return topUpProcessor.process(card, amount);
