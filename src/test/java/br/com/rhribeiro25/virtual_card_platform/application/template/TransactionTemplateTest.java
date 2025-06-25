@@ -3,7 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.application.template;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class TransactionTemplateTest {
 
     @Test
-    @DisplayName("Should throw OptimisticLockException when card save fails")
+    @DisplayName("Should throw ConflictException when card save fails")
     void shouldThrowOptimisticLockExceptionOnSaveFailure() {
         TransactionTemplate template = new TransactionTemplate() {
             @Override
@@ -55,7 +55,7 @@ class TransactionTemplateTest {
             mocked.when(() -> MessageUtil.getMessage("card.conflict"))
                   .thenReturn("Card already updated by another transaction");
 
-            assertThrows(OptimisticLockException.class, () -> template.process(card, BigDecimal.TEN));
+            assertThrows(ConflictException.class, () -> template.process(card, BigDecimal.TEN));
         }
     }
 }

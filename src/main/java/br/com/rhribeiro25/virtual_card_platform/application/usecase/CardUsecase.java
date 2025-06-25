@@ -7,7 +7,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -43,7 +43,7 @@ public class CardUsecase {
         try {
             return cardRepository.save(card);
         } catch (Exception e) {
-            throw new OptimisticLockException(MessageUtil.getMessage("card.conflict"));
+            throw new ConflictException(MessageUtil.getMessage("card.conflict"));
         }
     }
 

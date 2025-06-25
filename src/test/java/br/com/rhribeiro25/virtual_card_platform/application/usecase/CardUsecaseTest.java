@@ -6,8 +6,8 @@ import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransa
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -77,10 +77,10 @@ class CardUsecaseTest {
     }
 
     @Test
-    @DisplayName("Should throw OptimisticLockException when repository fails")
+    @DisplayName("Should throw ConflictException when repository fails")
     void createCardShouldThrowOptimisticLockException() {
         when(cardRepository.save(any())).thenThrow(new RuntimeException());
-        assertThrows(OptimisticLockException.class, () -> cardUsecase.create(card));
+        assertThrows(ConflictException.class, () -> cardUsecase.create(card));
     }
 
     @Test

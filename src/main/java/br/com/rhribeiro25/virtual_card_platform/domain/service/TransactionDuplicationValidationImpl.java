@@ -19,4 +19,9 @@ public class TransactionDuplicationValidationImpl implements TransactionValidati
     public void validate(Card card, BigDecimal amount, TransactionType transactionType) {
         transactionUsecase.isDuplicateTransaction(card, amount, transactionType);
     }
+
+    @Override
+    public boolean supports(String transactionType) {
+        return transactionType.equalsIgnoreCase("SPEND");
+    }
 }

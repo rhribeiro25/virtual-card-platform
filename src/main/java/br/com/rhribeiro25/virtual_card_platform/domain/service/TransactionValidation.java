@@ -7,4 +7,5 @@ import java.math.BigDecimal;
 
 public interface TransactionValidation {
     void validate(Card card, BigDecimal amount, TransactionType transactionType);
+    default boolean supports(String transactionType) { return true; }
 }

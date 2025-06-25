@@ -15,4 +15,9 @@ public class TransactionStatusValidationImpl implements TransactionValidation {
         if (card.getStatus() == CardStatus.BLOCKED)
             throw new BadRequestException(MessageUtil.getMessage("card.blocked.message"));
     }
+    @Override
+    public boolean supports(String transactionType) {
+        return transactionType.equalsIgnoreCase("TOPUP")
+                || transactionType.equalsIgnoreCase("SPEND");
+    }
 }

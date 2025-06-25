@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TopUpTransactionProcessor extends TransactionTemplate {
@@ -14,7 +15,9 @@ public class TopUpTransactionProcessor extends TransactionTemplate {
     private final List<TransactionValidation> validations;
 
     public TopUpTransactionProcessor(List<TransactionValidation> validations) {
-        this.validations = validations;
+        this.validations = validations.stream()
+                .filter(v -> v.supports(TransactionType.TOPUP.name()))
+                .collect(Collectors.toList());
     }
 
     @Override

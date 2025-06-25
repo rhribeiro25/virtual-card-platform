@@ -26,4 +26,9 @@ public class TransactionLimitValidationImpl implements TransactionValidation {
             throw new BadRequestException(MessageUtil.getMessage("card.spend.rateLimit", spendLimitPerMinute));
         }
     }
+
+    @Override
+    public boolean supports(String transactionType) {
+        return transactionType.equalsIgnoreCase("SPEND");
+    }
 }

@@ -15,4 +15,9 @@ public class TransactionBalanceValidationImpl implements TransactionValidation {
         if (transactionType == TransactionType.SPEND && card.getBalance().compareTo(amount) < 0)
             throw new BadRequestException(MessageUtil.getMessage("card.insufficientBalance"));
     }
+
+    @Override
+    public boolean supports(String transactionType) {
+        return transactionType.equalsIgnoreCase("SPEND");
+    }
 }

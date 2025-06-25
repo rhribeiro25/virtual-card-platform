@@ -56,9 +56,9 @@ public class GlobalExceptionsHandler {
         );
     }
 
-    @ExceptionHandler(OptimisticLockException.class)
+    @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleOptimisticLock(OptimisticLockException exception, HttpServletRequest request) {
+    public ErrorResponse handleOptimisticLock(ConflictException exception, HttpServletRequest request) {
         return new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
