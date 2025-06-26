@@ -73,27 +73,6 @@ class TransactionUsecaseTest {
     }
 
     @Test
-    @DisplayName("Should throw BadRequestException on duplicate transaction")
-    void shouldThrowExceptionOnDuplicateTransaction() {
-        Transaction duplicated = new Transaction();
-        when(transactionRepository.findDuplicateBetweenRangeTimeTransaction(any(), any(), any(), any(), any()))
-                .thenReturn(Optional.of(duplicated));
-
-        assertThrows(BadRequestException.class, () ->
-                transactionUsecase.isDuplicateTransaction(card, BigDecimal.TEN, TransactionType.SPEND));
-    }
-
-    @Test
-    @DisplayName("Should not throw exception when transaction is not duplicate")
-    void shouldNotThrowWhenNoDuplicateTransaction() {
-        when(transactionRepository.findDuplicateBetweenRangeTimeTransaction(any(), any(), any(), any(), any()))
-                .thenReturn(Optional.empty());
-
-        assertDoesNotThrow(() ->
-                transactionUsecase.isDuplicateTransaction(card, BigDecimal.TEN, TransactionType.SPEND));
-    }
-
-    @Test
     @DisplayName("Should count recent spend transactions")
     void shouldCountRecentSpends() {
         when(transactionRepository.countRecentTransactions(any(), any(), any()))

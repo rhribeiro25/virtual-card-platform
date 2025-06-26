@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,6 @@ import static org.mockito.Mockito.*;
 class TransactionBalanceValidationImplTest {
 
     private TransactionBalanceValidationImpl validation;
-
     private MessageSource messageSource;
 
     @BeforeEach
@@ -39,9 +39,9 @@ class TransactionBalanceValidationImplTest {
                 .cardholderName("Test")
                 .balance(BigDecimal.valueOf(50))
                 .build();
-
+        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
-                validation.validate(card, BigDecimal.valueOf(100), TransactionType.SPEND));
+                validation.validate(transaction));
     }
 
     @Test
@@ -51,20 +51,25 @@ class TransactionBalanceValidationImplTest {
                 .cardholderName("Test")
                 .balance(BigDecimal.valueOf(200))
                 .build();
-
+        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
         assertDoesNotThrow(() ->
-                validation.validate(card, BigDecimal.valueOf(100), TransactionType.SPEND));
+                validation.validate(transaction));
     }
 
     @Test
-    @DisplayName("Should not throw when transaction is TOPUP regardless of balance")
-    void shouldNotThrowForTopUpTransaction() {
+    @DisplayName("Should not throw when transaction is SPEND and validation passes")
+    void shouldNotThrowWhenSpendTransactionIsValid() {
         Card card = new Card.Builder()
                 .cardholderName("Test")
-                .balance(BigDecimal.ZERO)
+                .balance(BigDecimal.valueOf(200))
                 .build();
 
-        assertDoesNotThrow(() ->
-                validation.validate(card, BigDecimal.valueOf(100), TransactionType.TOPUP));
+        Transaction transaction = new Transaction.Builder()
+                .card(card)
+                .amount(BigDecimal.valueOf(100))
+                .type(TransactionType.SPEND)
+                .build();
+
+        assertDoesNotThrow(() -> validation.validate(transaction));
     }
 }

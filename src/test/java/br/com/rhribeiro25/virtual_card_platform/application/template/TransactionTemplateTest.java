@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.application.template;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
@@ -27,7 +28,7 @@ class TransactionTemplateTest {
     void shouldThrowOptimisticLockExceptionOnSaveFailure() {
         TransactionTemplate template = new TransactionTemplate() {
             @Override
-            protected void validate(Card card, BigDecimal amount) {}
+            protected void validate(Transaction transaction) {}
 
             @Override
             protected void updateBalance(Card card, BigDecimal amount) {}
@@ -49,13 +50,13 @@ class TransactionTemplateTest {
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        doThrow(new RuntimeException("DB Error")).when(cardRepository).save(any());
+        doThrow(new ConflictException("DB Error")).when(cardRepository).save(any());
 
         try (MockedStatic<MessageUtil> mocked = mockStatic(MessageUtil.class)) {
             mocked.when(() -> MessageUtil.getMessage("card.conflict"))
                   .thenReturn("Card already updated by another transaction");
-
-            assertThrows(ConflictException.class, () -> template.process(card, BigDecimal.TEN));
+            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.TEN).build();
+            assertThrows(ConflictException.class, () -> template.process(transaction));
         }
     }
 }

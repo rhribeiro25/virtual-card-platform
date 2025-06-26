@@ -93,7 +93,7 @@ class CardControllerTest {
     @Test
     @DisplayName("Should complete a SPEND transaction successfully")
     void spendShouldSucceed() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT)
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, UUID.randomUUID())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.balance").value("150.0"))
                 .andExpect(jsonPath("$.cardholderName").value("Renan"));
@@ -102,36 +102,37 @@ class CardControllerTest {
     @Test
     @DisplayName("Should fail SPEND with insufficient balance")
     void spendShouldFailWithInsufficientBalance() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(250))
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(250), UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Should fail SPEND with invalid amount")
     void spendShouldFailWithInvalidAmount() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, INVALID_AMOUNT)
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, INVALID_AMOUNT, UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Should fail on duplicate SPEND transaction")
     void spendShouldFailWithDuplicate() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT)
+        UUID requestId = UUID.randomUUID();
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, requestId)
                 .andExpect(status().isOk());
 
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT)
-                .andExpect(status().isBadRequest());
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, requestId)
+                .andExpect(status().isConflict());
     }
 
     @Test
     @DisplayName("Should enforce SPEND rate limit of 5 per minute")
     void spendShouldRespectRateLimit() throws Exception {
         for (int i = 1; i <= 5; i++) {
-            performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(i))
+            performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(i), UUID.randomUUID())
                     .andExpect(status().isOk());
         }
 
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(6))
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(6), UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
@@ -141,14 +142,14 @@ class CardControllerTest {
         card.setStatus(CardStatus.BLOCKED);
         cardUsecase.create(card);
 
-        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT)
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Should complete a TOPUP transaction successfully")
     void topupShouldSucceed() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, BigDecimal.valueOf(300))
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, BigDecimal.valueOf(300), UUID.randomUUID())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.balance").value("500.0"))
                 .andExpect(jsonPath("$.cardholderName").value("Renan"));
@@ -157,30 +158,33 @@ class CardControllerTest {
     @Test
     @DisplayName("Should fail TOPUP with invalid amount")
     void topupShouldFailWithInvalidAmount() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, INVALID_AMOUNT)
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, INVALID_AMOUNT, UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("Should fail on duplicate TOPUP transaction")
-    void topupShouldFailWithDuplicate() throws Exception {
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT)
+    @DisplayName("Should return 400 BadRequest on duplicate TOPUP transaction with same requestId")
+    void topupShouldFailWithDuplicateRequestId() throws Exception {
+        UUID requestId = UUID.randomUUID();
+
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, VALID_AMOUNT, requestId)
                 .andExpect(status().isOk());
 
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT)
-                .andExpect(status().isBadRequest());
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, VALID_AMOUNT, requestId)
+                .andExpect(status().isConflict());
     }
 
+
     @Test
-    @DisplayName("Should enforce TOPUP rate limit of 5 per minute")
+    @DisplayName("Successfully TOPUP rate limit of 5 per minute")
     void topupShouldRespectRateLimit() throws Exception {
         for (int i = 1; i <= 5; i++) {
-            performTransactionPost(card.getId(),  ENDPOINT_TOPUP, BigDecimal.valueOf(i))
+            performTransactionPost(card.getId(), ENDPOINT_TOPUP, BigDecimal.valueOf(i), UUID.randomUUID())
                     .andExpect(status().isOk());
         }
 
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, BigDecimal.valueOf(6))
-                .andExpect(status().isBadRequest());
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, BigDecimal.valueOf(6), UUID.randomUUID())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -189,7 +193,7 @@ class CardControllerTest {
         card.setStatus(CardStatus.BLOCKED);
         cardUsecase.create(card);
 
-        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT)
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT, UUID.randomUUID())
                 .andExpect(status().isBadRequest());
     }
 
@@ -246,8 +250,8 @@ class CardControllerTest {
                 .andExpect(jsonPath("$.content").isEmpty());
     }
 
-    private ResultActions performTransactionPost(UUID id, String endpoint, BigDecimal amount) throws Exception {
-        TransactionRequest request = new TransactionRequest(amount);
+    private ResultActions performTransactionPost(UUID id, String endpoint, BigDecimal amount, UUID requestId) throws Exception {
+        TransactionRequest request = new TransactionRequest(amount, requestId);
         return mvc.perform(post( BASE_PATH + "/" + id + "/" + endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)));

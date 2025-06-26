@@ -4,6 +4,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.service;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,9 +43,9 @@ class TransactionStatusValidationImplTest {
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.BLOCKED)
                 .build();
-
+        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
-                validation.validate(card, BigDecimal.TEN, TransactionType.SPEND));
+                validation.validate(transaction));
     }
 
     @Test
@@ -55,8 +56,8 @@ class TransactionStatusValidationImplTest {
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.ACTIVE)
                 .build();
-
+        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertDoesNotThrow(() ->
-                validation.validate(card, BigDecimal.TEN, TransactionType.SPEND));
+                validation.validate(transaction));
     }
 }

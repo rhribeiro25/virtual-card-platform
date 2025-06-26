@@ -30,7 +30,7 @@ public class TransactionUsecase {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
-        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage("card.transactionRangeMinutes"));
+        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage("card.conflict"));
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);
@@ -47,7 +47,7 @@ public class TransactionUsecase {
         );
 
         if (existingTransaction.isPresent()) {
-            String duplicateTransactionMessage = MessageUtil.getMessage("card.duplicateTransaction");
+            String duplicateTransactionMessage = MessageUtil.getMessage("card.conflict");
             throw new BadRequestException(duplicateTransactionMessage);
         }
     }

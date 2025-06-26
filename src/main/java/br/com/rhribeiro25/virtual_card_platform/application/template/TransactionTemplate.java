@@ -8,6 +8,8 @@ import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardR
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 import java.math.BigDecimal;
 
@@ -36,8 +38,8 @@ public abstract class TransactionTemplate {
     private void saveCard(Card card) {
         try {
             cardRepository.save(card);
-        } catch (Exception e) {
-            throw new ConflictException(MessageUtil.getMessage("card.duplicateTransaction"));
+        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
+            throw new ConflictException(MessageUtil.getMessage("card.conflict"));
         }
     }
 

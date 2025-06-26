@@ -4,6 +4,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.service;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +47,9 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtil.getMessage(eq("card.spend.rateLimit"), any())).thenReturn("Rate limit exceeded");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(5L);
-
+            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertThrows(BadRequestException.class, () ->
-                    validation.validate(card, BigDecimal.TEN, TransactionType.SPEND));
+                    validation.validate(transaction));
         }
     }
 
@@ -59,9 +60,9 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtil.getMessage("card.spend.limitPerMinute")).thenReturn("5");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(3L);
-
+            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertDoesNotThrow(() ->
-                    validation.validate(card, BigDecimal.TEN, TransactionType.SPEND));
+                    validation.validate(transaction));
         }
     }
 }
