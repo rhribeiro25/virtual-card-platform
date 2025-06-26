@@ -4,7 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionU
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,10 +18,10 @@ public class TransactionLimitInXTimeValidationImpl implements TransactionValidat
     @Override
     public void validate(Transaction transaction) {
 <span class="fc" id="L20">        long recentSpends = transactionUsecase.countRecentSpends(transaction.getCard().getId(), transaction.getType());</span>
-<span class="fc" id="L21">        int spendLimitPerMinute = Integer.parseInt(MessageUtil.getMessage(&quot;card.spend.limitPerMinute&quot;));</span>
+<span class="fc" id="L21">        int spendLimitPerMinute = Integer.parseInt(MessageUtils.getMessage(&quot;card.spend.limitPerMinute&quot;));</span>
 
 <span class="fc bfc" id="L23" title="All 2 branches covered.">        if (recentSpends &gt;= spendLimitPerMinute) {</span>
-<span class="fc" id="L24">            throw new BadRequestException(MessageUtil.getMessage(&quot;card.spend.rateLimit&quot;, spendLimitPerMinute));</span>
+<span class="fc" id="L24">            throw new BadRequestException(MessageUtils.getMessage(&quot;card.spend.rateLimit&quot;, spendLimitPerMinute));</span>
         }
 <span class="fc" id="L26">    }</span>
 

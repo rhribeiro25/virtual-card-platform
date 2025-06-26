@@ -4,14 +4,14 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 <span class="fc" id="L11">public class TransactionStatusValidationImpl implements TransactionValidation {</span>
     public void validate(Transaction transaction) {
 <span class="fc bfc" id="L13" title="All 2 branches covered.">        if (transaction.getCard().getStatus() == CardStatus.BLOCKED)</span>
-<span class="fc" id="L14">            throw new BadRequestException(MessageUtil.getMessage(&quot;card.blocked.message&quot;));</span>
+<span class="fc" id="L14">            throw new BadRequestException(MessageUtils.getMessage(&quot;card.blocked.message&quot;));</span>
 <span class="fc" id="L15">    }</span>
 
     @Override

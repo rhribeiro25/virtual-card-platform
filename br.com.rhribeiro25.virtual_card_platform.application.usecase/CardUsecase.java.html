@@ -12,7 +12,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictExcepti
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,43 +42,49 @@ public class CardUsecase {
 <span class="fc" id="L42">        this.topUpProcessor = topUpProcessor;</span>
 <span class="fc" id="L43">    }</span>
 
-    @Caching(evict = {@CacheEvict(cacheNames = &quot;TransactionsByValidCardId&quot;, allEntries = true), @CacheEvict(cacheNames = &quot;CardById&quot;, allEntries = true)})
+    @Caching(evict = {
+            @CacheEvict(cacheNames = &quot;cardsById&quot;, key = &quot;#card.id&quot;)
+    })
     @Transactional(rollbackFor = BusinessException.class)
     public Card create(Card card) {
         try {
-<span class="fc" id="L49">            return cardRepository.save(card);</span>
-<span class="fc" id="L50">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
-<span class="fc" id="L51">            throw new ConflictException(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
-<span class="nc" id="L52">        } catch (Exception e) {</span>
-<span class="nc" id="L53">            throw new InternalServerErrorException();</span>
+<span class="fc" id="L51">            return cardRepository.save(card);</span>
+<span class="fc" id="L52">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
+<span class="fc" id="L53">            throw new ConflictException(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
+<span class="nc" id="L54">        } catch (Exception e) {</span>
+<span class="nc" id="L55">            throw new InternalServerErrorException();</span>
         }
     }
 
-    @Caching(evict = {@CacheEvict(cacheNames = &quot;TransactionsByValidCardId&quot;, allEntries = true), @CacheEvict(cacheNames = &quot;CardById&quot;, key = &quot;#cardId&quot;)})
+    @Caching(evict = {
+            @CacheEvict(cacheNames = &quot;transactionsByCardId&quot;, key = &quot;#cardId&quot;),
+    })
     @Transactional(rollbackFor = BusinessException.class)
     public Card spend(UUID cardId, TransactionRequest transactionRequest) {
-<span class="fc" id="L60">        Card card = cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtil.getMessage(&quot;card.notFound&quot;)));</span>
-<span class="fc" id="L61">        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.SPEND);</span>
-<span class="fc" id="L62">        return spendProcessor.process(transaction);</span>
+<span class="fc" id="L64">        Card card = cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtils.getMessage(&quot;card.notFound&quot;)));</span>
+<span class="fc" id="L65">        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.SPEND);</span>
+<span class="fc" id="L66">        return spendProcessor.process(transaction);</span>
     }
 
-    @Caching(evict = {@CacheEvict(cacheNames = &quot;TransactionsByValidCardId&quot;, allEntries = true), @CacheEvict(cacheNames = &quot;CardById&quot;, key = &quot;#cardId&quot;)})
+    @Caching(evict = {
+            @CacheEvict(cacheNames = &quot;transactionsByCardId&quot;, key = &quot;#cardId&quot;),
+    })
     @Transactional(rollbackFor = BusinessException.class)
     public Card topUp(UUID cardId, TransactionRequest transactionRequest) {
-<span class="fc" id="L68">        Card card = cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtil.getMessage(&quot;card.notFound&quot;)));</span>
-<span class="fc" id="L69">        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.TOPUP);</span>
-<span class="fc" id="L70">        return topUpProcessor.process(transaction);</span>
+<span class="fc" id="L74">        Card card = cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtils.getMessage(&quot;card.notFound&quot;)));</span>
+<span class="fc" id="L75">        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.TOPUP);</span>
+<span class="fc" id="L76">        return topUpProcessor.process(transaction);</span>
     }
 
-    @Cacheable(value = &quot;CardById&quot;, key = &quot;#cardId&quot;)
+    @Cacheable(value = &quot;cardsById&quot;, key = &quot;#cardId&quot;)
     public Card getCardById(UUID cardId) {
-<span class="fc" id="L75">        return cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtil.getMessage(&quot;card.notFound&quot;)));</span>
+<span class="fc" id="L81">        return cardRepository.findById(cardId).orElseThrow(() -&gt; new NotFoundException(MessageUtils.getMessage(&quot;card.notFound&quot;)));</span>
     }
 
-    @Cacheable(value = &quot;TransactionsByValidCardId&quot;, key = &quot;#cardId ?: 'all'&quot;)
+    @Cacheable(value = &quot;transactionsByCardId&quot;, key = &quot;#cardId&quot;)
     public Page&lt;Transaction&gt; getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
-<span class="fc" id="L80">        getCardById(cardId);</span>
-<span class="fc" id="L81">        return transactionUsecase.getTransactionsByCardId(cardId, pageable);</span>
+<span class="fc" id="L86">        getCardById(cardId);</span>
+<span class="fc" id="L87">        return transactionUsecase.getTransactionsByCardId(cardId, pageable);</span>
     }
 
 }

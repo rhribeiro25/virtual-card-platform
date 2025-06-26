@@ -5,7 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class TransactionUsecase {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
-<span class="nc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
+<span class="nc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
 
 <span class="nc" id="L35">        LocalDateTime now = LocalDateTime.now();</span>
 <span class="nc" id="L36">        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);</span>
@@ -47,13 +47,13 @@ public class TransactionUsecase {
         );
 
 <span class="nc bnc" id="L49" title="All 2 branches missed.">        if (existingTransaction.isPresent()) {</span>
-<span class="nc" id="L50">            String duplicateTransactionMessage = MessageUtil.getMessage(&quot;card.conflict&quot;);</span>
+<span class="nc" id="L50">            String duplicateTransactionMessage = MessageUtils.getMessage(&quot;card.conflict&quot;);</span>
 <span class="nc" id="L51">            throw new BadRequestException(duplicateTransactionMessage);</span>
         }
 <span class="nc" id="L53">    }</span>
 
     public long countRecentSpends(UUID cardId, TransactionType transactionType) {
-<span class="fc" id="L56">        int spendRecentMinutes = Integer.parseInt(MessageUtil.getMessage(&quot;card.spend.recent.minutes&quot;));</span>
+<span class="fc" id="L56">        int spendRecentMinutes = Integer.parseInt(MessageUtils.getMessage(&quot;card.spend.recent.minutes&quot;));</span>
 
 <span class="fc" id="L58">        return transactionRepository.countRecentTransactions(</span>
                 cardId,

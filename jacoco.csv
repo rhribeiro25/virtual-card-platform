@@ -5,14 +5,15 @@ virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.ad
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,CardResponse,0,18,0,0,0,1,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,TransactionResponse,0,18,0,0,0,1,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,CardRequest,0,9,0,0,0,1,0,1,0,1
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,MessageUtil,0,14,0,0,0,6,0,3,0,3
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,CacheUtils,13,27,0,0,3,8,2,3,2,3
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,MessageUtils,0,14,0,0,0,6,0,3,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.enums,CardStatus,0,15,0,0,0,3,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.enums,TransactionType,0,15,0,0,0,3,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionBalanceValidationImpl,0,27,1,3,0,5,1,4,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicationBetweenRangeTimeValidationImpl,0,18,0,0,0,6,0,3,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionValidation,2,0,0,0,1,0,1,0,1,0
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionStatusValidationImpl,1,28,1,5,0,6,1,5,0,3
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicateUnexpectedImpl,1,40,1,5,0,10,1,5,0,3
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicateUnexpectedImpl,26,58,8,8,4,18,7,5,1,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionLimitInXTimeValidationImpl,0,44,0,2,0,9,0,4,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TopUpTransactionProcessor,2,33,0,0,1,9,1,5,1,5
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,SpendTransactionProcessor,2,33,0,0,1,9,1,5,1,5
