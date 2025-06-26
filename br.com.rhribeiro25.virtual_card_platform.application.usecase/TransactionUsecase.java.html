@@ -3,7 +3,7 @@
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.data.domain.Page;
@@ -30,27 +30,27 @@ public class TransactionUsecase {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
-<span class="fc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage(&quot;card.transactionRangeMinutes&quot;));</span>
+<span class="nc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
 
-<span class="fc" id="L35">        LocalDateTime now = LocalDateTime.now();</span>
-<span class="fc" id="L36">        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);</span>
+<span class="nc" id="L35">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L36">        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);</span>
 
-<span class="fc" id="L38">        Timestamp start = Timestamp.valueOf(rangeStart);</span>
-<span class="fc" id="L39">        Timestamp end = Timestamp.valueOf(now);</span>
+<span class="nc" id="L38">        Timestamp start = Timestamp.valueOf(rangeStart);</span>
+<span class="nc" id="L39">        Timestamp end = Timestamp.valueOf(now);</span>
 
-<span class="fc" id="L41">        Optional&lt;?&gt; existingTransaction = transactionRepository.findDuplicateTransaction(</span>
+<span class="nc" id="L41">        Optional&lt;?&gt; existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(</span>
                 amount,
-<span class="fc" id="L43">                card.getId(),</span>
+<span class="nc" id="L43">                card.getId(),</span>
                 start,
                 end,
                 type
         );
 
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (existingTransaction.isPresent()) {</span>
-<span class="fc" id="L50">            String duplicateTransactionMessage = MessageUtil.getMessage(&quot;card.duplicateTransaction&quot;);</span>
-<span class="fc" id="L51">            throw new BadRequestException(duplicateTransactionMessage);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (existingTransaction.isPresent()) {</span>
+<span class="nc" id="L50">            String duplicateTransactionMessage = MessageUtil.getMessage(&quot;card.conflict&quot;);</span>
+<span class="nc" id="L51">            throw new BadRequestException(duplicateTransactionMessage);</span>
         }
-<span class="fc" id="L53">    }</span>
+<span class="nc" id="L53">    }</span>
 
     public long countRecentSpends(UUID cardId, TransactionType transactionType) {
 <span class="fc" id="L56">        int spendRecentMinutes = Integer.parseInt(MessageUtil.getMessage(&quot;card.spend.recent.minutes&quot;));</span>
@@ -64,6 +64,10 @@ public class TransactionUsecase {
 
     public Page&lt;Transaction&gt; getTransactionsByCardId(UUID cardId, Pageable pageable) {
 <span class="fc" id="L66">        return transactionRepository.findByCardId(cardId, pageable);</span>
+    }
+
+    public Optional&lt;Transaction&gt; verifyDuplicateTransaction(UUID cardId, UUID requestId) {
+<span class="fc" id="L70">        return transactionRepository.findByCardIdAndRequestId(cardId, requestId);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

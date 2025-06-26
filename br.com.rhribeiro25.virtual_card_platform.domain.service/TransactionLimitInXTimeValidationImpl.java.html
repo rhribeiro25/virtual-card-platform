@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionLimitInXTimeValidationImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">virtual-card-platform</a> &gt; <a href="index.source.html" class="el_package">br.com.rhribeiro25.virtual_card_platform.domain.service</a> &gt; <span class="el_source">TransactionLimitInXTimeValidationImpl.java</span></div><h1>TransactionLimitInXTimeValidationImpl.java</h1><pre class="source lang-java linenums">package br.com.rhribeiro25.virtual_card_platform.domain.service;
+
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TransactionLimitInXTimeValidationImpl implements TransactionValidation {
+    private final TransactionUsecase transactionUsecase;
+
+<span class="fc" id="L14">    public TransactionLimitInXTimeValidationImpl(TransactionUsecase transactionUsecase) {</span>
+<span class="fc" id="L15">        this.transactionUsecase = transactionUsecase;</span>
+<span class="fc" id="L16">    }</span>
+
+    @Override
+    public void validate(Transaction transaction) {
+<span class="fc" id="L20">        long recentSpends = transactionUsecase.countRecentSpends(transaction.getCard().getId(), transaction.getType());</span>
+<span class="fc" id="L21">        int spendLimitPerMinute = Integer.parseInt(MessageUtil.getMessage(&quot;card.spend.limitPerMinute&quot;));</span>
+
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (recentSpends &gt;= spendLimitPerMinute) {</span>
+<span class="fc" id="L24">            throw new BadRequestException(MessageUtil.getMessage(&quot;card.spend.rateLimit&quot;, spendLimitPerMinute));</span>
+        }
+<span class="fc" id="L26">    }</span>
+
+    @Override
+    public boolean supports(TransactionType transactionType) {
+<span class="fc" id="L30">        return transactionType.equals(TransactionType.SPEND);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -3,15 +3,17 @@
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.repository.CardRepository;
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.OptimisticLockException;
-import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 import java.math.BigDecimal;
 
-<span class="fc" id="L14">public abstract class TransactionTemplate {</span>
+<span class="fc" id="L16">public abstract class TransactionTemplate {</span>
 
     @Autowired
     protected CardRepository cardRepository;
@@ -19,28 +21,30 @@ import java.math.BigDecimal;
     @Autowired
     protected TransactionUsecase transactionUsecase;
 
-    public final Card process(Card card, BigDecimal amount) {
-<span class="fc" id="L23">        validate(card, amount);</span>
-<span class="fc" id="L24">        updateBalance(card, amount);</span>
-<span class="fc" id="L25">        saveCard(card);</span>
-<span class="fc" id="L26">        createTransaction(card, amount);</span>
-<span class="fc" id="L27">        return card;</span>
+    public final Card process(Transaction transaction) {
+<span class="fc" id="L25">        validate(transaction);</span>
+<span class="fc" id="L26">        updateBalance(transaction.getCard(), transaction.getAmount());</span>
+<span class="fc" id="L27">        saveCard(transaction.getCard());</span>
+<span class="fc" id="L28">        createTransaction(transaction);</span>
+<span class="fc" id="L29">        return transaction.getCard();</span>
     }
 
-    protected abstract void validate(Card card, BigDecimal amount);
+    protected abstract void validate(Transaction transaction);
+
     protected abstract void updateBalance(Card card, BigDecimal amount);
+
     protected abstract TransactionType getType();
 
     private void saveCard(Card card) {
         try {
-<span class="fc" id="L36">            cardRepository.save(card);</span>
-<span class="fc" id="L37">        } catch (Exception e) {</span>
-<span class="fc" id="L38">            throw new OptimisticLockException(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
-<span class="fc" id="L39">        }</span>
-<span class="fc" id="L40">    }</span>
-
-    private void createTransaction(Card card, BigDecimal amount) {
-<span class="fc" id="L43">        transactionUsecase.create(TransactionMapper.toEntity(amount, card, getType()));</span>
+<span class="fc" id="L40">            cardRepository.save(card);</span>
+<span class="nc" id="L41">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
+<span class="nc" id="L42">            throw new ConflictException(MessageUtil.getMessage(&quot;card.conflict&quot;));</span>
+<span class="fc" id="L43">        }</span>
 <span class="fc" id="L44">    }</span>
+
+    private void createTransaction(Transaction transaction) {
+<span class="fc" id="L47">        transactionUsecase.create(transaction);</span>
+<span class="fc" id="L48">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

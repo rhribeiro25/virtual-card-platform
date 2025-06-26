@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionDuplicateUnexpectedImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">virtual-card-platform</a> &gt; <a href="index.source.html" class="el_package">br.com.rhribeiro25.virtual_card_platform.domain.service</a> &gt; <span class="el_source">TransactionDuplicateUnexpectedImpl.java</span></div><h1>TransactionDuplicateUnexpectedImpl.java</h1><pre class="source lang-java linenums">package br.com.rhribeiro25.virtual_card_platform.domain.service;
+
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class TransactionDuplicateUnexpectedImpl implements TransactionValidation {
+    private final TransactionUsecase transactionUsecase;
+
+<span class="fc" id="L17">    public TransactionDuplicateUnexpectedImpl(TransactionUsecase transactionUsecase) {</span>
+<span class="fc" id="L18">        this.transactionUsecase = transactionUsecase;</span>
+<span class="fc" id="L19">    }</span>
+
+    @Override
+    public void validate(Transaction transaction) {
+<span class="fc" id="L23">        UUID requestId = transaction.getRequestId();</span>
+<span class="fc" id="L24">        Optional&lt;Transaction&gt; optionalTransaction = transactionUsecase.verifyDuplicateTransaction(transaction.getCard().getId(), requestId);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (optionalTransaction.isPresent()) {</span>
+<span class="fc" id="L26">            throw new ConflictException(MessageUtil.getMessage(&quot;card.duplicateTransaction&quot;));</span>
+        }
+<span class="fc" id="L28">    }</span>
+
+    @Override
+    public boolean supports(TransactionType transactionType) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        return transactionType.equals(TransactionType.TOPUP)</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">                || transactionType.equals(TransactionType.SPEND);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

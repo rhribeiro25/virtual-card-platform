@@ -2,18 +2,22 @@
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
-<span class="fc" id="L13">public class TransactionStatusValidationImpl implements TransactionValidation {</span>
-    public void validate(Card card, BigDecimal amount, TransactionType transactionType) {
-<span class="fc bfc" id="L15" title="All 2 branches covered.">        if (card.getStatus() == CardStatus.BLOCKED)</span>
-<span class="fc" id="L16">            throw new BadRequestException(MessageUtil.getMessage(&quot;card.blocked.message&quot;));</span>
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L11">public class TransactionStatusValidationImpl implements TransactionValidation {</span>
+    public void validate(Transaction transaction) {
+<span class="fc bfc" id="L13" title="All 2 branches covered.">        if (transaction.getCard().getStatus() == CardStatus.BLOCKED)</span>
+<span class="fc" id="L14">            throw new BadRequestException(MessageUtil.getMessage(&quot;card.blocked.message&quot;));</span>
+<span class="fc" id="L15">    }</span>
+
+    @Override
+    public boolean supports(TransactionType transactionType) {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        return transactionType.equals(TransactionType.TOPUP)</span>
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">                || transactionType.equals(TransactionType.SPEND);</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
