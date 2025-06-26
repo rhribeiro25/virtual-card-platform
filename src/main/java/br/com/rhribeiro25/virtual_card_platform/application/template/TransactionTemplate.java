@@ -6,7 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -39,7 +39,7 @@ public abstract class TransactionTemplate {
         try {
             cardRepository.save(card);
         } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
-            throw new ConflictException(MessageUtil.getMessage("card.conflict"));
+            throw new ConflictException(MessageUtils.getMessage("card.conflict"));
         }
     }
 

@@ -6,7 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,9 +42,9 @@ class TransactionLimitInXTimeValidationImplTest {
     @Test
     @DisplayName("Should throw BadRequestException when limit is exceeded")
     void shouldThrowExceptionWhenLimitExceeded() {
-        try (MockedStatic<MessageUtil> mocked = mockStatic(MessageUtil.class)) {
-            mocked.when(() -> MessageUtil.getMessage("card.spend.limitPerMinute")).thenReturn("5");
-            mocked.when(() -> MessageUtil.getMessage(eq("card.spend.rateLimit"), any())).thenReturn("Rate limit exceeded");
+        try (MockedStatic<MessageUtils> mocked = mockStatic(MessageUtils.class)) {
+            mocked.when(() -> MessageUtils.getMessage("card.spend.limitPerMinute")).thenReturn("5");
+            mocked.when(() -> MessageUtils.getMessage(eq("card.spend.rateLimit"), any())).thenReturn("Rate limit exceeded");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(5L);
             Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
@@ -56,8 +56,8 @@ class TransactionLimitInXTimeValidationImplTest {
     @Test
     @DisplayName("Should not throw exception when limit not exceeded")
     void shouldNotThrowExceptionWhenWithinLimit() {
-        try (MockedStatic<MessageUtil> mocked = mockStatic(MessageUtil.class)) {
-            mocked.when(() -> MessageUtil.getMessage("card.spend.limitPerMinute")).thenReturn("5");
+        try (MockedStatic<MessageUtils> mocked = mockStatic(MessageUtils.class)) {
+            mocked.when(() -> MessageUtils.getMessage("card.spend.limitPerMinute")).thenReturn("5");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(3L);
             Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();

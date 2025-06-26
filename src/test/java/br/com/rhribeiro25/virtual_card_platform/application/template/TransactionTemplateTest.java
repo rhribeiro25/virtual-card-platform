@@ -7,7 +7,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -52,8 +52,8 @@ class TransactionTemplateTest {
 
         doThrow(new ConflictException("DB Error")).when(cardRepository).save(any());
 
-        try (MockedStatic<MessageUtil> mocked = mockStatic(MessageUtil.class)) {
-            mocked.when(() -> MessageUtil.getMessage("card.conflict"))
+        try (MockedStatic<MessageUtils> mocked = mockStatic(MessageUtils.class)) {
+            mocked.when(() -> MessageUtils.getMessage("card.conflict"))
                   .thenReturn("Card already updated by another transaction");
             Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.TEN).build();
             assertThrows(ConflictException.class, () -> template.process(transaction));

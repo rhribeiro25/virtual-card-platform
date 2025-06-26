@@ -5,8 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
-import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +53,7 @@ class TransactionUsecaseTest {
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        MessageUtil.setMessageSource(messageSource);
+        MessageUtils.setMessageSource(messageSource);
         when(messageSource.getMessage(eq("card.transactionRangeMinutes"), any(), any())).thenReturn("10");
         when(messageSource.getMessage(eq("card.duplicateTransaction"), any(), any())).thenReturn("Duplicate transaction");
         when(messageSource.getMessage(eq("card.spend.recent.minutes"), any(), any())).thenReturn("15");

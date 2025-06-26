@@ -5,7 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class TransactionBalanceValidationImplTest {
     @BeforeEach
     void setup() {
         messageSource = mock(MessageSource.class);
-        MessageUtil.setMessageSource(messageSource);
+        MessageUtils.setMessageSource(messageSource);
         when(messageSource.getMessage(eq("card.insufficientBalance"), any(), any())).thenReturn("Saldo insuficiente");
         validation = new TransactionBalanceValidationImpl();
     }

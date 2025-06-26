@@ -3,14 +3,13 @@ package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -65,7 +63,7 @@ class CardUsecaseTest {
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        MessageUtil.setMessageSource(messageSource);
+        MessageUtils.setMessageSource(messageSource);
         when(messageSource.getMessage(anyString(), any(), any())).thenReturn("mocked-message");
     }
 
@@ -81,8 +79,8 @@ class CardUsecaseTest {
     @Test
     @DisplayName("Should throw ConflictException when saving card fails")
     void createCardShouldThrowConflictExceptionWhenSaveFails() {
-        try (MockedStatic<MessageUtil> mocked = Mockito.mockStatic(MessageUtil.class)) {
-            mocked.when(() -> MessageUtil.getMessage("card.conflict"))
+        try (MockedStatic<MessageUtils> mocked = Mockito.mockStatic(MessageUtils.class)) {
+            mocked.when(() -> MessageUtils.getMessage("card.conflict"))
                     .thenReturn("Conflict detected: The card was modified by another transaction. Please try again.");
 
             when(cardRepository.save(card))

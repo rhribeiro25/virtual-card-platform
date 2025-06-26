@@ -5,7 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtil;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class TransactionUsecase {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
-        int rangeTimeTransaction = Integer.parseInt(MessageUtil.getMessage("card.conflict"));
+        int rangeTimeTransaction = Integer.parseInt(MessageUtils.getMessage("card.conflict"));
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);
@@ -47,13 +47,13 @@ public class TransactionUsecase {
         );
 
         if (existingTransaction.isPresent()) {
-            String duplicateTransactionMessage = MessageUtil.getMessage("card.conflict");
+            String duplicateTransactionMessage = MessageUtils.getMessage("card.conflict");
             throw new BadRequestException(duplicateTransactionMessage);
         }
     }
 
     public long countRecentSpends(UUID cardId, TransactionType transactionType) {
-        int spendRecentMinutes = Integer.parseInt(MessageUtil.getMessage("card.spend.recent.minutes"));
+        int spendRecentMinutes = Integer.parseInt(MessageUtils.getMessage("card.spend.recent.minutes"));
 
         return transactionRepository.countRecentTransactions(
                 cardId,
