@@ -59,7 +59,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"amount\": 10\n}"
+					"raw": "{\n  \"amount\": 4,\n  \"requestId\": \"de2db780-a747-4fa7-8bae-965bad2f51c1\"\n}"
 				},
 				"url": {
 					"raw": "{{host}}/cards/{{cardId}}/spend",
@@ -87,7 +87,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"amount\": 1\n}"
+					"raw": "{\n  \"amount\": 1,\n  \"requestId\": \"de2db780-a747-4fa7-9bae-965bad2f32a9\"\n\n}"
 				},
 				"url": {
 					"raw": "{{host}}/cards/{{cardId}}/topup",
