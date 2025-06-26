@@ -44,7 +44,7 @@ class TransactionRepositoryIntegrationTest {
 
     @Test
     @DisplayName("Should find duplicate transaction")
-    void shouldFindDuplicateTransaction() {
+    void shouldFindDuplicateBetweenRangeTimeTransaction() {
         Transaction tx = new Transaction.Builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
@@ -58,7 +58,7 @@ class TransactionRepositoryIntegrationTest {
         Timestamp start = Timestamp.valueOf(LocalDateTime.now().minusMinutes(5));
         Timestamp end = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
 
-        Optional<Transaction> result = transactionRepository.findDuplicateTransaction(
+        Optional<Transaction> result = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
                 BigDecimal.TEN,
                 card.getId(),
                 start,
@@ -116,7 +116,7 @@ class TransactionRepositoryIntegrationTest {
         Timestamp start = Timestamp.valueOf(LocalDateTime.now().minusMinutes(5));
         Timestamp end = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
 
-        Optional<Transaction> result = transactionRepository.findDuplicateTransaction(
+        Optional<Transaction> result = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
                 BigDecimal.TEN,
                 card.getId(),
                 start,

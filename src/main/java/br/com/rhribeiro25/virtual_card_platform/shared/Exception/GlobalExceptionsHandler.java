@@ -3,9 +3,9 @@ package br.com.rhribeiro25.virtual_card_platform.shared.Exception;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -15,80 +15,52 @@ import java.util.Map;
 public class GlobalExceptionsHandler {
 
     @ExceptionHandler(InternalServerErrorException.class)
-    public ErrorResponse handleInternalError(InternalServerErrorException exception, HttpServletRequest request) {
-        return new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleInternalServerError(
+            InternalServerErrorException exception,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 exception.getMessage(),
                 request.getServletPath()
         );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ErrorResponse handleBusinessException(BusinessException ex, HttpServletRequest request) {
-        return new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleBusinessException(
+            BusinessException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
                 ex.getStatus().value(),
-                ex.getStatus().name(),
+                ex.getStatus().getReasonPhrase(),
                 ex.getMessage(),
                 request.getServletPath()
         );
-    }
 
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(NotFoundException exception, HttpServletRequest request) {
-        return new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.name(),
-                exception.getMessage(),
-                request.getServletPath()
-        );
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequest(BadRequestException exception, HttpServletRequest request) {
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                exception.getMessage(),
-                request.getServletPath()
-        );
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleOptimisticLock(ConflictException exception, HttpServletRequest request) {
-        return new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                exception.getMessage(),
-                request.getServletPath()
-        );
+        return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationError(MethodArgumentNotValidException exception, HttpServletRequest request) {
-        Map<String, String> errorMessage = new HashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(e -> errorMessage.put(e.getField(), e.getDefaultMessage()));
+    public ResponseEntity<ErrorResponse> handleValidationError(
+            MethodArgumentNotValidException exception,
+            HttpServletRequest request) {
 
-        return new ErrorResponse(
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(
+                e -> errors.put(e.getField(), e.getDefaultMessage())
+        );
+
+        ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.name(),
-                errorMessage.toString(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                errors.toString(),
                 request.getServletPath()
         );
-    }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleServerError(Exception exception, HttpServletRequest request) {
-        return new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                exception.getMessage(),
-                request.getServletPath()
-        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

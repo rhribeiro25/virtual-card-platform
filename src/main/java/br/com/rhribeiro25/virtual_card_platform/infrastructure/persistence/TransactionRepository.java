@@ -23,7 +23,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
       AND t.card.id = :cardId
       AND t.createdAt BETWEEN :start AND :end
       AND t.type = :type""")
-    Optional<Transaction> findDuplicateTransaction(
+    Optional<Transaction> findDuplicateBetweenRangeTimeTransaction(
             @Param("amount") BigDecimal amount,
             @Param("cardId") UUID cardId,
             @Param("start") Timestamp start,
@@ -40,4 +40,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                            @Param("since") Timestamp since);
 
     Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
+
+    Optional<Transaction> findByCardIdAndRequestId(UUID cardId, UUID requestId);
 }

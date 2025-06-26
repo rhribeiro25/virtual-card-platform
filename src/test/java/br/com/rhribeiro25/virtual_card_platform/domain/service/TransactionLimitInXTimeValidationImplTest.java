@@ -21,16 +21,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-class TransactionLimitValidationImplTest {
+class TransactionLimitInXTimeValidationImplTest {
 
     private TransactionUsecase transactionUsecase;
-    private TransactionLimitValidationImpl validation;
+    private TransactionLimitInXTimeValidationImpl validation;
     private Card card;
 
     @BeforeEach
     void setUp() {
         transactionUsecase = mock(TransactionUsecase.class);
-        validation = new TransactionLimitValidationImpl(transactionUsecase);
+        validation = new TransactionLimitInXTimeValidationImpl(transactionUsecase);
 
         card = new Card.Builder()
                 .cardholderName("Test User")

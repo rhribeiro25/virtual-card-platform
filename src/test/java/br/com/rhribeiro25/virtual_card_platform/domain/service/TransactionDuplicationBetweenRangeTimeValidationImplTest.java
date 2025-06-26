@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-class TransactionDuplicationValidationImplTest {
+class TransactionDuplicationBetweenRangeTimeValidationImplTest {
 
     @Mock
     private TransactionUsecase transactionUsecase;
 
     @InjectMocks
-    private TransactionDuplicationValidationImpl validation;
+    private TransactionDuplicationBetweenRangeTimeValidationImpl validation;
 
     private Card card;
 

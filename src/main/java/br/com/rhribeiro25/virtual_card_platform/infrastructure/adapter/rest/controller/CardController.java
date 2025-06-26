@@ -140,7 +140,7 @@ public class CardController {
                 """)))
     })
     public ResponseEntity<?> spend(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
-        Card card = cardUsecase.spend(id, request.amount());
+        Card card = cardUsecase.spend(id, request);
         return ResponseEntity.ok(CardMapper.toResponse(card));
     }
 
@@ -195,7 +195,7 @@ public class CardController {
                 """)))
     })
     public ResponseEntity<CardResponse> topUp(@PathVariable UUID id, @Valid @RequestBody TransactionRequest request) {
-        Card card = cardUsecase.topUp(id, request.amount());
+        Card card = cardUsecase.topUp(id, request);
         return ResponseEntity.ok(CardMapper.toResponse(card));
     }
 

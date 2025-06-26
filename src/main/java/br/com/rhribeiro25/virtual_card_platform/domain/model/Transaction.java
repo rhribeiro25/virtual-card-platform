@@ -34,6 +34,9 @@ public class Transaction {
         this.createdAt = new Timestamp(System.currentTimeMillis());
     }
 
+    @Column(nullable = false, unique = true)
+    private UUID requestId;
+
     public Transaction() {
     }
 
@@ -43,6 +46,7 @@ public class Transaction {
         this.type = builder.type;
         this.amount = builder.amount;
         this.createdAt = builder.createdAt;
+        this.requestId = builder.requestId;
     }
 
     public UUID getId() {
@@ -81,6 +85,14 @@ public class Transaction {
         this.createdAt = createdAt;
     }
 
+    public UUID getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(UUID requestId) {
+        this.requestId = requestId;
+    }
+
     public static class Builder {
 
         private UUID id;
@@ -88,6 +100,7 @@ public class Transaction {
         private TransactionType type;
         private BigDecimal amount;
         private Timestamp createdAt;
+        private UUID requestId;
 
         public Transaction.Builder id(UUID id) {
             this.id = id;
@@ -111,6 +124,11 @@ public class Transaction {
 
         public Transaction.Builder createdAt(Timestamp createdAt) {
             this.createdAt = createdAt;
+            return this;
+        }
+
+        public Transaction.Builder requestId(UUID requestId) {
+            this.requestId = requestId;
             return this;
         }
 

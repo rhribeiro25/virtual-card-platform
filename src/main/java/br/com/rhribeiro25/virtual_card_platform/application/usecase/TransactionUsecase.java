@@ -38,7 +38,7 @@ public class TransactionUsecase {
         Timestamp start = Timestamp.valueOf(rangeStart);
         Timestamp end = Timestamp.valueOf(now);
 
-        Optional<?> existingTransaction = transactionRepository.findDuplicateTransaction(
+        Optional<?> existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
                 amount,
                 card.getId(),
                 start,
@@ -64,5 +64,9 @@ public class TransactionUsecase {
 
     public Page<Transaction> getTransactionsByCardId(UUID cardId, Pageable pageable) {
         return transactionRepository.findByCardId(cardId, pageable);
+    }
+
+    public Optional<Transaction> verifyDuplicateTransaction(UUID cardId, UUID requestId) {
+        return transactionRepository.findByCardIdAndRequestId(cardId, requestId);
     }
 }
