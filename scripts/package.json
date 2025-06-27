@@ -2,7 +2,7 @@
   "name": "jacoco-coverage-screenshot",
   "version": "1.0.0",
   "scripts": {
-    "screenshot": "node scripts/screenshot.js"
+    "screenshot": "node screenshot.js"
   },
   "dependencies": {
     "puppeteer": "^21.3.8"
