@@ -1,18 +1,24 @@
 const puppeteer = require('puppeteer');
-const path = require('path');
 
 (async () => {
   const browser = await puppeteer.launch({
-    headless: 'new',
+    executablePath: '/usr/bin/google-chrome', // Caminho padrão no Ubuntu
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();
-  const filePath = 'file://' + path.resolve('docs/index.html');
-  await page.goto(filePath, { waitUntil: 'networkidle0' });
+
+  await page.goto(`file://${process.cwd()}/../target/site/jacoco/index.html`, {
+    waitUntil: 'networkidle0'
+  });
 
   await page.setViewport({ width: 1280, height: 800 });
-  await page.screenshot({ path: 'docs/coverage.png' });
+
+  await page.screenshot({
+    path: '../src/main/resources/static/docs/images/coverage/coverage.png',
+    fullPage: true
+  });
 
   await browser.close();
 })();
