@@ -15,7 +15,7 @@
 - [📙 Learning Strategy](#learning-strategy)
 - [✅ Code Coverage](#code-coverage)
 
-##💼 Problem Overview
+## 💼 Problem Overview
   
 
   <br>
@@ -32,7 +32,7 @@
 
 
 
-##🧱 Core Requirements
+## 🧱 Core Requirements
   
 
   ##### 🏛️ Entity
@@ -104,7 +104,7 @@
 
 
 
-##📝 Business Rules
+## 📝 Business Rules
   
 
   <br>
@@ -121,7 +121,7 @@
 
 
 
-##🧩 Sequence Diagrams
+## 🧩 Sequence Diagrams
   
 
 <br>
@@ -195,7 +195,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##🛠️ Setup Essentials
+## 🛠️ Setup Essentials
   
 
   <br>
@@ -209,7 +209,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##▶️ How to Run
+## ▶️ How to Run
   
 
   <br>
@@ -228,7 +228,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##📬 API Usage via Postman
+## 📬 API Usage via Postman
   
 
   <br>
@@ -263,7 +263,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
  
 
-##⚙ Implementations
+## ⚙ Implementations
   
 
   - In-memory **H2 database** with versioning via **Flyway**
@@ -310,7 +310,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##🌟 Bonus Implementations
+## 🌟 Bonus Implementations
   
 
   <br>
@@ -333,7 +333,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##🧠 Technical Design Decisions
+## 🧠 Technical Design Decisions
   
 
   <br>
@@ -352,7 +352,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##⚖ Trade-offs
+## ⚖ Trade-offs
   
 
 1. Simplified Domain Models (Card & Transaction only)
@@ -441,7 +441,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##🚀 Future Improvements
+## 🚀 Future Improvements
   
 
 1. <strong>Observability & Monitoring</strong>
@@ -492,7 +492,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 
 
-##📙 Learning Strategy
+## 📙 Learning Strategy
   
 
   <br>

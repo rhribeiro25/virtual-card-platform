@@ -18,7 +18,16 @@ jobs:
       - name: 🧾 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Build with Maven inside container
+      - name: ✅ Mark directory as safe for Git
+        run: git config --global --add safe.directory /__w/virtual-card-platform/virtual-card-platform
+
+      - name: ⚙️ Configure GitHub token for push
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'actions@github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: 📦 Build with Maven
         run: mvn clean install --no-transfer-progress
 
       - name: ✅ Run tests
@@ -27,28 +36,22 @@ jobs:
       - name: 📄 Generate JaCoCo coverage report
         run: mvn jacoco:report
 
-      - name: 📤 Upload JaCoCo HTML report (as downloadable artifact)
+      - name: 📤 Upload JaCoCo HTML report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: 📁 Move JaCoCo HTML to docs folder (for GitHub Pages)
+      - name: 📁 Copy JaCoCo report to docs
         run: |
           mkdir -p docs
           cp -r target/site/jacoco/* docs/
 
-      - name: 🚀 Deploy GitHub Pages with report
+      - name: 🚀 Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_dir: ./docs
-
-      - name: ⚙️ Configure GitHub token for push
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'actions@github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}
 
       - name: 🛠️ Set up Node.js
         uses: actions/setup-node@v4
@@ -59,7 +62,7 @@ jobs:
         run: PUPPETEER_SKIP_DOWNLOAD=true npm install
         working-directory: scripts
 
-      - name: 📤 Install Chromium in Maven container
+      - name: 🧱 Install Google Chrome
         run: |
           apt-get update
           apt-get install -y wget gnupg unzip
@@ -76,26 +79,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: 📷 Generate screenshot from JaCoCo HTML
+      - name: 📷 Generate coverage screenshot
         run: npm run screenshot
         working-directory: scripts
 
-      - name: ✅ Mark directory as safe for Git
-        run: git config --global --add safe.directory /__w/virtual-card-platform/virtual-card-platform
-
-      - name: 🛡️ Mark current directory as safe for Git
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
       - name: ↪️ Commit coverage image to repo
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'actions@github.com'
-          git add src/main/resources/static/docs/images/coverage/coverage.png
-          git commit -m "Update JaCoCo coverage image" || echo "No changes"
-          git push
+          git add src/main/resources/static/docs/images/coverage/coverage.png || true
+          git diff --cached --quiet || (git commit -m "Update JaCoCo coverage image" && git push)
 
-      - name: 🚨 Check code quality with SpotBugs (optional)
+      - name: 🚨 Run SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
-      - name: ✅ Build finished
-        run: echo "Build and report published successfully ✅"
+      - name: ✅ Done
+        run: echo "✅ Build and coverage report published successfully!"
