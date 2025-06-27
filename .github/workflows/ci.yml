@@ -30,7 +30,7 @@ jobs:
       - name: 📦 Build with Maven
         run: mvn clean install --no-transfer-progress
 
-      - name: ✅ Run tests
+      - name: 🧪 Run tests
         run: mvn test
 
       - name: 📄 Generate JaCoCo coverage report
@@ -62,7 +62,7 @@ jobs:
         run: PUPPETEER_SKIP_DOWNLOAD=true npm install
         working-directory: scripts
 
-      - name: 🧱 Install Google Chrome
+      - name: 🌐 Install Google Chrome
         run: |
           apt-get update
           apt-get install -y wget gnupg unzip
@@ -84,20 +84,16 @@ jobs:
         working-directory: scripts
 
       - name: ↪️ Force commit and push coverage image
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           git config --global user.name "Renan Henrique Ribeiro"
           git config --global user.email "renan.shaolin.25@gmail.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/rhribeiro25/virtual-card-platform.git
-          git fetch origin
-          git checkout ${GITHUB_REF##*/}
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}
           git add src/main/resources/static/docs/images/coverage/coverage.png || true
           git commit -m "Update JaCoCo coverage image" || echo "No changes"
-          git push --force origin HEAD
+          git push origin HEAD
 
       - name: 🚨 Run SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
-      - name: ✅ Done
+      - name: 🥇 Done
         run: echo "✅ Build and coverage report published successfully!"
