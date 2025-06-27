@@ -265,6 +265,8 @@
     🧠 Technical Design Decisions
   </span></strong></summary>
 
+  <br>
+
   Using a rich domain model with full `Card` object instead of just `cardId` enables:
 
   - Referential integrity and cascaded validations
