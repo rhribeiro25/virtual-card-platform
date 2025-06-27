@@ -284,94 +284,86 @@
 
 <br>
 
-##### Simplified Domain Models (Card & Transaction only)
+1. Simplified Domain Models (Card & Transaction only)
 
-###### Trade-off 
-Limited modeling to only two main entities (`Card` and `Transaction`) to keep the codebase small and testable.
+    **Trade-off:**  
+    Limited modeling to only two main entities (`Card` and `Transaction`) to keep the codebase small and testable.
+    
+    **Impact:**  
+    ✅ Keeps business logic focused and isolated  
+    ❌ May require refactoring when introducing related domains (e.g., User, Limits, Notifications)
 
-###### Impact
-✅ Keeps business logic focused and isolated  
-❌ May require refactoring when introducing related domains (e.g., User, Limits, Notifications)
+2. Synchronous REST-only Communication
 
+    **Trade-off:**  
+    Used only REST APIs for card operations.
+    
+    **Impact:**  
+    ✅ Easy to implement and test  
+    ❌ Not scalable for high-throughput or event-driven scenarios (e.g., Kafka-based processing)
 
-##### Synchronous REST-only Communication
+3. Optimistic Locking Instead of Distributed Locking
 
-###### Trade-off 
-Used only REST APIs for card operations.
+    **Trade-off:**  
+    Used `@Version` field for concurrency handling instead of distributed locks (e.g., Redis-based).
+    
+    **Impact:**  
+    ✅ Simple and safe within a single DB instance  
+    ❌ May not prevent race conditions in distributed, high-concurrency environments
 
-###### Impact
-✅ Easy to implement and test  
-❌ Not scalable for high-throughput or event-driven scenarios (e.g., Kafka-based processing)
+4. In-memory Cache Instead of Redis
 
+    **Trade-off:**  
+    Used `@Cacheable` with in-memory cache to reduce DB hits.
+    
+    **Impact:**  
+    ✅ Zero setup; improves performance locally  
+    ❌ Not suitable for horizontal scaling or shared cache between instances
 
-##### Optimistic Locking Instead of Distributed Locking
+5. Flyway for Versioning, No Liquibase or Schema Generation
 
-###### Trade-off 
-Used `@Version` field for concurrency handling instead of distributed locks (e.g., Redis-based).
+    **Trade-off:**  
+    Chose Flyway for database migrations and disabled Spring’s auto DDL generation.
+    
+    **Impact:**  
+    ✅ Full control over schema changes, predictable  
+    ❌ Requires manual script writing; no visual diffing or rollback tools built-in
 
-###### Impact
-✅ Simple and safe within a single DB instance  
-❌ May not prevent race conditions in distributed, high-concurrency environments
+6. Rate Limiting by Business Rule, Not Infrastructure
 
+    **Trade-off:**  
+    Implemented rate limiting (5 SPEND/min) in business logic instead of using an API Gateway or filter-based limiter.
+    
+    **Impact:**  
+    ✅ Business-specific control  
+    ❌ No automatic protection against DoS or broader abuse patterns
 
-##### In-memory Cache Instead of Redis
+7. No Integration with External Services
 
-###### Trade-off 
-Used `@Cacheable` with in-memory cache to reduce DB hits.
+    **Trade-off:**  
+    The project is self-contained and doesn't simulate real external systems (e.g., card providers, fraud detection, etc.).
+    
+    **Impact:**  
+    ✅ Simpler test scope  
+    ❌ Less realistic for real-world systems with integration complexity
 
-###### Impact
-✅ Zero setup; improves performance locally  
-❌ Not suitable for horizontal scaling or shared cache between instances
+8. CI/CD with GitHub Actions but No Deployment Step
 
+    **Trade-off:**  
+    Configured automated tests and coverage reports, but deployment was not included.
+    
+    **Impact:**  
+    ✅ Validates code quality early  
+    ❌ Does not demonstrate production readiness (e.g., Docker, cloud deploy)
 
-##### Flyway for Versioning, No Liquibase or Schema Generation
+9. No Logging Framework Configured (e.g., SLF4J + Logback)
 
-###### Trade-off 
-Chose Flyway for database migrations and disabled Spring’s auto DDL generation.
-
-###### Impact
-✅ Full control over schema changes, predictable  
-❌ Requires manual script writing; no visual diffing or rollback tools built-in
-
-
-##### Rate Limiting by Business Rule, Not Infrastructure
-
-###### Trade-off 
-Implemented rate limiting (5 SPEND/min) in business logic instead of using an API Gateway or filter-based limiter.
-
-###### Impact
-✅ Business-specific control  
-❌ No automatic protection against DoS or broader abuse patterns
-
-
-##### No Integration with External Services
-
-###### Trade-off 
-The project is self-contained and doesn't simulate real external systems (e.g., card providers, fraud detection, etc.).
-
-###### Impact
-✅ Simpler test scope  
-❌ Less realistic for real-world systems with integration complexity
-
-
-##### CI/CD with GitHub Actions but No Deployment Step
-
-###### Trade-off 
-Configured automated tests and coverage reports, but deployment was not included.
-
-###### Impact
-✅ Validates code quality early  
-❌ Does not demonstrate production readiness (e.g., Docker, cloud deploy)
-
-
-##### No Logging Framework Configured (e.g., SLF4J + Logback)
-
-###### Trade-off 
-Relied on Spring Boot default logging without structuring log outputs.
-
-###### Impact
-✅ Sufficient for local dev  
-❌ Not prepared for observability or log analysis in production
+    **Trade-off:**  
+    Relied on Spring Boot default logging without structuring log outputs.
+    
+    **Impact:**  
+    ✅ Sufficient for local dev  
+    ❌ Not prepared for observability or log analysis in production
 
 ---
 
