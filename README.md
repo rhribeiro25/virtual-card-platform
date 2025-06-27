@@ -147,7 +147,7 @@ To use it:
 ```
 
 **HTTP Status:** `201 Created`  
-![🖼️ Create Card Screenshot](docs/images/create-card.png)
+![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
 
 ---
 
