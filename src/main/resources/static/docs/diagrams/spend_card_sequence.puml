@@ -1,0 +1,35 @@
+@startuml
+actor user as "Client App"
+
+box "API Layer" #LightBlue
+participant "CardController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CardUsecase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Infrastructure Layer" #LightCoral
+participant "CardRepository" as cardRepo <<(I,#ADD1B2)>>
+participant "TransactionRepository" as txRepo <<(I,#ADD1B2)>>
+end box
+
+database "Cache" as cache #MediumBlue
+database "H2 Database" as db #MediumBlue
+
+user -> controller : POST /cards/{id}/spend
+controller -> usecase : spend()
+usecase -> cache : check card in cache
+alt cache miss
+    usecase -> cardRepo : findById()
+    cardRepo -> db : SELECT card
+    db --> cardRepo : card
+    cardRepo --> usecase : card
+end
+usecase -> txRepo : save(SPEND)
+txRepo -> db : INSERT transaction
+db --> txRepo : OK
+txRepo --> usecase : transaction
+usecase --> controller : txDTO
+controller --> user : 200 OK
+@enduml

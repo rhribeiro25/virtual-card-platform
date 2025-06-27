@@ -114,6 +114,82 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
+    🧩 Sequence Diagrams
+  </span></strong></summary>
+
+<br>
+
+This section presents the key backend flows through sequence diagrams, covering both successful and failure scenarios for each API endpoint.
+
+> Diagrams are generated with PlantUML and stored under `src/main/resources/static/docs/diagrams/`.
+
+#
+
+### ✅ Create Card – Success
+
+![Create Card – Success](src/main/resources/static/docs/images/diagrams/create_card_sequence.png)
+
+#
+
+### ❌ Create Card – Errors
+
+![Create Card – Errors](src/main/resources/static/docs/images/diagrams/create_card_errors.png)
+
+#
+
+### ✅ Get Card – Success
+
+![Get Card – Success](src/main/resources/static/docs/images/diagrams/get_card_sequence.png)
+
+#
+
+### ❌ Get Card – Errors
+
+![Get Card – Errors](src/main/resources/static/docs/images/diagrams/get_card_errors.png)
+
+#
+
+### ✅ Get Transactions – Success
+
+![Get Transactions – Success](src/main/resources/static/docs/images/diagrams/get_transactions_sequence.png)
+
+#
+
+### ❌ Get Transactions – Errors
+
+![Get Transactions – Errors](src/main/resources/static/docs/images/diagrams/get_transactions_errors.png)
+
+#
+
+### ✅ Spend Card – Success
+
+![Spend Card – Success](src/main/resources/static/docs/images/diagrams/spend_card_sequence.png)
+
+#
+
+### ❌ Spend Card – Errors
+
+![Spend Card – Errors](src/main/resources/static/docs/images/diagrams/spend_card_errors.png)
+
+#
+
+### ✅ Top-Up Card – Success
+
+![Top-Up Card – Success](src/main/resources/static/docs/images/diagrams/topup_card_sequence.png)
+
+#
+
+### ❌ Top-Up Card – Errors
+
+![Top-Up Card – Errors](src/main/resources/static/docs/images/diagrams/topup_card_errors.png)
+
+
+#
+
+</details>
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
     🛠️ Setup Essentials
   </span></strong></summary>
 
@@ -439,6 +515,7 @@
 #
 
 </details>
+
 
 #
 

@@ -1,0 +1,45 @@
+@startuml
+skinparam sequenceParticipantBorderColor Black
+skinparam sequenceParticipantBackgroundColor #FFFFFF
+
+actor user as "Client App"
+
+box "API Layer" #LightBlue
+participant "CardController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CardUsecase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "TransactionRepository" as txRepo <<(I,#ADD1B2)>>
+end box
+
+database "Cache" as cache #MediumBlue
+database "H2 Database" as db #MediumBlue
+
+user -> controller : GET /cards/{id}/transactions
+controller -> usecase : getTransactions()
+
+group Invalid Card ID Format
+  usecase --> controller : throws BusinessException
+  controller --> user : 400 Bad Request
+end
+
+group Card Not Found
+    usecase -> cache : check transactions in cache
+    cache --> usecase : miss
+    usecase -> txRepo : findByCardId()
+    txRepo -> db : SELECT
+    db --> txRepo : empty
+    txRepo --> usecase : []
+    usecase --> controller : throws NotFoundException
+    controller --> user : 404 Not Found
+end
+
+group Unexpected Failure
+  usecase --> controller : throws RuntimeException
+  controller --> user : 500 Internal Server Error
+end
+@enduml

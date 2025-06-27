@@ -1,0 +1,30 @@
+@startuml
+actor user as "Client App"
+
+box "API Layer" #LightBlue
+participant "CardController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CardUsecase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Infrastructure Layer" #LightCoral
+participant "CardRepository" as cardRepo <<(I,#ADD1B2)>>
+end box
+
+database "Cache" as cache #MediumBlue
+database "H2 Database" as db #MediumBlue
+
+user -> controller : GET /cards/{id}
+controller -> usecase : getCard()
+usecase -> cache : check card in cache
+alt cache miss
+    usecase -> cardRepo : findById()
+    cardRepo -> db : SELECT card
+    db --> cardRepo : card
+    cardRepo --> usecase : card
+end
+usecase --> controller : CardDTO
+controller --> user : 200 OK
+@enduml
