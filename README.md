@@ -1,6 +1,6 @@
 # 🎫 Virtual Card Platform
 
-- [💼 Problem Overview](#-problem-overview)
+- [💼 Problem Overview](#problem-overview)
 - [🧱 Core Requirements](#-core-requirements)
 - [📝 Business Rules](#-business-rules)
 - [🧩 Sequence Diagrams](#-sequence-diagrams)
@@ -17,7 +17,7 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    [💼 Problem Overview](#-problem-overview)
+    ## 💼 Problem Overview
   </span></strong></summary>
 
   <br>
