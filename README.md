@@ -151,7 +151,7 @@ To use it:
 
 ### 📜 `GET /cards/{id}/transactions` – List Transactions
 
-![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-history.png)
+![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
 ---
 
