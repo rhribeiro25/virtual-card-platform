@@ -15,7 +15,7 @@
   
   The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
   
-  ---
+  #
 
 </details>
 
@@ -89,7 +89,7 @@
     
     - Returns the full transaction history for a card.
     
-  ---
+  #
 
 </details>
 
@@ -108,7 +108,7 @@
   - A card can have a **maximum of 5 SPEND transactions per minute**
   - Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
   
-  ---
+  #
 
 </details>
 
@@ -123,7 +123,7 @@
   - **Maven 3.8** – Dependency management and build tool
   - **Default port: 8080**
 
----
+#
 
 </details>
 
@@ -145,7 +145,7 @@
   > - In-memory H2 database initialized via Flyway
   > - In-memory cache for improved performance and reduced database load
 
----
+#
 
 </details>
 
@@ -182,7 +182,7 @@
   
   ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
----
+#
 
 </details> 
 
@@ -231,7 +231,7 @@
   > JDBC URL: `jdbc:h2:mem:virtual_card_platform`\
   > User: `sa` | Password: `123456`
 
----
+#
 
 </details>
 
@@ -256,7 +256,7 @@
   - Transactional Rollback – @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
   - Custom Validation per Transaction Type – validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
 
----
+#
 
 </details>
 
@@ -275,7 +275,7 @@
 
   > This design improves expressiveness and consistency without violating business constraints.
 
----
+#
 
 </details>
 
@@ -365,7 +365,7 @@
     ✅ Sufficient for local dev  
     ❌ Not prepared for observability or log analysis in production
 
----
+#
 
 </details>
 
@@ -419,7 +419,7 @@
     - GitHub Actions with code coverage badge and changelog generator
     - Automatic changelog generation using Conventional Commits + Release Drafter
 
----
+#
 
 </details>
 
@@ -434,7 +434,7 @@
   - Official documentation as a primary reference
   - Courses and online resources for frameworks and architecture
 
----
+#
 
 </details>
 
