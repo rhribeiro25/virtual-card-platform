@@ -240,23 +240,23 @@ This section presents the key backend flows through sequence diagrams, covering 
 
   ###### 💳 `POST /cards` – Create a Virtual Card
   
-  ![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
+  ![Create Card Screenshot](src/main/resources/static/docs/images/postman/create-card.png)
 
   ###### 💸 `POST /cards/{id}/topup` – Add Funds to a Card
   
-  ![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
+  ![Top-Up Screenshot](src/main/resources/static/docs/images/postman/topup-card.png)
 
   ###### 💸  `POST /cards/{id}/spend` – Spend from the Card
   
-  ![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
+  ![Spend Screenshot](src/main/resources/static/docs/images/postman/spend-card.png)
   
   ###### 🔍 `GET /cards/{id}` – Retrieve Card Details
   
-  ![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
+  ![Get Card Screenshot](src/main/resources/static/docs/images/postman/get-card-details.png)
   
   ###### 📜 `GET /cards/{id}/transactions` – List Transactions
   
-  ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
+  ![Transaction History Screenshot](src/main/resources/static/docs/images/postman/get-transactions-page.png)
 
 #
 
@@ -515,6 +515,13 @@ This section presents the key backend flows through sequence diagrams, covering 
 #
 
 </details>
+
+
+### ✅ Code Coverage
+
+![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)
+
+🔍 [Full interactive report](https://rhribeiro25.github.io/virtual-card-platform/coverage/index.html)
 
 
 #
