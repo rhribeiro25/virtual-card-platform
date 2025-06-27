@@ -21,7 +21,7 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    ✅ Core Requirements
+    🧱 Core Requirements
   </span></strong></summary>
 
   ##### 🏛️ Entity
@@ -117,9 +117,10 @@
     🛠️ Setup Essentials
   </span></strong></summary>
 
-- **Java 17+** – Required language version
-- **Maven 3.8+** – Dependency management and build tool
-- **Default port: 8080**
+  <br>
+  - **Java 17** – Required language version
+  - **Maven 3.8** – Dependency management and build tool
+  - **Default port: 8080**
 
 ---
 
