@@ -140,59 +140,45 @@
   ```
 
   > 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
-      > 🚀 The application runs with:
-      > - In-memory H2 database initialized via Flyway
-      > - In-memory cache for improved performance and reduced database load
+  > 
+  > 🚀 The application runs with:
+  > - In-memory H2 database initialized via Flyway
+  > - In-memory cache for improved performance and reduced database load
 
 ---
 
 </details>
 
 <details>
-  <summary>
+  <summary><strong><span style="font-size: 1.1em;">
     📬 API Usage via Postman
-  </summary>
+  </span></strong></summary>
+
+  <br>
 
   This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
   
-  To use it:
-  
   1. Import the collection into Postman  
   2. Run the application using:
-  
-     ```bash
-     mvn spring-boot:run
-     ```
-  
-  3. Execute the requests in the recommended order:
-  </details>
-  ---
-  
-  ### 🟢 `POST /cards` – Create a Virtual Card
+  3. Execute the requests in the following order:
+
+  ###### 🟡 `POST /cards` – Create a Virtual Card
   
   ![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
-  
-  ---
-  
-  ### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
+
+  ###### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
   
   ![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
-  
-  ---
-  
-  ### 🔴 `POST /cards/{id}/spend` – Spend from the Card
+
+  ###### 🟡  `POST /cards/{id}/spend` – Spend from the Card
   
   ![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
   
-  ---
-  
-  ### 🔍 `GET /cards/{id}` – Retrieve Card Details
+  ###### 🔍 `GET /cards/{id}` – Retrieve Card Details
   
   ![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
   
-  ---
-  
-  ### 📜 `GET /cards/{id}/transactions` – List Transactions
+  ###### 📜 `GET /cards/{id}/transactions` – List Transactions
   
   ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
