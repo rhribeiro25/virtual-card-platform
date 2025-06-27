@@ -95,8 +95,10 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    🛡 Business Rules
+    📝 Business Rules
   </span></strong></summary>
+
+  <br>
 
   - A card's balance **can never go below zero**
   - Transactions must ensure **atomicity and consistency** (e.g., no double spend)
@@ -112,12 +114,12 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    ▶️ Setup Essentials
+    🛠️ Setup Essentials
   </span></strong></summary>
 
-    - **Java 17+** – Required language version
-    - **Maven 3.8+** – Dependency management and build tool
-    - **Default port: 8080**
+- **Java 17+** – Required language version
+- **Maven 3.8+** – Dependency management and build tool
+- **Default port: 8080**
 
 ---
 
