@@ -1,0 +1,39 @@
+@startuml
+skinparam sequenceParticipantBorderColor Black
+skinparam sequenceParticipantBackgroundColor #FFFFFF
+
+actor user as "Client App"
+
+box "API Layer" #LightBlue
+participant "CardController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CardUsecase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Infrastructure Layer" #LightCoral
+participant "CardRepository" as cardRepo <<(I,#ADD1B2)>>
+end box
+
+database "Cache" as cache #MediumBlue
+database "H2 Database" as db #MediumBlue
+
+user -> controller : POST /cards
+controller -> usecase : createCard()
+
+group Invalid Input
+  usecase --> controller : throws BusinessException
+  controller --> user : 400 Bad Request
+end
+
+group Optimistic Lock Error
+  usecase --> controller : throws OptimisticLockException
+  controller --> user : 409 Conflict
+end
+
+group Unexpected Failure
+  usecase --> controller : throws RuntimeException
+  controller --> user : 500 Internal Server Error
+end
+@enduml

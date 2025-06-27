@@ -1,0 +1,50 @@
+@startuml
+skinparam sequenceParticipantBorderColor Black
+skinparam sequenceParticipantBackgroundColor #FFFFFF
+
+actor user as "Client App"
+
+box "API Layer" #LightBlue
+participant "CardController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CardUsecase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "CardRepository" as cardRepo <<(I,#ADD1B2)>>
+participant "TransactionRepository" as txRepo <<(I,#ADD1B2)>>
+end box
+
+database "Cache" as cache #MediumBlue
+database "H2 Database" as db #MediumBlue
+
+user -> controller : POST /cards/{id}/topup
+controller -> usecase : topUp()
+
+group Invalid Input (Negative Amount)
+  usecase --> controller : throws BusinessException
+  controller --> user : 400 Bad Request
+end
+
+group Duplicate Request (RequestId found)
+  usecase -> cache : check requestId
+  cache --> usecase : found
+  usecase --> controller : throws DuplicateRequestException
+  controller --> user : 409 Conflict
+end
+
+group Card Not Found
+  usecase -> cardRepo : findById()
+  cardRepo -> db : SELECT
+  db --> cardRepo : null
+  usecase --> controller : throws NotFoundException
+  controller --> user : 404 Not Found
+end
+
+group Unexpected Failure
+  usecase --> controller : throws RuntimeException
+  controller --> user : 500 Internal Server Error
+end
+@enduml
