@@ -240,8 +240,6 @@
     🌟 Bonus Implementations
   </span></strong></summary>
 
-  <br>
-
   - Pagination support in transaction history
   - Card status (`ACTIVE`, `BLOCKED`) with enforcement
   - Version field (`@Version`) to enable optimistic concurrency
@@ -250,11 +248,11 @@
   - Caching to avoid repeated queries
   - CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
   - **Flyway** DB versioning for environment consistency
-  - Request ID Validation – I added validation using requestId in transactions to make sure the same transaction isn't processed more than once, even in case of network issues or retries.
+  - Request ID Validation – validation using requestId in transactions to make sure the same transaction isn't processed more than once, even in case of network issues or retries.
   - Cache First Strategy – Now the system checks the cache first, and only goes to the database if the data isn’t there. That helps improve performance and reduce unnecessary DB hits.
-  - Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
-  - Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
-  - Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
+  - Global Exception Handler – organizing everything through BusinessException to keep things clean and centralized.
+  - Transactional Rollback – @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
+  - Custom Validation per Transaction Type – validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
 
 ---
 
@@ -265,15 +263,15 @@
     🧠 Technical Design Decisions
   </span></strong></summary>
 
-### `Transaction` linked directly to `Card` entity:
+  Using a rich domain model with full `Card` object instead of just `cardId` enables:
 
-Using a rich domain model with full `Card` object instead of just `cardId` enables:
+  - Referential integrity and cascaded validations
+  - Easy access to card status and metadata
+  - Easier extension for rules based on card state
+  
+  - <br>
 
-- Referential integrity and cascaded validations
-- Easy access to card status and metadata
-- Easier extension for rules based on card state
-
-> This design improves expressiveness and consistency without violating business constraints.
+  > This design improves expressiveness and consistency without violating business constraints.
 
 ---
 
@@ -284,8 +282,95 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
     ⚖ Trade-offs
   </span></strong></summary>
 
-- Security (e.g., JWT) not implemented to focus on core logic
-- H2 in-memory DB used for speed and ease of local testing
+<br>
+
+🟡 Simplified Domain Models (Card & Transaction only)
+
+**Trade-off:**  
+
+**Impact:**  
+✅ Keeps business logic focused and isolated  
+❌ May require refactoring when introducing related domains (e.g., User, Limits, Notifications)
+
+
+🟡 Synchronous REST-only Communication
+
+**Trade-off:**  
+Used only REST APIs for card operations.
+
+**Impact:**  
+✅ Easy to implement and test  
+❌ Not scalable for high-throughput or event-driven scenarios (e.g., Kafka-based processing)
+
+
+🟡 Optimistic Locking Instead of Distributed Locking
+
+**Trade-off:**  
+Used `@Version` field for concurrency handling instead of distributed locks (e.g., Redis-based).
+
+**Impact:**  
+✅ Simple and safe within a single DB instance  
+❌ May not prevent race conditions in distributed, high-concurrency environments
+
+
+🟡 In-memory Cache Instead of Redis
+
+**Trade-off:**  
+Used `@Cacheable` with in-memory cache to reduce DB hits.
+
+**Impact:**  
+✅ Zero setup; improves performance locally  
+❌ Not suitable for horizontal scaling or shared cache between instances
+
+
+🟡 Flyway for Versioning, No Liquibase or Schema Generation
+
+**Trade-off:**  
+Chose Flyway for database migrations and disabled Spring’s auto DDL generation.
+
+**Impact:**  
+✅ Full control over schema changes, predictable  
+❌ Requires manual script writing; no visual diffing or rollback tools built-in
+
+
+🟡 Rate Limiting by Business Rule, Not Infrastructure
+
+**Trade-off:**  
+Implemented rate limiting (5 SPEND/min) in business logic instead of using an API Gateway or filter-based limiter.
+
+**Impact:**  
+✅ Business-specific control  
+❌ No automatic protection against DoS or broader abuse patterns
+
+
+🟡 No Integration with External Services
+
+**Trade-off:**  
+The project is self-contained and doesn't simulate real external systems (e.g., card providers, fraud detection, etc.).
+
+**Impact:**  
+✅ Simpler test scope  
+❌ Less realistic for real-world systems with integration complexity
+
+
+🟡 CI/CD with GitHub Actions but No Deployment Step
+
+**Trade-off:**  
+Configured automated tests and coverage reports, but deployment was not included.
+
+**Impact:**  
+✅ Validates code quality early  
+❌ Does not demonstrate production readiness (e.g., Docker, cloud deploy)
+
+
+🟡 No Logging Framework Configured (e.g., SLF4J + Logback)
+
+**Trade-off:**  
+Relied on Spring Boot default logging without structuring log outputs.
+
+**Impact:**  
+✅ Sufficient for local dev  
+❌ Not prepared for observability or log analysis in production
 
 ---
 
