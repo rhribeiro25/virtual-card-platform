@@ -2,114 +2,123 @@
 
 <details>
   <summary>
-    ## 💼 Problem Overview
+    💼 Problem Overview
   </summary>
 
-You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
-
-- Create virtual cards
-- Add funds (top-up)
-- Spend funds from the cards
-
-The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
-
----
-
-</details>
-
-<details>
-  <summary>## ✅ Core Requirements</summary>
-
-### 📘 Entities
-
-**Card**
-
-- `id: UUID`
-- `cardholderName: String`
-- `balance: BigDecimal`
-- `createdAt: Timestamp`
-
-**Transaction**
-
-- `id: UUID`
-- `cardId: UUID` (foreign key)
-- `type: ENUM { SPEND, TOPUP }`
-- `amount: BigDecimal`
-- `createdAt: Timestamp`
-
----
-
-### 🔌 API Endpoints
-
-#### `POST /cards`
-
-Creates a new virtual card.
-
-```json
-{
-  "cardholderName": "Alice",
-  "initialBalance": 100.00
-}
-```
-
-#### `POST /cards/{id}/spend`
-
-Spends from a card.
-
-- Returns `400 Bad Request` if balance is insufficient.
-- Must prevent double-spending via race condition handling.
-
-```json
-{
-  "amount": 30.00
-}
-```
-
-#### `POST /cards/{id}/topup`
-
-Adds funds to an existing card.
-
-```json
-{
-  "amount": 50.00
-}
-```
-
-#### `GET /cards/{id}`
-
-Retrieves card details including current balance.
-
-#### `GET /cards/{id}/transactions`
-
-Returns the full transaction history for a card.
-
----
+  You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
+  
+  - Create virtual cards
+    - Add funds (top-up)
+    - Spend funds from the cards
+  
+  The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
+  
+  ---
 
 </details>
 
 <details>
-  <summary>## 🛡 Business Rules</summary>
+  <summary>
+    ✅ Core Requirements
+  </summary>
 
-- A card's balance **can never go below zero**
-- Transactions must ensure **atomicity and consistency** (e.g., no double spend)
-- Spending from **non-existent or deleted cards** is forbidden
-- Transactions are blocked if the card is `BLOCKED`
-- Cards must exist; otherwise, return `404 Not Found`
-- A card can have a **maximum of 5 SPEND transactions per minute**
-- Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
-
----
+  ### 📘 Entities
+  
+  **Card**
+  
+  - `id: UUID`
+    - `cardholderName: String`
+    - `balance: BigDecimal`
+    - `createdAt: Timestamp`
+  
+  **Transaction**
+  
+  - `id: UUID`
+    - `cardId: UUID` (foreign key)
+    - `type: ENUM { SPEND, TOPUP }`
+    - `amount: BigDecimal`
+    - `createdAt: Timestamp`
+  
+  ---
+  
+  ### 🔌 API Endpoints
+  
+  #### `POST /cards`
+  
+  Creates a new virtual card.
+  
+  ```json
+  {
+    "cardholderName": "Alice",
+    "initialBalance": 100.00
+  }
+  ```
+  
+  #### `POST /cards/{id}/spend`
+  
+  Spends from a card.
+  
+  - Returns `400 Bad Request` if balance is insufficient.
+    - Must prevent double-spending via race condition handling.
+  
+  ```json
+  {
+    "amount": 30.00
+  }
+  ```
+  
+  #### `POST /cards/{id}/topup`
+  
+  Adds funds to an existing card.
+  
+  ```json
+  {
+    "amount": 50.00
+  }
+  ```
+  
+  #### `GET /cards/{id}`
+  
+  Retrieves card details including current balance.
+  
+  #### `GET /cards/{id}/transactions`
+  
+  Returns the full transaction history for a card.
+  
+  ---
 
 </details>
 
 <details>
-  <summary>## ▶️ Setup Essentials</summary>
+  <summary>
+    🛡 Business Rules
+  </summary>
 
-- **Java 17+** – Required language version
-- **Maven 3.8+** – Dependency management and build tool
-- **Default port: 8080**
+  - A card's balance **can never go below zero**
+  - Transactions must ensure **atomicity and consistency** (e.g., no double spend)
+  - Spending from **non-existent or deleted cards** is forbidden
+  - Transactions are blocked if the card is `BLOCKED`
+  - Cards must exist; otherwise, return `404 Not Found`
+  - A card can have a **maximum of 5 SPEND transactions per minute**
+  - Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
+  
+  ---
+
 </details>
+
+<details>
+  <summary>
+    ▶️ Setup Essentials
+  </summary>
+
+    - **Java 17+** – Required language version
+    - **Maven 3.8+** – Dependency management and build tool
+    - **Default port: 8080**
+
 ---
+
+</details>
+
 
 <details>
   <summary>### ▶️ How to Run</summary>
