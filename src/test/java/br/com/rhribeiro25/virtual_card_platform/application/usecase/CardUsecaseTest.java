@@ -8,6 +8,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,7 +31,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 @ActiveProfiles("test")
 class CardUsecaseTest {
 
@@ -67,6 +68,8 @@ class CardUsecaseTest {
         when(messageSource.getMessage(anyString(), any(), any())).thenReturn("mocked-message");
     }
 
+    // --- create ---
+
     @Test
     @DisplayName("Should create card successfully")
     void createCardSuccessfully() {
@@ -77,22 +80,35 @@ class CardUsecaseTest {
     }
 
     @Test
-    @DisplayName("Should throw ConflictException when saving card fails")
-    void createCardShouldThrowConflictExceptionWhenSaveFails() {
+    @DisplayName("Should throw ConflictException on OptimisticLockingFailureException")
+    void createCardConflictOptimisticLock() {
         try (MockedStatic<MessageUtils> mocked = Mockito.mockStatic(MessageUtils.class)) {
-            mocked.when(() -> MessageUtils.getMessage("card.conflict"))
-                    .thenReturn("Conflict detected: The card was modified by another transaction. Please try again.");
-
-            when(cardRepository.save(card))
-                    .thenThrow(new OptimisticLockingFailureException("conflict test"));
-
-            ConflictException exception = assertThrows(ConflictException.class, () -> {
-                cardUsecase.create(card);
-            });
-
-            assertEquals("Conflict detected: The card was modified by another transaction. Please try again.", exception.getMessage());
+            mocked.when(() -> MessageUtils.getMessage("card.conflict")).thenReturn("Conflict");
+            when(cardRepository.save(any())).thenThrow(new OptimisticLockingFailureException("conflict"));
+            ConflictException ex = assertThrows(ConflictException.class, () -> cardUsecase.create(card));
+            assertEquals("Conflict", ex.getMessage());
         }
     }
+
+    @Test
+    @DisplayName("Should throw ConflictException on DataIntegrityViolationException")
+    void createCardConflictDataIntegrity() {
+        try (MockedStatic<MessageUtils> mocked = Mockito.mockStatic(MessageUtils.class)) {
+            mocked.when(() -> MessageUtils.getMessage("card.conflict")).thenReturn("Conflict");
+            when(cardRepository.save(any())).thenThrow(new DataIntegrityViolationException("data error"));
+            ConflictException ex = assertThrows(ConflictException.class, () -> cardUsecase.create(card));
+            assertEquals("Conflict", ex.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Should throw InternalServerErrorException on other exceptions")
+    void createCardInternalError() {
+        when(cardRepository.save(any())).thenThrow(new RuntimeException("unknown"));
+        assertThrows(InternalServerErrorException.class, () -> cardUsecase.create(card));
+    }
+
+    // --- spend ---
 
     @Test
     @DisplayName("Should process spend successfully")
@@ -107,13 +123,15 @@ class CardUsecaseTest {
         assertEquals(card, result);
     }
 
-
     @Test
-    @DisplayName("Should fail spend when card not found")
+    @DisplayName("Should throw NotFoundException when spending with card not found")
     void spendShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> cardUsecase.spend(cardId, any()));
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        assertThrows(NotFoundException.class, () -> cardUsecase.spend(cardId, transaction));
     }
+
+    // --- topUp ---
 
     @Test
     @DisplayName("Should process top up successfully")
@@ -121,16 +139,22 @@ class CardUsecaseTest {
         when(cardRepository.findById(any())).thenReturn(Optional.of(card));
         when(topUpProcessor.process(any())).thenReturn(card);
 
-        Card result = cardUsecase.topUp(cardId, new TransactionRequest(any(), UUID.randomUUID()));
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+
+        Card result = cardUsecase.topUp(cardId, transaction);
+
         assertEquals(card, result);
     }
 
     @Test
-    @DisplayName("Should fail top up when card not found")
+    @DisplayName("Should throw NotFoundException when top up with card not found")
     void topUpShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> cardUsecase.topUp(cardId, any()));
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        assertThrows(NotFoundException.class, () -> cardUsecase.topUp(cardId, transaction));
     }
+
+    // --- getCardById ---
 
     @Test
     @DisplayName("Should get card by ID successfully")
@@ -147,6 +171,8 @@ class CardUsecaseTest {
         assertThrows(NotFoundException.class, () -> cardUsecase.getCardById(cardId));
     }
 
+    // --- getTransactionsByValidCardId ---
+
     @Test
     @DisplayName("Should return transactions for valid card")
     void getTransactionsByValidCardId() {
@@ -155,6 +181,14 @@ class CardUsecaseTest {
         when(transactionUsecase.getTransactionsByCardId(any(), any(Pageable.class))).thenReturn(transactions);
 
         Page<Transaction> result = cardUsecase.getTransactionsByValidCardId(cardId, Pageable.unpaged());
+
         assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException when getting transactions for non-existent card")
+    void getTransactionsByValidCardIdNotFound() {
+        when(cardRepository.findById(any())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> cardUsecase.getTransactionsByValidCardId(cardId, Pageable.unpaged()));
     }
 }

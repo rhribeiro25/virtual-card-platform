@@ -23,9 +23,4 @@ public class CacheUtils {
                 .orElse(null);
     }
 
-    public static boolean isInCache(String cacheName, Object key) {
-        return Optional.ofNullable(cacheManager.getCache(cacheName))
-                .map(cache -> cache.get(key))
-                .isPresent();
-    }
 }

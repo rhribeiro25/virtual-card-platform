@@ -15,8 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -64,5 +64,11 @@ class TransactionLimitInXTimeValidationImplTest {
             assertDoesNotThrow(() ->
                     validation.validate(transaction));
         }
+    }
+
+    @Test
+    @DisplayName("Should support only SPEND and TOPUP transaction types")
+    void shouldSupportSpecificTransactionTypes() {
+        assertTrue(validation.supports(TransactionType.SPEND));
     }
 }
