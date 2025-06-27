@@ -80,6 +80,9 @@ jobs:
         run: npm run screenshot
         working-directory: scripts
 
+      - name: ✅ Mark directory as safe for Git
+        run: git config --global --add safe.directory /__w/virtual-card-platform/virtual-card-platform
+
       - name: 🛡️ Mark current directory as safe for Git
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 

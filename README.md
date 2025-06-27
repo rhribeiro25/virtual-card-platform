@@ -1,24 +1,22 @@
 # 🎫 Virtual Card Platform
 
 - [💼 Problem Overview](#problem-overview)
-- [🧱 Core Requirements](#-core-requirements)
-- [📝 Business Rules](#-business-rules)
-- [🧩 Sequence Diagrams](#-sequence-diagrams)
-- [🛠️ Setup Essentials](#-setup-essentials)
-- [▶️ How to Run](#️-how-to-run)
-- [📬 API Usage via Postman](#-api-usage-via-postman)
-- [⚙ Implementations](#-implementations)
-- [🌟 Bonus Implementations](#-bonus-implementations)
-- [🧠 Technical Design Decisions](#-technical-design-decisions)
-- [⚖ Trade-offs](#-trade-offs)
-- [🚀 Future Improvements](#-future-improvements)
-- [📙 Learning Strategy](#-learning-strategy)
-- [✅ Code Coverage](#-code-coverage)
+- [🧱 Core Requirements](#core-requirements)
+- [📝 Business Rules](#business-rules)
+- [🧩 Sequence Diagrams](#sequence-diagrams)
+- [🛠️ Setup Essentials](#setup-essentials)
+- [▶️ How to Run](#️how-to-run)
+- [📬 API Usage via Postman](#api-usage-via-postman)
+- [⚙ Implementations](#implementations)
+- [🌟 Bonus Implementations](#bonus-implementations)
+- [🧠 Technical Design Decisions](#technical-design-decisions)
+- [⚖ Trade-offs](#trade-offs)
+- [🚀 Future Improvements](#future-improvements)
+- [📙 Learning Strategy](#learning-strategy)
+- [✅ Code Coverage](#code-coverage)
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    ## 💼 Problem Overview
-  </span></strong></summary>
+##💼 Problem Overview
+  
 
   <br>
 
@@ -32,12 +30,10 @@
   
   #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🧱 Core Requirements
-  </span></strong></summary>
+
+##🧱 Core Requirements
+  
 
   ##### 🏛️ Entity
 
@@ -106,12 +102,10 @@
     
   #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    📝 Business Rules
-  </span></strong></summary>
+
+##📝 Business Rules
+  
 
   <br>
 
@@ -125,12 +119,10 @@
   
   #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🧩 Sequence Diagrams
-  </span></strong></summary>
+
+##🧩 Sequence Diagrams
+  
 
 <br>
 
@@ -201,12 +193,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🛠️ Setup Essentials
-  </span></strong></summary>
+
+##🛠️ Setup Essentials
+  
 
   <br>
 
@@ -216,13 +206,11 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    ▶️ How to Run
-  </span></strong></summary>
+
+##▶️ How to Run
+  
 
   <br>
 
@@ -238,12 +226,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    📬 API Usage via Postman
-  </span></strong></summary>
+
+##📬 API Usage via Postman
+  
 
   <br>
 
@@ -275,12 +261,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details> 
+ 
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    ⚙ Implementations
-  </span></strong></summary>
+##⚙ Implementations
+  
 
   - In-memory **H2 database** with versioning via **Flyway**
 
@@ -324,12 +308,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🌟 Bonus Implementations
-  </span></strong></summary>
+
+##🌟 Bonus Implementations
+  
 
   <br>
 
@@ -349,12 +331,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🧠 Technical Design Decisions
-  </span></strong></summary>
+
+##🧠 Technical Design Decisions
+  
 
   <br>
 
@@ -370,12 +350,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    ⚖ Trade-offs
-  </span></strong></summary>
+
+##⚖ Trade-offs
+  
 
 1. Simplified Domain Models (Card & Transaction only)
 
@@ -460,13 +438,11 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    🚀 Future Improvements
-  </span></strong></summary>
+
+##🚀 Future Improvements
+  
 
 1. <strong>Observability & Monitoring</strong>
     - Centralized logging with ELK stack (Elasticsearch, Logstash, Kibana)
@@ -514,12 +490,10 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
 
-<details>
-  <summary><strong><span style="font-size: 1.1em;">
-    📙 Learning Strategy
-  </span></strong></summary>
+
+##📙 Learning Strategy
+  
 
   <br>
 
@@ -529,7 +503,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-</details>
+
 
 
 ### ✅ Code Coverage
