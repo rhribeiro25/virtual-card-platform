@@ -154,7 +154,7 @@ To use it:
 
 ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
-</details> 
+</details> ```
 ---
 
 ## ⚙ Implementations
