@@ -162,15 +162,15 @@
   2. Run the application using:
   3. Execute the requests in the following order:
 
-  ###### 🟡 `POST /cards` – Create a Virtual Card
+  ###### 💳 `POST /cards` – Create a Virtual Card
   
   ![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
 
-  ###### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
+  ###### 💸 `POST /cards/{id}/topup` – Add Funds to a Card
   
   ![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
 
-  ###### 🟡  `POST /cards/{id}/spend` – Spend from the Card
+  ###### 💸  `POST /cards/{id}/spend` – Spend from the Card
   
   ![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
   
