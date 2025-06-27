@@ -101,6 +101,7 @@ Returns the full transaction history for a card.
 
 ```bash
 mvn spring-boot:run
+```
 
 > 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
 > 🚀 The application runs with:
