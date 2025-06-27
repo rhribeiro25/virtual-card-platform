@@ -118,9 +118,9 @@
   </span></strong></summary>
 
   <br>
-  - **Java 17** – Required language version
-  - **Maven 3.8** – Dependency management and build tool
-  - **Default port: 8080**
+- **Java 17** – Required language version
+- **Maven 3.8** – Dependency management and build tool
+- **Default port: 8080**
 
 ---
 
