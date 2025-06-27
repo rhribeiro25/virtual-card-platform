@@ -24,8 +24,6 @@
     ✅ Core Requirements
   </span></strong></summary>
 
-  <br>
-
   ##### 🏛️ Entity
 
   ###### 💳 Card 
