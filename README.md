@@ -273,7 +273,7 @@
   - Easy access to card status and metadata
   - Easier extension for rules based on card state
   
-  - <br>
+  <br>
 
   > This design improves expressiveness and consistency without violating business constraints.
 
