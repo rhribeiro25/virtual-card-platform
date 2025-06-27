@@ -5,6 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,4 +92,25 @@ class TransactionUsecaseTest {
         assertNotNull(result);
         verify(transactionRepository).findByCardId(eq(cardId), any());
     }
+
+    @Test
+    @DisplayName("Should throw BadRequestException when duplicate transaction exists in time range")
+    void shouldThrowExceptionWhenDuplicateTransactionExists() {
+        BigDecimal amount = BigDecimal.TEN;
+        TransactionType type = TransactionType.SPEND;
+
+        when(messageSource.getMessage(eq("card.conflict"), any(), any())).thenReturn("10");
+
+        when(transactionRepository.findDuplicateBetweenRangeTimeTransaction(
+                eq(amount),
+                eq(card.getId()),
+                any(),
+                any(),
+                eq(type)
+        )).thenReturn(Optional.of(new Transaction()));
+
+        assertThrows(BadRequestException.class,
+                () -> transactionUsecase.isDuplicateTransaction(card, amount, type));
+    }
+
 }
