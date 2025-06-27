@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class TransactionDuplicateUnexpectedImplTest {
 
     private TransactionUsecase transactionUsecase;
-    private TransactionDuplicateUnexpectedImpl validator;
+    private TransactionDuplicateUnexpectedImpl validation;
 
     private final UUID cardId = UUID.randomUUID();
     private final UUID requestId = UUID.randomUUID();
@@ -33,7 +33,7 @@ class TransactionDuplicateUnexpectedImplTest {
     @BeforeEach
     void setUp() {
         transactionUsecase = mock(TransactionUsecase.class);
-        validator = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
+        validation = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
 
         card = new Card.Builder().id(cardId).cardholderName("Test User").build();
     }
@@ -42,7 +42,7 @@ class TransactionDuplicateUnexpectedImplTest {
     @DisplayName("Should skip validation when requestId is null")
     void shouldSkipValidationWhenRequestIdIsNull() {
         Transaction transaction = new Transaction.Builder().card(card).requestId(null).build();
-        assertDoesNotThrow(() -> validator.validate(transaction));
+        assertDoesNotThrow(() -> validation.validate(transaction));
     }
 
     @Test
@@ -62,7 +62,7 @@ class TransactionDuplicateUnexpectedImplTest {
             msgMock.when(() -> MessageUtils.getMessage("card.duplicateTransaction"))
                     .thenReturn("Duplicated transaction");
 
-            ConflictException ex = assertThrows(ConflictException.class, () -> validator.validate(transaction));
+            ConflictException ex = assertThrows(ConflictException.class, () -> validation.validate(transaction));
             assertEquals("Duplicated transaction", ex.getMessage());
         }
     }
@@ -84,7 +84,7 @@ class TransactionDuplicateUnexpectedImplTest {
             msgMock.when(() -> MessageUtils.getMessage("card.duplicateTransaction"))
                     .thenReturn("Duplicated transaction");
 
-            ConflictException ex = assertThrows(ConflictException.class, () -> validator.validate(transaction));
+            ConflictException ex = assertThrows(ConflictException.class, () -> validation.validate(transaction));
             assertEquals("Duplicated transaction", ex.getMessage());
         }
     }
@@ -101,14 +101,14 @@ class TransactionDuplicateUnexpectedImplTest {
             when(transactionUsecase.verifyDuplicateTransaction(cardId, requestId))
                     .thenReturn(Optional.empty());
 
-            assertDoesNotThrow(() -> validator.validate(transaction));
+            assertDoesNotThrow(() -> validation.validate(transaction));
         }
     }
 
     @Test
     @DisplayName("Should support only SPEND and TOPUP transaction types")
     void shouldSupportSpecificTransactionTypes() {
-        assertTrue(validator.supports(TransactionType.SPEND));
-        assertTrue(validator.supports(TransactionType.TOPUP));
+        assertTrue(validation.supports(TransactionType.SPEND));
+        assertTrue(validation.supports(TransactionType.TOPUP));
     }
 }

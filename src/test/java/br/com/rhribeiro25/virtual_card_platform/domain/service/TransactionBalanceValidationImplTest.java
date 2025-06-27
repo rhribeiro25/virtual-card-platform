@@ -14,8 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -71,5 +71,11 @@ class TransactionBalanceValidationImplTest {
                 .build();
 
         assertDoesNotThrow(() -> validation.validate(transaction));
+    }
+
+    @Test
+    @DisplayName("Should support only SPEND and TOPUP transaction types")
+    void shouldSupportSpecificTransactionTypes() {
+        assertTrue(validation.supports(TransactionType.SPEND));
     }
 }

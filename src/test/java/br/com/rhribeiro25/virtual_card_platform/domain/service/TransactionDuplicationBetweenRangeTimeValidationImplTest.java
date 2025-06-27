@@ -16,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -57,5 +57,12 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
         Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
+    }
+
+    @Test
+    @DisplayName("Should not support SPEND and TOPUP transaction types")
+    void shouldSupportSpecificTransactionTypes() {
+        assertFalse(validation.supports(TransactionType.SPEND));
+        assertFalse(validation.supports(TransactionType.TOPUP));
     }
 }
