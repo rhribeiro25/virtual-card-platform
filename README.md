@@ -190,6 +190,28 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
+    ✅ Test Coverage
+  </span></strong></summary>
+
+  <br>
+
+![Test Coverage](https://rhribeiro25.github.io/virtual-card-platform/badge-coverage.svg)
+
+This project maintains **100% test coverage** across all components using:
+
+- **Unit tests** with JUnit & Mockito
+- **Integration tests** with MockMVC
+- Coverage enforced and reported via **JaCoCo**
+- GitHub Actions workflow validates coverage on every push
+
+👉 Access the full HTML report here:  
+[View JaCoCo Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
+
+#
+</details>
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
     🛠️ Setup Essentials
   </span></strong></summary>
 
