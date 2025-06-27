@@ -121,7 +121,7 @@
 
 This section presents the key backend flows through sequence diagrams, covering both successful and failure scenarios for each API endpoint.
 
-> Diagrams are generated with PlantUML and stored under `src/main/resources/static/docs/images/diagrams/`.
+> Diagrams are generated with PlantUML and stored under `src/main/resources/static/docs/diagrams/`.
 
 #
 
