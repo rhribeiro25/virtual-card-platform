@@ -44,53 +44,51 @@
     - `type: ENUM { SPEND, TOPUP }`
     - `amount: BigDecimal`
     - `createdAt: Timestamp`
-  
-  ---
-  
+
   ##### 🔌 API Endpoints
   
-  #### `POST /cards`
+  - `POST /cards`
   
-  Creates a new virtual card.
+    Creates a new virtual card.
+    
+    ```json
+    {
+      "cardholderName": "Alice",
+      "initialBalance": 100.00
+    }
+    ```
   
-  ```json
-  {
-    "cardholderName": "Alice",
-    "initialBalance": 100.00
-  }
-  ```
+  - `POST /cards/{id}/spend`
   
-  #### `POST /cards/{id}/spend`
+    Spends from a card.
+    
+    - Returns `400 Bad Request` if balance is insufficient.
+      - Must prevent double-spending via race condition handling.
+    
+    ```json
+    {
+      "amount": 30.00
+    }
+    ```
   
-  Spends from a card.
+  - `POST /cards/{id}/topup`
   
-  - Returns `400 Bad Request` if balance is insufficient.
-    - Must prevent double-spending via race condition handling.
+    Adds funds to an existing card.
+    
+    ```json
+    {
+      "amount": 50.00
+    }
+    ```
   
-  ```json
-  {
-    "amount": 30.00
-  }
-  ```
+  - `GET /cards/{id}`
   
-  #### `POST /cards/{id}/topup`
-  
-  Adds funds to an existing card.
-  
-  ```json
-  {
-    "amount": 50.00
-  }
-  ```
-  
-  #### `GET /cards/{id}`
-  
-  Retrieves card details including current balance.
-  
-  #### `GET /cards/{id}/transactions`
-  
-  Returns the full transaction history for a card.
-  
+    Retrieves card details including current balance.
+    
+    #### `GET /cards/{id}/transactions`
+    
+    Returns the full transaction history for a card.
+    
   ---
 
 </details>
