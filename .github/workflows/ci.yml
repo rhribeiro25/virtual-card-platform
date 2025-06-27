@@ -49,8 +49,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Node.js dependencies
-        run: PUPPETEER_SKIP_DOWNLOAD=true npm install
+      - name: 📤 Install Node.js dependencies
+        run: npm install
         working-directory: scripts
 
       - name: 🗃️ Cache Node.js modules
