@@ -187,73 +187,82 @@
 </details> 
 
 <details>
-  <summary>## ⚙ Implementations</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    ⚙ Implementations
+  </span></strong></summary>
 
-- In-memory **H2 database** with versioning via **Flyway**
+  <br>
 
-- **Spring Data JPA**
+  - In-memory **H2 database** with versioning via **Flyway**
 
-- In-memory **cache** using `@Cacheable` and `@CacheEvict`
+  - **Spring Data JPA**
 
-- 100% **test coverage** (unit and integration) with **JUnit + Mockito**
+  - In-memory **cache** using `@Cacheable` and `@CacheEvict`
 
-- **Jacoco** test coverage report published via GitHub Pages:
+  - 100% **test coverage** (unit and integration) with **JUnit + Mockito**
 
-  👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
+  - Transaction safety using `@Transactional` and **optimistic locking** via `@Version`
 
-- **Swagger UI** available for REST API exploration:
+  - Proper layering: `Controller → Service (UseCase) → Repository`
 
-  👉 [Swagger Interface (localhost)](http://localhost:8080/swagger-ui.html)
+  - Use of **DTOs**, **MapStruct-like mappers**, and REST best practices (HTTP 200, 201, 400, 404, 409, 500)
 
-- **Postman Collection** for manual testing:
+  - Design patterns:
+      - **Template Method** for transaction execution
+      - **Facade** via `CardUsecase` to encapsulate logic
+      - **Builder** for creating immutable entities
 
-  👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+  - **Jacoco** test coverage report published via GitHub Pages:
 
-- H2 database accessible during execution:
+    👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
 
-  👉 [H2 Console](http://localhost:8080/h2-console)
-> JDBC URL: `jdbc:h2:mem:virtual_card_platform`\
-> User: `sa` | Password: `123456`
+  - **Swagger UI** available for REST API exploration:
 
-- Transaction safety using `@Transactional` and **optimistic locking** via `@Version`
+    👉 [Swagger Interface (localhost)](http://localhost:8080/swagger-ui.html)
 
-- Proper layering: `Controller → Service (UseCase) → Repository`
+  - **Postman Collection** for manual testing:
 
-- Use of **DTOs**, **MapStruct-like mappers**, and REST best practices (HTTP 200, 201, 400, 404, 409, 500)
+    👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
-- Design patterns:
+  - H2 database accessible during execution:
 
-  - **Template Method** for transaction execution
-  - **Facade** via `CardUsecase` to encapsulate logic
-  - **Builder** for creating immutable entities
-
----
-
-</details>
-
-<details>
-  <summary>## 🌟 Bonus Implementations</summary>
-
-- Pagination support in transaction history
-- Card status (`ACTIVE`, `BLOCKED`) with enforcement
-- Version field (`@Version`) to enable optimistic concurrency
-- Rate limiting: max 5 `SPEND` transactions/minute/card
-- Swagger API documentation
-- Caching to avoid repeated queries
-- CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
-- **Flyway** DB versioning for environment consistency
-- Request ID Validation – I added validation using requestId in transactions to make sure the same transaction isn't processed more than once, even in case of network issues or retries.
-- Cache First Strategy – Now the system checks the cache first, and only goes to the database if the data isn’t there. That helps improve performance and reduce unnecessary DB hits.
-- Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
-- Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
-- Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
+    👉 [H2 Console](http://localhost:8080/h2-console)
+  > JDBC URL: `jdbc:h2:mem:virtual_card_platform`\
+  > User: `sa` | Password: `123456`
 
 ---
 
 </details>
 
 <details>
-  <summary>🧠 Technical Design Decisions</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    🌟 Bonus Implementations
+  </span></strong></summary>
+
+  <br>
+
+  - Pagination support in transaction history
+  - Card status (`ACTIVE`, `BLOCKED`) with enforcement
+  - Version field (`@Version`) to enable optimistic concurrency
+  - Rate limiting: max 5 `SPEND` transactions/minute/card
+  - Swagger API documentation
+  - Caching to avoid repeated queries
+  - CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
+  - **Flyway** DB versioning for environment consistency
+  - Request ID Validation – I added validation using requestId in transactions to make sure the same transaction isn't processed more than once, even in case of network issues or retries.
+  - Cache First Strategy – Now the system checks the cache first, and only goes to the database if the data isn’t there. That helps improve performance and reduce unnecessary DB hits.
+  - Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
+  - Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
+  - Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
+
+---
+
+</details>
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
+    🧠 Technical Design Decisions
+  </span></strong></summary>
 
 ### `Transaction` linked directly to `Card` entity:
 
@@ -270,15 +279,22 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 </details>
 
 <details>
-  <summary>## ⚖ Trade-offs</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    ⚖ Trade-offs
+  </span></strong></summary>
 
 - Security (e.g., JWT) not implemented to focus on core logic
 - H2 in-memory DB used for speed and ease of local testing
-</details>
+
 ---
 
+</details>
+
+
 <details>
-  <summary>## 🚀 Future Improvements</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    🚀 Future Improvements
+  </span></strong></summary>
 
 - JWT authentication via Spring Security
 - Redis cache for horizontal scalability
@@ -293,7 +309,9 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 </details>
 
 <details>
-  <summary>## 📙 Learning Strategy</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    📙 Learning Strategy
+  </span></strong></summary>
 
 - Practical development with hands-on debugging
 - Official documentation as a primary reference
