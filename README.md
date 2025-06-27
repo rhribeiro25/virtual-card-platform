@@ -129,138 +129,29 @@ To use it:
 
 ![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
 
-**Request:**
-```json
-{
-  "cardholderName": "Alice",
-  "initialBalance": 100.00
-}
-```
-
-**Response (HTTP Status: `201 Created`):**
-```json
-{
-  "id": "b1f2c3d4-5678-4e90-abcd-1234567890ab",
-  "cardholderName": "Alice",
-  "balance": 100.00,
-  "status": "ACTIVE",
-  "createdAt": "2025-06-27T12:00:00Z"
-}
-```
-
 ---
 
 ### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
 
-**Request:**
-```json
-{
-  "amount": 50.00
-}
-```
-
-**Response:**
-```json
-{
-  "transactionId": "abc-123",
-  "type": "TOPUP",
-  "amount": 50.00,
-  "createdAt": "2025-06-27T12:05:00Z"
-}
-```
-
-**HTTP Status:** `200 OK`  
-🖼️ *Screenshot:* `docs/images/topup-card.png`
+![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
 
 ---
 
 ### 🔴 `POST /cards/{id}/spend` – Spend from the Card
 
-**Request:**
-```json
-{
-  "amount": 30.00
-}
-```
-
-**Response (success):**
-```json
-{
-  "transactionId": "def-456",
-  "type": "SPEND",
-  "amount": 30.00,
-  "createdAt": "2025-06-27T12:10:00Z"
-}
-```
-
-**HTTP Status:** `200 OK`
-
-**Response (insufficient funds):**
-```json
-{
-  "error": "Insufficient balance"
-}
-```
-
-**HTTP Status:** `400 Bad Request`
-
-**Response (rate limit exceeded):**
-```json
-{
-  "error": "Maximum number of SPEND transactions exceeded"
-}
-```
-
-**HTTP Status:** `429 Too Many Requests`  
-🖼️ *Screenshot:* `docs/images/spend-card.png`
+![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
 
 ---
 
 ### 🔍 `GET /cards/{id}` – Retrieve Card Details
 
-**Response:**
-```json
-{
-  "id": "b1f2c3d4-5678-4e90-abcd-1234567890ab",
-  "cardholderName": "Alice",
-  "balance": 120.00,
-  "status": "ACTIVE",
-  "createdAt": "2025-06-27T12:00:00Z"
-}
-```
-
-**HTTP Status:** `200 OK`  
-🖼️ *Screenshot:* `docs/images/get-card.png`
+![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
 
 ---
 
 ### 📜 `GET /cards/{id}/transactions` – List Transactions
 
-**Response:**
-```json
-{
-  "content": [
-    {
-      "transactionId": "def-456",
-      "type": "SPEND",
-      "amount": 30.00,
-      "createdAt": "2025-06-27T12:10:00Z"
-    },
-    {
-      "transactionId": "abc-123",
-      "type": "TOPUP",
-      "amount": 50.00,
-      "createdAt": "2025-06-27T12:05:00Z"
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 2
-}
-```
-
-**HTTP Status:** `200 OK`  
-🖼️ *Screenshot:* `docs/images/get-transactions.png`
+![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-history.png)
 
 ---
 
