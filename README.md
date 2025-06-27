@@ -516,6 +516,10 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 
 </details>
 
+### ✅ Code Coverage
+
+![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)
+
 
 #
 
