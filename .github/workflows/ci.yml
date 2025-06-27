@@ -2,9 +2,9 @@ name: Java CI with Maven in Docker
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "**" ]
 
 jobs:
   build:
@@ -17,35 +17,85 @@ jobs:
     steps:
       - name: 🧾 Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-      - name: 📦 Build with Maven inside container
+      - name: ✅ Mark directory as safe for Git
+        run: git config --global --add safe.directory /__w/virtual-card-platform/virtual-card-platform
+
+      - name: ⚙️ Configure GitHub token for push
+        run: |
+          git config --global user.name 'Renan Henrique Ribeiro'
+          git config --global user.email 'renan.shaolin.25@gmail.com'
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}
+
+      - name: 📦 Build with Maven
         run: mvn clean install --no-transfer-progress
 
-      - name: ✅ Run tests
+      - name: 🧪 Run tests
         run: mvn test
 
       - name: 📄 Generate JaCoCo coverage report
         run: mvn jacoco:report
 
-      - name: 📤 Upload JaCoCo HTML report (as downloadable artifact)
+      - name: 📤 Upload JaCoCo HTML report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
 
-      - name: 📁 Move JaCoCo HTML to docs folder (for GitHub Pages)
+      - name: 📁 Copy JaCoCo report to docs
         run: |
           mkdir -p docs
           cp -r target/site/jacoco/* docs/
 
-      - name: 🚀 Deploy GitHub Pages with report
+      - name: 🚀 Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
           publish_dir: ./docs
 
-      - name: 🚨 Check code quality with SpotBugs (optional)
+      - name: 🛠️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📤 Install Node.js dependencies
+        run: PUPPETEER_SKIP_DOWNLOAD=true npm install
+        working-directory: scripts
+
+      - name: 🌐 Install Google Chrome
+        run: |
+          apt-get update
+          apt-get install -y wget gnupg unzip
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          apt-get install -y ./google-chrome-stable_current_amd64.deb
+
+      - name: 🗃️ Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            scripts/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('scripts/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 📷 Generate coverage screenshot
+        run: npm run screenshot
+        working-directory: scripts
+
+      - name: ↪️ Force commit and push coverage image
+        run: |
+          git config --global user.name "Renan Henrique Ribeiro"
+          git config --global user.email "renan.shaolin.25@gmail.com"
+          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}
+          git add src/main/resources/static/docs/images/coverage/coverage.png || true
+          git commit -m "Update JaCoCo coverage image" || echo "No changes"
+          git push origin HEAD
+
+      - name: 🚨 Run SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
 
-      - name: ✅ Build finished
-        run: echo "Build and report published successfully ✅"
+      - name: 🥇 Done
+        run: echo "✅ Build and coverage report published successfully!"
