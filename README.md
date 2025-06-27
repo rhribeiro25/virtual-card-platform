@@ -1,6 +1,7 @@
 # 🎫 Virtual Card Platform - Backend API
 
-## 💼 Problem Overview
+<details>
+  <summary>## 💼 Problem Overview</summary>
 
 You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
 
@@ -9,10 +10,11 @@ You are tasked with building the backend API for a **Virtual Card Platform**. Us
 - Spend funds from the cards
 
 The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
-
+</details>
 ---
 
-## ✅ Core Requirements
+<details>
+  <summary>## ✅ Core Requirements</summary>
 
 ### 📘 Entities
 
@@ -30,7 +32,7 @@ The system must guarantee **data consistency**, **prevent overspending**, and re
 - `type: ENUM { SPEND, TOPUP }`
 - `amount: BigDecimal`
 - `createdAt: Timestamp`
-
+</details>
 ---
 
 ### 🔌 API Endpoints
@@ -76,10 +78,11 @@ Retrieves card details including current balance.
 #### `GET /cards/{id}/transactions`
 
 Returns the full transaction history for a card.
-
+</details>
 ---
 
-## 🛡 Business Rules
+<details>
+  <summary>## 🛡 Business Rules</summary>
 
 - A card's balance **can never go below zero**
 - Transactions must ensure **atomicity and consistency** (e.g., no double spend)
@@ -88,16 +91,20 @@ Returns the full transaction history for a card.
 - Cards must exist; otherwise, return `404 Not Found`
 - A card can have a **maximum of 5 SPEND transactions per minute**
 - Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
-
+</details>
 ---
 
-## ▶️ Setup Essentials
+<details>
+  <summary>## ▶️ Setup Essentials</summary>
 
 - **Java 17+** – Required language version
 - **Maven 3.8+** – Dependency management and build tool
 - **Default port: 8080**
+</details>
+---
 
-### ▶️ How to Run
+<details>
+  <summary>### ▶️ How to Run</summary>
 
 ```bash
 mvn spring-boot:run
@@ -123,7 +130,7 @@ To use it:
    ```
 
 3. Execute the requests in the recommended order:
-
+</details>
 ---
 
 ### 🟢 `POST /cards` – Create a Virtual Card
@@ -155,9 +162,11 @@ To use it:
 ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
 </details> 
+
 ---
 
-## ⚙ Implementations
+<details>
+  <summary>## ⚙ Implementations</summary>
 
 - In-memory **H2 database** with versioning via **Flyway**
 
@@ -196,10 +205,11 @@ To use it:
   - **Template Method** for transaction execution
   - **Facade** via `CardUsecase` to encapsulate logic
   - **Builder** for creating immutable entities
-
+</details>
 ---
 
-## 🌟 Bonus Implementations
+<details>
+  <summary>## 🌟 Bonus Implementations</summary>
 
 - Pagination support in transaction history
 - Card status (`ACTIVE`, `BLOCKED`) with enforcement
@@ -214,10 +224,11 @@ To use it:
 - Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
 - Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
 - Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
-
+</details>
 ---
 
-🧠 Technical Design Decisions
+<details>
+  <summary>🧠 Technical Design Decisions</summary>
 
 ### `Transaction` linked directly to `Card` entity:
 
@@ -228,17 +239,19 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - Easier extension for rules based on card state
 
 > This design improves expressiveness and consistency without violating business constraints.
-
+</details>
 ---
 
-## ⚖ Trade-offs
+<details>
+  <summary>## ⚖ Trade-offs</summary>
 
 - Security (e.g., JWT) not implemented to focus on core logic
 - H2 in-memory DB used for speed and ease of local testing
-
+</details>
 ---
 
-## 🚀 Future Improvements
+<details>
+  <summary>## 🚀 Future Improvements</summary>
 
 - JWT authentication via Spring Security
 - Redis cache for horizontal scalability
@@ -247,15 +260,16 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - API Gateway and circuit breakers
 - Cloud deployment with monitoring and alerting
 - Observability with structured logs and tracing support (ELK, OpenTelemetry, Grafana-ready)
-
+</details>
 ---
 
-## 📙 Learning Strategy
+<details>
+  <summary>## 📙 Learning Strategy</summary>
 
 - Practical development with hands-on debugging
 - Official documentation as a primary reference
 - Courses and online resources for frameworks and architecture
-
+</details>
 ---
 
 > Developed by Renan Henrique Ribeiro\
