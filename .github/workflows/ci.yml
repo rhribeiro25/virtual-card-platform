@@ -65,6 +65,7 @@ jobs:
 
       - name: 📷 Generate screenshot from JaCoCo HTML
         run: npm run screenshot
+        working-directory: scripts
 
       - name: ↪️ Commit coverage image to repo
         run: |
