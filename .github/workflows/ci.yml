@@ -51,6 +51,7 @@ jobs:
 
       - name: 📥 Install Puppeteer
         run: npm install
+        working-directory: scripts
 
       - name: 📷 Generate screenshot from JaCoCo HTML
         run: npm run screenshot
