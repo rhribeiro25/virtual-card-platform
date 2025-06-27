@@ -1,4 +1,4 @@
-# 🎫 Virtual Card Platform - Backend API
+# 🎫 Virtual Card Platform
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
