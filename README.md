@@ -114,7 +114,7 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    ## 🧩 Sequence Diagrams
+    🧩 Sequence Diagrams
   </span></strong></summary>
 
 <br>
