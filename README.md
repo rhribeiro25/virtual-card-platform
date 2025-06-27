@@ -375,49 +375,49 @@
     🚀 Future Improvements
   </span></strong></summary>
 
-1. Observability & Monitoring
-   - Centralized logging with ELK stack (Elasticsearch, Logstash, Kibana)
-   - Tracing with OpenTelemetry or Jaeger
-   - Health checks via Spring Boot Actuator
-   - Real-time metrics with Prometheus + Grafana
-   - Alerting system (e.g., with Grafana Alerts or Google Cloud Monitoring)
+1. <strong>Observability & Monitoring</strong>
+    - Centralized logging with ELK stack (Elasticsearch, Logstash, Kibana)
+    - Tracing with OpenTelemetry or Jaeger
+    - Health checks via Spring Boot Actuator
+    - Real-time metrics with Prometheus + Grafana
+    - Alerting system (e.g., with Grafana Alerts or Google Cloud Monitoring)
 
-2. Security
-  - OAuth2 + JWT token support with Spring Security
-  - JWE (JSON Web Encryption) for sensitive payload protection
-  - Rate limiting via API Gateway or Bucket4j
-  - CORS and CSRF protection setup
-  - Secrets management with Vault or environment-level encryption
+2. <strong>Security</strong>
+    - OAuth2 + JWT token support with Spring Security
+    - JWE (JSON Web Encryption) for sensitive payload protection
+    - Rate limiting via API Gateway or Bucket4j
+    - CORS and CSRF protection setup
+    - Secrets management with Vault or environment-level encryption
 
-3. Persistence & Infrastructure
-  - Replace H2 with PostgreSQL in Docker
-  - Full Docker Compose environment (App + DB + Cache + Monitoring)
-  - Migration scripts validation with Flyway dry-run
-  - Testcontainers for integration tests with real databases
+3. <strong>Persistence & Infrastructure</strong>
+    - Replace H2 with PostgreSQL in Docker
+    - Full Docker Compose environment (App + DB + Cache + Monitoring)
+    - Migration scripts validation with Flyway dry-run
+    - Testcontainers for integration tests with real databases
 
-4. Testing & Quality
-  - Integration tests using Testcontainers
-  - Contract testing with Spring Cloud Contract
-  - Load testing with k6 or Gatling
-  - Mutation testing with Pitest
-  - Code smells and static analysis with SonarQube
+4. <strong>Testing & Quality</strong>
+    - Integration tests using Testcontainers
+    - Contract testing with Spring Cloud Contract
+    - Load testing with k6 or Gatling
+    - Mutation testing with Pitest
+    - Code smells and static analysis with SonarQube
 
-5. Performance & Scalability
-  - Use Redis or Caffeine for distributed caching
-  - Enable async processing with @Async or Spring Batch
-  - Introduce rate limiting using external services (e.g., Kong, Envoy)
-  - Adopt Circuit Breaker pattern (e.g., with Resilience4j)
+5. <strong>Performance & Scalability</strong>
+    - Use Redis or Caffeine for distributed caching
+    - Enable async processing with @Async or Spring Batch
+    - Introduce rate limiting using external services (e.g., Kong, Envoy)
+    - Adopt Circuit Breaker pattern (e.g., with Resilience4j)
 
-6. Architecture & Organization
-  - Modularization using Spring Modules / Multi-Module Maven
-  - Use Clean Architecture + CQRS for command/query separation
-  - Extract audit logic to a dedicated auditing module
+6. <strong>Architecture & Organization</strong>
+    - Modularization using Spring Modules / Multi-Module Maven
+    - Use Clean Architecture + CQRS for command/query separation
+    - Extract audit logic to a dedicated auditing module
 
-7. Developer Experience
-  - Swagger UI enhancements (tag groups, examples, auth header prefill)
-  - Include Makefile or CLI script for common dev tasks
-  - GitHub Actions with code coverage badge and changelog generator
-  - Automatic changelog generation using Conventional Commits + Release Drafter
+7. <strong>Developer Experience</strong>
+    - Swagger UI enhancements (tag groups, examples, auth header prefill)
+    - Include Makefile or CLI script for common dev tasks
+    - GitHub Actions with code coverage badge and changelog generator
+    - Automatic changelog generation using Conventional Commits + Release Drafter
 
 ---
 
