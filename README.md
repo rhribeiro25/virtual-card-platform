@@ -65,7 +65,8 @@
     
     ```json
     {
-      "amount": 30.00
+      "amount": 30.00,
+      "requestId": "UUID"
     }
     ```
   
@@ -75,7 +76,8 @@
     
     ```json
     {
-      "amount": 50.00
+      "amount": 50.00,
+      "requestId": "UUID"
     }
     ```
   
@@ -83,7 +85,7 @@
   
     - Retrieves card details including current balance.
     
-    #### `GET /cards/{id}/transactions`
+  - `GET /cards/{id}/transactions`
     
     - Returns the full transaction history for a card.
     
@@ -92,9 +94,9 @@
 </details>
 
 <details>
-  <summary>
+  <summary><strong><span style="font-size: 1.1em;">
     🛡 Business Rules
-  </summary>
+  </span></strong></summary>
 
   - A card's balance **can never go below zero**
   - Transactions must ensure **atomicity and consistency** (e.g., no double spend)
@@ -109,9 +111,9 @@
 </details>
 
 <details>
-  <summary>
+  <summary><strong><span style="font-size: 1.1em;">
     ▶️ Setup Essentials
-  </summary>
+  </span></strong></summary>
 
     - **Java 17+** – Required language version
     - **Maven 3.8+** – Dependency management and build tool
@@ -123,66 +125,70 @@
 
 
 <details>
-  <summary>### ▶️ How to Run</summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    ▶️ How to Run
+  </span></strong></summary>
 
-```bash
-mvn spring-boot:run
-```
-
-> 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
-> 🚀 The application runs with:
-> - In-memory H2 database initialized via Flyway
-> - In-memory cache for improved performance and reduced database load
+    ```bash
+    mvn spring-boot:run
+    ```
+    
+    > 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
+    > 🚀 The application runs with:
+    > - In-memory H2 database initialized via Flyway
+    > - In-memory cache for improved performance and reduced database load
 
 ---
 
 </details>
 
 <details>
-  <summary>## 📬 API Usage via Postman</summary>
+  <summary>
+    📬 API Usage via Postman
+  </summary>
 
-This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
-
-To use it:
-
-1. Import the collection into Postman  
-2. Run the application using:
-
-   ```bash
-   mvn spring-boot:run
-   ```
-
-3. Execute the requests in the recommended order:
-</details>
----
-
-### 🟢 `POST /cards` – Create a Virtual Card
-
-![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
-
----
-
-### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
-
-![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
-
----
-
-### 🔴 `POST /cards/{id}/spend` – Spend from the Card
-
-![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
-
----
-
-### 🔍 `GET /cards/{id}` – Retrieve Card Details
-
-![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
-
----
-
-### 📜 `GET /cards/{id}/transactions` – List Transactions
-
-![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
+  This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
+  
+  To use it:
+  
+  1. Import the collection into Postman  
+  2. Run the application using:
+  
+     ```bash
+     mvn spring-boot:run
+     ```
+  
+  3. Execute the requests in the recommended order:
+  </details>
+  ---
+  
+  ### 🟢 `POST /cards` – Create a Virtual Card
+  
+  ![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
+  
+  ---
+  
+  ### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
+  
+  ![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
+  
+  ---
+  
+  ### 🔴 `POST /cards/{id}/spend` – Spend from the Card
+  
+  ![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
+  
+  ---
+  
+  ### 🔍 `GET /cards/{id}` – Retrieve Card Details
+  
+  ![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
+  
+  ---
+  
+  ### 📜 `GET /cards/{id}/transactions` – List Transactions
+  
+  ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
 ---
 
