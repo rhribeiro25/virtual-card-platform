@@ -127,61 +127,62 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 ### ✅ Create Card – Success
 
-<img src="src/main/resources/static/docs/images/diagrams/create_card_sequence.png" width="500"/>
+![Create Card – Success](src/main/resources/static/docs/images/diagrams/create_card_sequence.png)
 
 #
 
 ### ❌ Create Card – Errors
 
-<img src="src/main/resources/static/docs/images/diagrams/create_card_errors.png" width="500"/>
+![Create Card – Errors](src/main/resources/static/docs/images/diagrams/create_card_errors.png)
 
 #
 
 ### ✅ Get Card – Success
 
-<img src="src/main/resources/static/docs/images/diagrams/get_card_sequence.png" width="500"/>
+![Get Card – Success](src/main/resources/static/docs/images/diagrams/get_card_sequence.png)
 
 #
 
 ### ❌ Get Card – Errors
 
-<img src="src/main/resources/static/docs/images/diagrams/get_card_errors.png" width="500"/>
+![Get Card – Errors](src/main/resources/static/docs/images/diagrams/get_card_errors.png)
 
 #
 
 ### ✅ Get Transactions – Success
 
-<img src="src/main/resources/static/docs/images/diagrams/get_transactions_sequence.png" width="500"/>
+![Get Transactions – Success](src/main/resources/static/docs/images/diagrams/get_transactions_sequence.png)
 
 #
 
 ### ❌ Get Transactions – Errors
 
-<img src="src/main/resources/static/docs/images/diagrams/get_transactions_errors.png" width="500"/>
+![Get Transactions – Errors](src/main/resources/static/docs/images/diagrams/get_transactions_errors.png)
 
 #
 
 ### ✅ Spend Card – Success
 
-<img src="src/main/resources/static/docs/images/diagrams/spend_card_sequence.png" width="500"/>
+![Spend Card – Success](src/main/resources/static/docs/images/diagrams/spend_card_sequence.png)
 
 #
 
 ### ❌ Spend Card – Errors
 
-<img src="src/main/resources/static/docs/images/diagrams/spend_card_errors.png" width="500"/>
+![Spend Card – Errors](src/main/resources/static/docs/images/diagrams/spend_card_errors.png)
 
 #
 
 ### ✅ Top-Up Card – Success
 
-<img src="src/main/resources/static/docs/images/diagrams/topup_card_sequence.png" width="500"/>
+![Top-Up Card – Success](src/main/resources/static/docs/images/diagrams/topup_card_sequence.png)
 
 #
 
 ### ❌ Top-Up Card – Errors
 
-<img src="src/main/resources/static/docs/images/diagrams/topup_card_errors.png" width="500"/>
+![Top-Up Card – Errors](src/main/resources/static/docs/images/diagrams/topup_card_errors.png)
+
 
 #
 
