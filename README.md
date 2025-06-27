@@ -231,10 +231,8 @@ This section presents the key backend flows through sequence diagrams, covering 
   </span></strong></summary>
 
   <br>
-- **Postman Collection** for manual testing:
 
-👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
-👉 This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
+- his project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
 
 1. Import the collection into Postman
 2. Run the application using:
@@ -242,23 +240,23 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 ###### 💳 `POST /cards` – Create a Virtual Card
 
-![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
+![Create Card Screenshot](src/main/resources/static/docs/images/postman/create-card.png)
 
 ###### 💸 `POST /cards/{id}/topup` – Add Funds to a Card
 
-![Top-Up Screenshot](src/main/resources/static/docs/images/topup-card.png)
+![Top-Up Screenshot](src/main/resources/static/docs/images/postman/topup-card.png)
 
 ###### 💸  `POST /cards/{id}/spend` – Spend from the Card
 
-![Spend Screenshot](src/main/resources/static/docs/images/spend-card.png)
+![Spend Screenshot](src/main/resources/static/docs/images/postman/spend-card.png)
 
 ###### 🔍 `GET /cards/{id}` – Retrieve Card Details
 
-![Get Card Screenshot](src/main/resources/static/docs/images/get-card-details.png)
+![Get Card Screenshot](src/main/resources/static/docs/images/postman/get-card-details.png)
 
 ###### 📜 `GET /cards/{id}/transactions` – List Transactions
 
-![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
+![Transaction History Screenshot](src/main/resources/static/docs/images/postman/get-transactions-page.png)
 
 #
 
@@ -271,9 +269,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 - **Jacoco** test coverage report published via GitHub Pages:
 
-  👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
-
-  ![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)
+  [![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)](https://rhribeiro25.github.io/virtual-card-platform)
 
 #
 
