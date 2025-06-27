@@ -428,9 +428,11 @@
     📙 Learning Strategy
   </span></strong></summary>
 
-- Practical development with hands-on debugging
-- Official documentation as a primary reference
-- Courses and online resources for frameworks and architecture
+  <br>
+
+  - Practical development with hands-on debugging
+  - Official documentation as a primary reference
+  - Courses and online resources for frameworks and architecture
 
 ---
 
