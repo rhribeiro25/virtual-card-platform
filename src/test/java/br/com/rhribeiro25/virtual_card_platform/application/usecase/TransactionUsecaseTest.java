@@ -4,15 +4,15 @@ package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionDuplicateUnexpectedImpl;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.CacheUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,6 +42,7 @@ class TransactionUsecaseTest {
     @InjectMocks
     private TransactionUsecase transactionUsecase;
 
+    private TransactionDuplicateUnexpectedImpl validation;
     private Card card;
     private UUID cardId;
 
@@ -59,6 +60,7 @@ class TransactionUsecaseTest {
         when(messageSource.getMessage(eq("card.transactionRangeMinutes"), any(), any())).thenReturn("10");
         when(messageSource.getMessage(eq("card.duplicateTransaction"), any(), any())).thenReturn("Duplicate transaction");
         when(messageSource.getMessage(eq("card.spend.recent.minutes"), any(), any())).thenReturn("15");
+        validation = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
     }
 
     @Test
@@ -111,6 +113,26 @@ class TransactionUsecaseTest {
 
         assertThrows(BadRequestException.class,
                 () -> transactionUsecase.isDuplicateTransaction(card, amount, type));
+    }
+
+    @Test
+    @DisplayName("Should NOT throw exception when existingTransaction is empty")
+    void shouldNotThrowWhenNoExistingTransaction() {
+        UUID requestId = UUID.randomUUID();
+        Transaction transaction = new Transaction.Builder()
+                .card(card)
+                .requestId(requestId)
+                .build();
+
+        try (MockedStatic<CacheUtils> cacheMock = Mockito.mockStatic(CacheUtils.class)) {
+            cacheMock.when(() -> CacheUtils.getFromCache("transactionsByCardId", cardId, Page.class))
+                    .thenReturn(null);
+
+            when(transactionUsecase.verifyDuplicateTransaction(cardId, requestId))
+                    .thenReturn(Optional.empty());
+
+            assertDoesNotThrow(() -> validation.validate(transaction));
+        }
     }
 
 }

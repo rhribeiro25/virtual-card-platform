@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -111,4 +112,5 @@ class TransactionDuplicateUnexpectedImplTest {
         assertTrue(validation.supports(TransactionType.SPEND));
         assertTrue(validation.supports(TransactionType.TOPUP));
     }
+
 }
