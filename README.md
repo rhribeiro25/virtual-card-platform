@@ -10,8 +10,10 @@ You are tasked with building the backend API for a **Virtual Card Platform**. Us
 - Spend funds from the cards
 
 The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>## ✅ Core Requirements</summary>
@@ -79,9 +81,9 @@ Retrieves card details including current balance.
 
 Returns the full transaction history for a card.
 
-</details>
-
 ---
+
+</details>
 
 <details>
   <summary>## 🛡 Business Rules</summary>
@@ -93,8 +95,10 @@ Returns the full transaction history for a card.
 - Cards must exist; otherwise, return `404 Not Found`
 - A card can have a **maximum of 5 SPEND transactions per minute**
 - Duplicate transactions are avoided by checking amount and timestamp within a configurable time window
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>## ▶️ Setup Essentials</summary>
@@ -116,6 +120,10 @@ mvn spring-boot:run
 > 🚀 The application runs with:
 > - In-memory H2 database initialized via Flyway
 > - In-memory cache for improved performance and reduced database load
+
+---
+
+</details>
 
 <details>
   <summary>## 📬 API Usage via Postman</summary>
@@ -163,9 +171,9 @@ To use it:
 
 ![Transaction History Screenshot](src/main/resources/static/docs/images/get-transactions-page.png)
 
-</details> 
-
 ---
+
+</details> 
 
 <details>
   <summary>## ⚙ Implementations</summary>
@@ -207,8 +215,10 @@ To use it:
   - **Template Method** for transaction execution
   - **Facade** via `CardUsecase` to encapsulate logic
   - **Builder** for creating immutable entities
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>## 🌟 Bonus Implementations</summary>
@@ -226,8 +236,10 @@ To use it:
 - Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
 - Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
 - Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>🧠 Technical Design Decisions</summary>
@@ -241,8 +253,10 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - Easier extension for rules based on card state
 
 > This design improves expressiveness and consistency without violating business constraints.
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>## ⚖ Trade-offs</summary>
@@ -262,8 +276,10 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - API Gateway and circuit breakers
 - Cloud deployment with monitoring and alerting
 - Observability with structured logs and tracing support (ELK, OpenTelemetry, Grafana-ready)
-</details>
+
 ---
+
+</details>
 
 <details>
   <summary>## 📙 Learning Strategy</summary>
@@ -271,8 +287,10 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 - Practical development with hands-on debugging
 - Official documentation as a primary reference
 - Courses and online resources for frameworks and architecture
-</details>
+
 ---
+
+</details>
 
 > Developed by Renan Henrique Ribeiro\
 > [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
