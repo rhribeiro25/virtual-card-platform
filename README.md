@@ -17,7 +17,7 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    💼 Problem Overview
+    [💼 Problem Overview](#-problem-overview)
   </span></strong></summary>
 
   <br>

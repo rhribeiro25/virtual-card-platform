@@ -74,6 +74,9 @@ jobs:
         run: npm run screenshot
         working-directory: scripts
 
+      - name: 🛡️ Mark current directory as safe for Git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: ↪️ Commit coverage image to repo
         run: |
           git config --global user.name 'github-actions'
