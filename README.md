@@ -1,9 +1,9 @@
 # 🎫 Virtual Card Platform - Backend API
 
 <details>
-  <summary>
-    <H3>💼 Problem Overview</H3>
-  </summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    💼 Problem Overview
+  </span></strong></summary>
 
   You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
   
@@ -18,9 +18,9 @@
 </details>
 
 <details>
-  <summary>
-    <H3>✅ Core Requirements</H3>
-  </summary>
+  <summary><strong><span style="font-size: 1.1em;">
+    ✅ Core Requirements
+  </span></strong></summary>
 
   ### 📘 Entities
   
