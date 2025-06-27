@@ -133,14 +133,16 @@
     ▶️ How to Run
   </span></strong></summary>
 
-    ```bash
+  <br>
+
+  ```bash
     mvn spring-boot:run
-    ```
-    
-    > 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
-    > 🚀 The application runs with:
-    > - In-memory H2 database initialized via Flyway
-    > - In-memory cache for improved performance and reduced database load
+  ```
+
+  > 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
+  > 🚀 The application runs with:
+   - In-memory H2 database initialized via Flyway
+   - In-memory cache for improved performance and reduced database load
 
 ---
 
