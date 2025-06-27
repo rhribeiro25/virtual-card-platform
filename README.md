@@ -231,8 +231,10 @@ This section presents the key backend flows through sequence diagrams, covering 
   </span></strong></summary>
 
   <br>
+- **Postman Collection** for manual testing:
 
-This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
+👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
+👉 This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
 
 1. Import the collection into Postman
 2. Run the application using:
@@ -264,6 +266,21 @@ This project includes a complete [Postman collection](https://github.com/rhribei
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
+    🧪 Code Test Coverage
+  </span></strong></summary>
+
+- **Jacoco** test coverage report published via GitHub Pages:
+
+  👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
+
+  ![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)
+
+#
+
+</details>
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
     ⚙ Implementations
   </span></strong></summary>
 
@@ -286,17 +303,9 @@ This project includes a complete [Postman collection](https://github.com/rhribei
     - **Facade** via `CardUsecase` to encapsulate logic
     - **Builder** for creating immutable entities
 
-- **Jacoco** test coverage report published via GitHub Pages:
-
-  👉 [Test Coverage Report](https://rhribeiro25.github.io/virtual-card-platform)
-
 - **Swagger UI** available for REST API exploration:
 
   👉 [Swagger Interface (localhost)](http://localhost:8080/swagger-ui.html)
-
-- **Postman Collection** for manual testing:
-
-  👉 [Access the file](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json)
 
 - H2 database accessible during execution:
 
@@ -515,10 +524,6 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 #
 
 </details>
-
-### ✅ Code Coverage
-
-![JaCoCo Coverage](src/main/resources/static/docs/images/coverage/coverage.png)
 
 
 #
