@@ -10,8 +10,8 @@
   You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
   
   - Create virtual cards
-    - Add funds (top-up)
-    - Spend funds from the cards
+  - Add funds (top-up)
+  - Spend funds from the cards
   
   The system must guarantee **data consistency**, **prevent overspending**, and remain **robust under concurrent usage**.
   
