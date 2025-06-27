@@ -84,10 +84,14 @@ jobs:
         working-directory: scripts
 
       - name: ↪️ Force commit and push coverage image
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          git config --global user.name 'Renan Henrique Ribeiro'
-          git config --global user.email 'renan.shaolin.25@gmail.com'
-          git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/rhribeiro25/virtual-card-platform.git
+          git config --global user.name "Renan Henrique Ribeiro"
+          git config --global user.email "renan.shaolin.25@gmail.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/rhribeiro25/virtual-card-platform.git
+          git fetch origin
+          git checkout ${GITHUB_REF##*/}
           git add src/main/resources/static/docs/images/coverage/coverage.png || true
           git commit -m "Update JaCoCo coverage image" || echo "No changes"
           git push --force origin HEAD
