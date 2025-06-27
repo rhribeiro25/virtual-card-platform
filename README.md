@@ -438,7 +438,7 @@
 
 </details>
 
- <br>
+---
 
 > Developed by Renan Henrique Ribeiro\
 > [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
