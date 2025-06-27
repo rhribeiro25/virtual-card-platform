@@ -438,7 +438,7 @@
 
 </details>
 
----
+<hr style="border: 0; border-top: 1px solid #eaecef;" />
 
 > Developed by Renan Henrique Ribeiro\
 > [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
