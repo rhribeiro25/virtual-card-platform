@@ -32,7 +32,7 @@ The system must guarantee **data consistency**, **prevent overspending**, and re
 - `type: ENUM { SPEND, TOPUP }`
 - `amount: BigDecimal`
 - `createdAt: Timestamp`
-</details>
+
 ---
 
 ### 🔌 API Endpoints
@@ -78,7 +78,9 @@ Retrieves card details including current balance.
 #### `GET /cards/{id}/transactions`
 
 Returns the full transaction history for a card.
+
 </details>
+
 ---
 
 <details>
