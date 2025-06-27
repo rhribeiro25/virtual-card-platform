@@ -2,7 +2,7 @@
 
 <details>
   <summary>
-    <T3>💼 Problem Overview</T3>
+    <H3>💼 Problem Overview</H3>
   </summary>
 
   You are tasked with building the backend API for a **Virtual Card Platform**. Users should be able to:
@@ -19,7 +19,7 @@
 
 <details>
   <summary>
-    ✅ Core Requirements
+    <H3>✅ Core Requirements</H3>
   </summary>
 
   ### 📘 Entities
