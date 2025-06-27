@@ -191,8 +191,6 @@
     ⚙ Implementations
   </span></strong></summary>
 
-  <br>
-
   - In-memory **H2 database** with versioning via **Flyway**
 
   - **Spring Data JPA**
