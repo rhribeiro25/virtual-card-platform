@@ -5,7 +5,7 @@ virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.ad
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,CardResponse,0,18,0,0,0,1,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,TransactionResponse,0,18,0,0,0,1,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto,CardRequest,0,9,0,0,0,1,0,1,0,1
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,CacheUtils,13,27,0,0,3,8,2,3,2,3
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,CacheUtils,0,27,0,0,0,8,0,3,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.shared.utils,MessageUtils,0,14,0,0,0,6,0,3,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.enums,CardStatus,0,15,0,0,0,3,0,1,0,1
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.enums,TransactionType,0,15,0,0,0,3,0,1,0,1
@@ -18,5 +18,5 @@ virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,Tr
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TopUpTransactionProcessor,2,33,0,0,1,9,1,5,1,5
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,SpendTransactionProcessor,2,33,0,0,1,9,1,5,1,5
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TransactionTemplate,0,44,0,0,0,13,0,4,0,4
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,CardUsecase,5,108,0,0,2,18,0,9,0,9
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,CardUsecase,0,113,0,0,0,20,0,9,0,9
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,TransactionUsecase,1,83,1,1,1,19,1,6,0,6

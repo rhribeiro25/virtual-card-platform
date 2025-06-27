@@ -23,10 +23,5 @@ public class CacheUtils {
 <span class="fc" id="L23">                .orElse(null);</span>
     }
 
-    public static boolean isInCache(String cacheName, Object key) {
-<span class="nc" id="L27">        return Optional.ofNullable(cacheManager.getCache(cacheName))</span>
-<span class="nc" id="L28">                .map(cache -&gt; cache.get(key))</span>
-<span class="nc" id="L29">                .isPresent();</span>
-    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

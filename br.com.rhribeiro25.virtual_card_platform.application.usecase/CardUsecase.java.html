@@ -51,8 +51,8 @@ public class CardUsecase {
 <span class="fc" id="L51">            return cardRepository.save(card);</span>
 <span class="fc" id="L52">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
 <span class="fc" id="L53">            throw new ConflictException(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
-<span class="nc" id="L54">        } catch (Exception e) {</span>
-<span class="nc" id="L55">            throw new InternalServerErrorException();</span>
+<span class="fc" id="L54">        } catch (Exception e) {</span>
+<span class="fc" id="L55">            throw new InternalServerErrorException();</span>
         }
     }
 
