@@ -53,6 +53,16 @@ jobs:
         run: npm install
         working-directory: scripts
 
+      - name: 🗃️ Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            scripts/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('scripts/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: 📷 Generate screenshot from JaCoCo HTML
         run: npm run screenshot
 
