@@ -38,8 +38,8 @@ import java.math.BigDecimal;
     private void saveCard(Card card) {
         try {
 <span class="fc" id="L40">            cardRepository.save(card);</span>
-<span class="nc" id="L41">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
-<span class="nc" id="L42">            throw new ConflictException(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
+<span class="fc" id="L41">        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {</span>
+<span class="fc" id="L42">            throw new ConflictException(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
 <span class="fc" id="L43">        }</span>
 <span class="fc" id="L44">    }</span>
 

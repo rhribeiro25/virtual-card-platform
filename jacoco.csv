@@ -13,10 +13,10 @@ virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,Tr
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicationBetweenRangeTimeValidationImpl,0,18,0,0,0,6,0,3,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionValidation,2,0,0,0,1,0,1,0,1,0
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionStatusValidationImpl,1,28,1,5,0,6,1,5,0,3
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicateUnexpectedImpl,26,58,8,8,4,18,7,5,1,3
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionDuplicateUnexpectedImpl,2,82,3,13,0,22,3,9,0,4
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.domain.service,TransactionLimitInXTimeValidationImpl,0,44,0,2,0,9,0,4,0,3
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TopUpTransactionProcessor,2,33,0,0,1,9,1,5,1,5
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,SpendTransactionProcessor,2,33,0,0,1,9,1,5,1,5
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TransactionTemplate,9,35,0,0,2,11,0,4,0,4
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.template,TransactionTemplate,0,44,0,0,0,13,0,4,0,4
 virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,CardUsecase,5,108,0,0,2,18,0,9,0,9
-virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,TransactionUsecase,43,41,2,0,11,9,2,5,1,5
+virtual-card-platform,br.com.rhribeiro25.virtual_card_platform.application.usecase,TransactionUsecase,1,83,1,1,1,19,1,6,0,6

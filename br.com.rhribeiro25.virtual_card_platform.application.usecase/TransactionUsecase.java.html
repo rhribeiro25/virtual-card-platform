@@ -30,25 +30,25 @@ public class TransactionUsecase {
     }
 
     public void isDuplicateTransaction(Card card, BigDecimal amount, TransactionType type) {
-<span class="nc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
+<span class="fc" id="L33">        int rangeTimeTransaction = Integer.parseInt(MessageUtils.getMessage(&quot;card.conflict&quot;));</span>
 
-<span class="nc" id="L35">        LocalDateTime now = LocalDateTime.now();</span>
-<span class="nc" id="L36">        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);</span>
+<span class="fc" id="L35">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L36">        LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);</span>
 
-<span class="nc" id="L38">        Timestamp start = Timestamp.valueOf(rangeStart);</span>
-<span class="nc" id="L39">        Timestamp end = Timestamp.valueOf(now);</span>
+<span class="fc" id="L38">        Timestamp start = Timestamp.valueOf(rangeStart);</span>
+<span class="fc" id="L39">        Timestamp end = Timestamp.valueOf(now);</span>
 
-<span class="nc" id="L41">        Optional&lt;?&gt; existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(</span>
+<span class="fc" id="L41">        Optional&lt;?&gt; existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(</span>
                 amount,
-<span class="nc" id="L43">                card.getId(),</span>
+<span class="fc" id="L43">                card.getId(),</span>
                 start,
                 end,
                 type
         );
 
-<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (existingTransaction.isPresent()) {</span>
-<span class="nc" id="L50">            String duplicateTransactionMessage = MessageUtils.getMessage(&quot;card.conflict&quot;);</span>
-<span class="nc" id="L51">            throw new BadRequestException(duplicateTransactionMessage);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (existingTransaction.isPresent()) {</span>
+<span class="fc" id="L50">            String duplicateTransactionMessage = MessageUtils.getMessage(&quot;card.conflict&quot;);</span>
+<span class="fc" id="L51">            throw new BadRequestException(duplicateTransactionMessage);</span>
         }
 <span class="nc" id="L53">    }</span>
 
