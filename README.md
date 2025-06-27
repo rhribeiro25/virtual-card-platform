@@ -1,19 +1,19 @@
 # 🎫 Virtual Card Platform
 
-- [💼 Problem Overview](#problem-overview)
-- [🧱 Core Requirements](#core-requirements)
-- [📝 Business Rules](#business-rules)
-- [🧩 Sequence Diagrams](#sequence-diagrams)
-- [🛠️ Setup Essentials](#setup-essentials)
-- [▶️ How to Run](#️how-to-run)
-- [📬 API Usage via Postman](#api-usage-via-postman)
-- [⚙ Implementations](#implementations)
-- [🌟 Bonus Implementations](#bonus-implementations)
-- [🧠 Technical Design Decisions](#technical-design-decisions)
-- [⚖ Trade-offs](#trade-offs)
-- [🚀 Future Improvements](#future-improvements)
-- [📙 Learning Strategy](#learning-strategy)
-- [✅ Code Coverage](#code-coverage)
+- [💼 Problem Overview](#-problem-overview)
+- [🧱 Core Requirements](#-core-requirements)
+- [📝 Business Rules](#-business-rules)
+- [🧩 Sequence Diagrams](#-sequence-diagrams)
+- [🛠️ Setup Essentials](#-setup-essentials)
+- [▶️ How to Run](#️-how-to-run)
+- [📬 API Usage via Postman](#-api-usage-via-postman)
+- [⚙ Implementations](#-implementations)
+- [🌟 Bonus Implementations](#-bonus-implementations)
+- [🧠 Technical Design Decisions](#-technical-design-decisions)
+- [⚖ Trade-offs](#-trade-offs)
+- [🚀 Future Improvements](#-future-improvements)
+- [📙 Learning Strategy](#-learning-strategy)
+- [✅ Code Coverage](#-code-coverage)
 
 ## 💼 Problem Overview
   
