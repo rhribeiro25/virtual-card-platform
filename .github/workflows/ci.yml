@@ -59,15 +59,15 @@ jobs:
           node-version: '20'
 
       - name: 📤 Install Node.js dependencies
-        run: PUPPETEER_SKIP_DOWNLOAD=true npm install
+        run: npm install
         working-directory: scripts
 
-      - name: 🧱 Install Google Chrome
-        run: |
-          apt-get update
-          apt-get install -y wget gnupg unzip
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          apt-get install -y ./google-chrome-stable_current_amd64.deb
+#      - name: 🧱 Install Google Chrome
+#        run: |
+#          apt-get update
+#          apt-get install -y wget gnupg unzip
+#          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#          apt-get install -y ./google-chrome-stable_current_amd64.deb
 
       - name: 🗃️ Cache Node.js modules
         uses: actions/cache@v3
@@ -83,10 +83,13 @@ jobs:
         run: npm run screenshot
         working-directory: scripts
 
-      - name: ↪️ Commit coverage image to repo
+      - name: ↪️ Force commit and push coverage image
         run: |
+          git config --global user.name 'Renan Henrique Ribeiro'
+          git config --global user.email 'renan.shaolin.25@gmail.com'
           git add src/main/resources/static/docs/images/coverage/coverage.png || true
-          git diff --cached --quiet || (git commit -m "Update JaCoCo coverage image" && git push)
+          git commit -m "Update JaCoCo coverage image" || echo "No changes"
+          git push --force origin HEAD  
 
       - name: 🚨 Run SpotBugs (optional)
         run: mvn com.github.spotbugs:spotbugs-maven-plugin:check -Dspotbugs.failOnError=false
