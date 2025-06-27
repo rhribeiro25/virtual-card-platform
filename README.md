@@ -97,6 +97,171 @@ Returns the full transaction history for a card.
 - **Maven 3.8+** – Dependency management and build tool
 - **Default port: 8080**
 
+### ▶️ How to Run
+
+```bash
+mvn spring-boot:run
+
+> 📌 That's it! No additional configuration is needed. All dependencies are resolved via Maven.
+> 🚀 The application runs with:
+> - In-memory H2 database initialized via Flyway
+> - In-memory cache for improved performance and reduced database load
+
+## 📬 API Usage via Postman
+
+This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
+
+To use it:
+
+1. Import the collection into Postman  
+2. Run the application using:
+
+   ```bash
+   mvn spring-boot:run
+   ```
+
+3. Execute the requests in the recommended order:
+
+---
+
+### 🟢 `POST /cards` – Create a Virtual Card
+
+**Request:**
+```json
+{
+  "cardholderName": "Alice",
+  "initialBalance": 100.00
+}
+```
+
+**Response:**
+```json
+{
+  "id": "b1f2c3d4-5678-4e90-abcd-1234567890ab",
+  "cardholderName": "Alice",
+  "balance": 100.00,
+  "status": "ACTIVE",
+  "createdAt": "2025-06-27T12:00:00Z"
+}
+```
+
+**HTTP Status:** `201 Created`  
+🖼️ *Screenshot:* `docs/images/create-card.png`
+
+---
+
+### 🟡 `POST /cards/{id}/topup` – Add Funds to a Card
+
+**Request:**
+```json
+{
+  "amount": 50.00
+}
+```
+
+**Response:**
+```json
+{
+  "transactionId": "abc-123",
+  "type": "TOPUP",
+  "amount": 50.00,
+  "createdAt": "2025-06-27T12:05:00Z"
+}
+```
+
+**HTTP Status:** `200 OK`  
+🖼️ *Screenshot:* `docs/images/topup-card.png`
+
+---
+
+### 🔴 `POST /cards/{id}/spend` – Spend from the Card
+
+**Request:**
+```json
+{
+  "amount": 30.00
+}
+```
+
+**Response (success):**
+```json
+{
+  "transactionId": "def-456",
+  "type": "SPEND",
+  "amount": 30.00,
+  "createdAt": "2025-06-27T12:10:00Z"
+}
+```
+
+**HTTP Status:** `200 OK`
+
+**Response (insufficient funds):**
+```json
+{
+  "error": "Insufficient balance"
+}
+```
+
+**HTTP Status:** `400 Bad Request`
+
+**Response (rate limit exceeded):**
+```json
+{
+  "error": "Maximum number of SPEND transactions exceeded"
+}
+```
+
+**HTTP Status:** `429 Too Many Requests`  
+🖼️ *Screenshot:* `docs/images/spend-card.png`
+
+---
+
+### 🔍 `GET /cards/{id}` – Retrieve Card Details
+
+**Response:**
+```json
+{
+  "id": "b1f2c3d4-5678-4e90-abcd-1234567890ab",
+  "cardholderName": "Alice",
+  "balance": 120.00,
+  "status": "ACTIVE",
+  "createdAt": "2025-06-27T12:00:00Z"
+}
+```
+
+**HTTP Status:** `200 OK`  
+🖼️ *Screenshot:* `docs/images/get-card.png`
+
+---
+
+### 📜 `GET /cards/{id}/transactions` – List Transactions
+
+**Response:**
+```json
+{
+  "content": [
+    {
+      "transactionId": "def-456",
+      "type": "SPEND",
+      "amount": 30.00,
+      "createdAt": "2025-06-27T12:10:00Z"
+    },
+    {
+      "transactionId": "abc-123",
+      "type": "TOPUP",
+      "amount": 50.00,
+      "createdAt": "2025-06-27T12:05:00Z"
+    }
+  ],
+  "page": 0,
+  "size": 10,
+  "totalElements": 2
+}
+```
+
+**HTTP Status:** `200 OK`  
+🖼️ *Screenshot:* `docs/images/get-transactions.png`
+
 ---
 
 ## ⚙ Implementations
@@ -151,6 +316,11 @@ Returns the full transaction history for a card.
 - Caching to avoid repeated queries
 - CI pipeline with **GitHub Actions** (build, test, Jacoco publish)
 - **Flyway** DB versioning for environment consistency
+- Request ID Validation – I added validation using requestId in transactions to make sure the same transaction isn't processed more than once, even in case of network issues or retries.
+- Cache First Strategy – Now the system checks the cache first, and only goes to the database if the data isn’t there. That helps improve performance and reduce unnecessary DB hits.
+- Global Exception Handler Improvements – I standardized internal error messages and improved how I handle exceptions, organizing everything through BusinessException to keep things clean and centralized.
+- Transactional Rollback – I applied @Transactional(rollbackFor = BusinessException.class) to ensure that if anything goes wrong in a business rule, all operations inside the process are rolled back, even those inside a Template Method flow.
+- Custom Validation per Transaction Type – I made validations customizable using a supports() method, so each one is only applied to the right type of transaction. It makes the system more flexible and easier to maintain.
 
 ---
 
