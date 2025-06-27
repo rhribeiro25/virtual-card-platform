@@ -108,6 +108,7 @@ mvn spring-boot:run
 > - In-memory H2 database initialized via Flyway
 > - In-memory cache for improved performance and reduced database load
 
+<details>
 ## 📬 API Usage via Postman
 
 This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
