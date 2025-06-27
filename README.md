@@ -127,6 +127,8 @@ To use it:
 
 ### 🟢 `POST /cards` – Create a Virtual Card
 
+![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
+
 **Request:**
 ```json
 {
@@ -135,7 +137,7 @@ To use it:
 }
 ```
 
-**Response:**
+**Response (HTTP Status: `201 Created`):**
 ```json
 {
   "id": "b1f2c3d4-5678-4e90-abcd-1234567890ab",
@@ -145,9 +147,6 @@ To use it:
   "createdAt": "2025-06-27T12:00:00Z"
 }
 ```
-
-**HTTP Status:** `201 Created`  
-![Create Card Screenshot](src/main/resources/static/docs/images/create-card.png)
 
 ---
 
