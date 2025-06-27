@@ -286,89 +286,90 @@
 
 🟡 Simplified Domain Models (Card & Transaction only)
 
-**Trade-off:**  
+###### Trade-off 
+Limited modeling to only two main entities (`Card` and `Transaction`) to keep the codebase small and testable.
 
-**Impact:**  
+###### Impact
 ✅ Keeps business logic focused and isolated  
 ❌ May require refactoring when introducing related domains (e.g., User, Limits, Notifications)
 
 
 🟡 Synchronous REST-only Communication
 
-**Trade-off:**  
+###### Trade-off 
 Used only REST APIs for card operations.
 
-**Impact:**  
+###### Impact
 ✅ Easy to implement and test  
 ❌ Not scalable for high-throughput or event-driven scenarios (e.g., Kafka-based processing)
 
 
 🟡 Optimistic Locking Instead of Distributed Locking
 
-**Trade-off:**  
+###### Trade-off 
 Used `@Version` field for concurrency handling instead of distributed locks (e.g., Redis-based).
 
-**Impact:**  
+###### Impact
 ✅ Simple and safe within a single DB instance  
 ❌ May not prevent race conditions in distributed, high-concurrency environments
 
 
 🟡 In-memory Cache Instead of Redis
 
-**Trade-off:**  
+###### Trade-off 
 Used `@Cacheable` with in-memory cache to reduce DB hits.
 
-**Impact:**  
+###### Impact
 ✅ Zero setup; improves performance locally  
 ❌ Not suitable for horizontal scaling or shared cache between instances
 
 
 🟡 Flyway for Versioning, No Liquibase or Schema Generation
 
-**Trade-off:**  
+###### Trade-off 
 Chose Flyway for database migrations and disabled Spring’s auto DDL generation.
 
-**Impact:**  
+###### Impact
 ✅ Full control over schema changes, predictable  
 ❌ Requires manual script writing; no visual diffing or rollback tools built-in
 
 
 🟡 Rate Limiting by Business Rule, Not Infrastructure
 
-**Trade-off:**  
+###### Trade-off 
 Implemented rate limiting (5 SPEND/min) in business logic instead of using an API Gateway or filter-based limiter.
 
-**Impact:**  
+###### Impact
 ✅ Business-specific control  
 ❌ No automatic protection against DoS or broader abuse patterns
 
 
 🟡 No Integration with External Services
 
-**Trade-off:**  
+###### Trade-off 
 The project is self-contained and doesn't simulate real external systems (e.g., card providers, fraud detection, etc.).
 
-**Impact:**  
+###### Impact
 ✅ Simpler test scope  
 ❌ Less realistic for real-world systems with integration complexity
 
 
 🟡 CI/CD with GitHub Actions but No Deployment Step
 
-**Trade-off:**  
+###### Trade-off 
 Configured automated tests and coverage reports, but deployment was not included.
 
-**Impact:**  
+###### Impact
 ✅ Validates code quality early  
 ❌ Does not demonstrate production readiness (e.g., Docker, cloud deploy)
 
 
 🟡 No Logging Framework Configured (e.g., SLF4J + Logback)
 
-**Trade-off:**  
+###### Trade-off 
 Relied on Spring Boot default logging without structuring log outputs.
 
-**Impact:**  
+###### Impact
 ✅ Sufficient for local dev  
 ❌ Not prepared for observability or log analysis in production
 
