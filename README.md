@@ -28,7 +28,7 @@
 
   - 💳 Card 
 
-    **The Card entity represents a virtual card created by a user within the platform. It holds key information required for performing financial transactions, such as the available balance and operational status.**
+    The Card entity represents a virtual card created by a user within the platform. It holds key information required for performing financial transactions, such as the available balance and operational status.
     
     - `id: UUID`
     - `cardholderName: String`
@@ -37,7 +37,7 @@
   
   - 💸 Transaction
 
-    **The Transaction entity represents a financial operation executed on a virtual card. It stores information about the transaction type, amount, and the moment it occurred. Every transaction is linked to a specific card.**
+    The Transaction entity represents a financial operation executed on a virtual card. It stores information about the transaction type, amount, and the moment it occurred. Every transaction is linked to a specific card.
     
     - `id: UUID`
     - `cardId: UUID` (foreign key)
@@ -49,7 +49,7 @@
   
   - `POST /cards`
   
-    Creates a new virtual card.
+    - Creates a new virtual card.
     
     ```json
     {
@@ -59,11 +59,9 @@
     ```
   
   - `POST /cards/{id}/spend`
-  
-    Spends from a card.
-    
+   
     - Returns `400 Bad Request` if balance is insufficient.
-      - Must prevent double-spending via race condition handling.
+    - Must prevent double-spending via race condition handling.
     
     ```json
     {
@@ -73,7 +71,7 @@
   
   - `POST /cards/{id}/topup`
   
-    Adds funds to an existing card.
+    - Adds funds to an existing card.
     
     ```json
     {
@@ -83,11 +81,11 @@
   
   - `GET /cards/{id}`
   
-    Retrieves card details including current balance.
+    - Retrieves card details including current balance.
     
     #### `GET /cards/{id}/transactions`
     
-    Returns the full transaction history for a card.
+    - Returns the full transaction history for a card.
     
   ---
 
