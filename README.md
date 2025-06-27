@@ -284,7 +284,7 @@
 
 <br>
 
-🟡 Simplified Domain Models (Card & Transaction only)
+##### Simplified Domain Models (Card & Transaction only)
 
 ###### Trade-off 
 Limited modeling to only two main entities (`Card` and `Transaction`) to keep the codebase small and testable.
@@ -294,7 +294,7 @@ Limited modeling to only two main entities (`Card` and `Transaction`) to keep th
 ❌ May require refactoring when introducing related domains (e.g., User, Limits, Notifications)
 
 
-🟡 Synchronous REST-only Communication
+##### Synchronous REST-only Communication
 
 ###### Trade-off 
 Used only REST APIs for card operations.
@@ -304,7 +304,7 @@ Used only REST APIs for card operations.
 ❌ Not scalable for high-throughput or event-driven scenarios (e.g., Kafka-based processing)
 
 
-🟡 Optimistic Locking Instead of Distributed Locking
+##### Optimistic Locking Instead of Distributed Locking
 
 ###### Trade-off 
 Used `@Version` field for concurrency handling instead of distributed locks (e.g., Redis-based).
@@ -314,7 +314,7 @@ Used `@Version` field for concurrency handling instead of distributed locks (e.g
 ❌ May not prevent race conditions in distributed, high-concurrency environments
 
 
-🟡 In-memory Cache Instead of Redis
+##### In-memory Cache Instead of Redis
 
 ###### Trade-off 
 Used `@Cacheable` with in-memory cache to reduce DB hits.
@@ -324,7 +324,7 @@ Used `@Cacheable` with in-memory cache to reduce DB hits.
 ❌ Not suitable for horizontal scaling or shared cache between instances
 
 
-🟡 Flyway for Versioning, No Liquibase or Schema Generation
+##### Flyway for Versioning, No Liquibase or Schema Generation
 
 ###### Trade-off 
 Chose Flyway for database migrations and disabled Spring’s auto DDL generation.
@@ -334,7 +334,7 @@ Chose Flyway for database migrations and disabled Spring’s auto DDL generation
 ❌ Requires manual script writing; no visual diffing or rollback tools built-in
 
 
-🟡 Rate Limiting by Business Rule, Not Infrastructure
+##### Rate Limiting by Business Rule, Not Infrastructure
 
 ###### Trade-off 
 Implemented rate limiting (5 SPEND/min) in business logic instead of using an API Gateway or filter-based limiter.
@@ -344,7 +344,7 @@ Implemented rate limiting (5 SPEND/min) in business logic instead of using an AP
 ❌ No automatic protection against DoS or broader abuse patterns
 
 
-🟡 No Integration with External Services
+##### No Integration with External Services
 
 ###### Trade-off 
 The project is self-contained and doesn't simulate real external systems (e.g., card providers, fraud detection, etc.).
@@ -354,7 +354,7 @@ The project is self-contained and doesn't simulate real external systems (e.g., 
 ❌ Less realistic for real-world systems with integration complexity
 
 
-🟡 CI/CD with GitHub Actions but No Deployment Step
+##### CI/CD with GitHub Actions but No Deployment Step
 
 ###### Trade-off 
 Configured automated tests and coverage reports, but deployment was not included.
@@ -364,7 +364,7 @@ Configured automated tests and coverage reports, but deployment was not included
 ❌ Does not demonstrate production readiness (e.g., Docker, cloud deploy)
 
 
-🟡 No Logging Framework Configured (e.g., SLF4J + Logback)
+##### No Logging Framework Configured (e.g., SLF4J + Logback)
 
 ###### Trade-off 
 Relied on Spring Boot default logging without structuring log outputs.
