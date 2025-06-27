@@ -26,24 +26,24 @@
 
   ##### 🏛️ Entity
 
-  ###### 💳 Card 
+  - 💳 Card 
 
-  **The Card entity represents a virtual card created by a user within the platform. It holds key information required for performing financial transactions, such as the available balance and operational status.**
+    **The Card entity represents a virtual card created by a user within the platform. It holds key information required for performing financial transactions, such as the available balance and operational status.**
+    
+    - `id: UUID`
+    - `cardholderName: String`
+    - `balance: BigDecimal`
+    - `createdAt: Timestamp`
   
-  - `id: UUID`
-  - `cardholderName: String`
-  - `balance: BigDecimal`
-  - `createdAt: Timestamp`
-  
-  ###### 💸 Transaction
+  - 💸 Transaction
 
-  **The Transaction entity represents a financial operation executed on a virtual card. It stores information about the transaction type, amount, and the moment it occurred. Every transaction is linked to a specific card.**
-  
-  - `id: UUID`
-  - `cardId: UUID` (foreign key)
-  - `type: ENUM { SPEND, TOPUP }`
-  - `amount: BigDecimal`
-  - `createdAt: Timestamp`
+    **The Transaction entity represents a financial operation executed on a virtual card. It stores information about the transaction type, amount, and the moment it occurred. Every transaction is linked to a specific card.**
+    
+    - `id: UUID`
+    - `cardId: UUID` (foreign key)
+    - `type: ENUM { SPEND, TOPUP }`
+    - `amount: BigDecimal`
+    - `createdAt: Timestamp`
   
   ---
   
