@@ -11,12 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,6 +32,7 @@ class TransactionDuplicateUnexpectedImplTest {
 
     @BeforeEach
     void setUp() {
+
         transactionUsecase = mock(TransactionUsecase.class);
         validation = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
 
@@ -106,9 +107,36 @@ class TransactionDuplicateUnexpectedImplTest {
     }
 
     @Test
+    @DisplayName("Should not detect duplicate by requestId or cardId when exists data in cache")
+    void shouldNotDetectDuplicateWhenIdsDifferInCache() {
+        MessageSource messageSourceMock = Mockito.mock(MessageSource.class);
+        Mockito.when(messageSourceMock.getMessage(Mockito.anyString(), Mockito.any(), Mockito.any(Locale.class)))
+                .thenReturn("Duplicated transaction message");
+        MessageUtils.setMessageSource(messageSourceMock);
+
+        Transaction transaction = new Transaction.Builder().card(card).requestId(requestId).build();
+        Transaction Transaction2 = new Transaction.Builder().card(card).requestId(UUID.randomUUID()).build();
+        List<Transaction> transactions = Collections.singletonList(transaction);
+        Page<Transaction> transactionPage = new PageImpl<>(transactions);
+
+        try (MockedStatic<CacheUtils> cacheMock = mockStatic(CacheUtils.class)) {
+            cacheMock.when(() -> CacheUtils.getFromCache("transactionsByCardId", cardId, Page.class))
+                    .thenReturn(transactionPage);
+            assertDoesNotThrow(() -> validation.validate(Transaction2));
+        }
+
+    }
+
+    @Test
     @DisplayName("Should support only SPEND and TOPUP transaction types")
     void shouldSupportSpecificTransactionTypes() {
         assertTrue(validation.supports(TransactionType.SPEND));
         assertTrue(validation.supports(TransactionType.TOPUP));
+    }
+
+    @Test
+    @DisplayName("Should not support transaction TRANSFER ")
+    void shouldNotSupportOtherTransactionTypes() {
+        assertFalse(validation.supports(TransactionType.TRANSFER));
     }
 }

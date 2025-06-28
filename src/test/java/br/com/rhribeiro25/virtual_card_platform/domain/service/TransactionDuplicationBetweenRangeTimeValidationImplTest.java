@@ -65,4 +65,10 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
         assertFalse(validation.supports(TransactionType.SPEND));
         assertFalse(validation.supports(TransactionType.TOPUP));
     }
+
+    @Test
+    @DisplayName("Should not support transaction TRANSFER ")
+    void shouldNotSupportOtherTransactionTypes() {
+        assertFalse(validation.supports(TransactionType.TRANSFER));
+    }
 }
