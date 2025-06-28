@@ -116,6 +116,25 @@ class TransactionUsecaseTest {
     }
 
     @Test
+    @DisplayName("Should pass validation when no duplicate transaction exists in time range")
+    void shouldPassValidationWhenNoDuplicateTransactionExists() {
+        BigDecimal amount = BigDecimal.TEN;
+        TransactionType type = TransactionType.SPEND;
+
+        when(messageSource.getMessage(eq("card.conflict"), any(), any())).thenReturn("10");
+
+        when(transactionRepository.findDuplicateBetweenRangeTimeTransaction(
+                eq(amount),
+                eq(card.getId()),
+                any(),
+                any(),
+                eq(type)
+        )).thenReturn(Optional.empty());
+
+        assertDoesNotThrow(() -> transactionUsecase.isDuplicateTransaction(card, amount, type));
+    }
+
+    @Test
     @DisplayName("Should NOT throw exception when existingTransaction is empty")
     void shouldNotThrowWhenNoExistingTransaction() {
         UUID requestId = UUID.randomUUID();

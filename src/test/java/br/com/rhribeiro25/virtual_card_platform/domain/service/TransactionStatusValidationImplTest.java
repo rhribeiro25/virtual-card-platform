@@ -68,4 +68,10 @@ class TransactionStatusValidationImplTest {
         assertTrue(validation.supports(TransactionType.TOPUP));
     }
 
+    @Test
+    @DisplayName("Should not support transaction TRANSFER ")
+    void shouldNotSupportOtherTransactionTypes() {
+        assertFalse(validation.supports(TransactionType.TRANSFER));
+    }
+
 }

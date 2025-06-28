@@ -71,4 +71,10 @@ class TransactionLimitInXTimeValidationImplTest {
     void shouldSupportSpecificTransactionTypes() {
         assertTrue(validation.supports(TransactionType.SPEND));
     }
+
+    @Test
+    @DisplayName("Should not support transaction TRANSFER ")
+    void shouldNotSupportOtherTransactionTypes() {
+        assertFalse(validation.supports(TransactionType.TRANSFER));
+    }
 }
