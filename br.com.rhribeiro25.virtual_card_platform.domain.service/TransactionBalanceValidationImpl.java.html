@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
     @Override
     public void validate(Transaction transaction) {
-<span class="pc bpc" id="L14" title="1 of 4 branches missed.">        if (transaction.getType() == TransactionType.SPEND &amp;&amp; transaction.getCard().getBalance().compareTo(transaction.getAmount()) &lt; 0)</span>
+<span class="fc bfc" id="L14" title="All 4 branches covered.">        if (transaction.getType() == TransactionType.SPEND &amp;&amp; transaction.getCard().getBalance().compareTo(transaction.getAmount()) &lt; 0)</span>
 <span class="fc" id="L15">            throw new BadRequestException(MessageUtils.getMessage(&quot;card.insufficientBalance&quot;));</span>
 <span class="fc" id="L16">    }</span>
 

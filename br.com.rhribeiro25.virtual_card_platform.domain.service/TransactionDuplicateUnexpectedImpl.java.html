@@ -35,7 +35,7 @@ public class TransactionDuplicateUnexpectedImpl implements TransactionValidation
 <span class="fc bfc" id="L35" title="All 2 branches covered.">        if (transactionsPage != null) {</span>
 <span class="fc" id="L36">            existsInCache = transactionsPage.getContent().stream()</span>
 <span class="pc bpc" id="L37" title="1 of 2 branches missed.">                    .anyMatch(t -&gt; cardId.equals(t.getCard().getId()) &amp;&amp;</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">                            requestId.equals(t.getRequestId()));</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">                            requestId.equals(t.getRequestId()));</span>
         } else {
 <span class="fc" id="L40">            existsInDb = transactionUsecase</span>
 <span class="fc" id="L41">                    .verifyDuplicateTransaction(cardId, requestId)</span>
@@ -50,7 +50,7 @@ public class TransactionDuplicateUnexpectedImpl implements TransactionValidation
     @Override
     public boolean supports(TransactionType transactionType) {
 <span class="fc bfc" id="L52" title="All 2 branches covered.">        return transactionType.equals(TransactionType.TOPUP)</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">                || transactionType.equals(TransactionType.SPEND);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                || transactionType.equals(TransactionType.SPEND);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
