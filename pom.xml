@@ -100,6 +100,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>virtual-card-platform-api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

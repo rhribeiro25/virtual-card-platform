@@ -1,0 +1,1 @@
+web: java -jar target/virtual-card-platform-api.jar
