@@ -1,4 +1,3 @@
 FROM eclipse-temurin:17-jdk-jammy
-ARG JAR_FILE=target/virtual-card-platform-api-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} api.jar
-ENTRYPOINT ["java","-jar","/api.jar"]
+COPY ${JAR_FILE} virtual-card-platform-api.jar
+ENTRYPOINT ["java","-jar","/virtual-card-platform-api.jar"]
