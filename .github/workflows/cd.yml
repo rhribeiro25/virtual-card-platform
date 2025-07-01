@@ -41,8 +41,6 @@ jobs:
       - name: 🚀 Deploy to Heroku
         if: steps.env-detect.outputs.env != ''
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME_DEV }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           SPRING_PROFILES_ACTIVE: ${{ steps.env-detect.outputs.env }}
         run: |
@@ -53,11 +51,16 @@ jobs:
           # Mapeando app name com base no ambiente
           if [ "${{ steps.env-detect.outputs.env }}" == "dev" ]; then
             APP_NAME=${{ secrets.HEROKU_APP_NAME_DEV }}
+            API_KEY=${{ secrets.HEROKU_API_KEY_DEV }}
           elif [ "${{ steps.env-detect.outputs.env }}" == "hml" ]; then
             APP_NAME=${{ secrets.HEROKU_APP_NAME_HML }}
+            API_KEY=${{ secrets.HEROKU_API_KEY_HML }}
           elif [ "${{ steps.env-detect.outputs.env }}" == "prd" ]; then
             APP_NAME=${{ secrets.HEROKU_APP_NAME_PRD }}
+            API_KEY=${{ secrets.HEROKU_API_KEY_PRD }}
           fi
-
+          
+          # Login e deploy
+          echo "$API_KEY" | heroku container:login
           heroku container:push web --app "$APP_NAME"
           heroku container:release web --app "$APP_NAME"
