@@ -35,6 +35,7 @@ jobs:
             echo "env=prd" >> $GITHUB_OUTPUT
           else
             echo "❌ Tag sem ambiente conhecido. Encerrando..."
+            echo "Ambiente desconhecido: ${{ steps.env-detect.outputs.env }}"
             exit 1
           fi
 
