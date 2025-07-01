@@ -27,15 +27,17 @@ jobs:
       - name: 🧠 Detect environment
         id: env-detect
         run: |
-          if [[ "${{ github.ref_name }}" == *-dev ]]; then
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+
+          if [[ "$TAG_NAME" == *-dev ]]; then
             echo "env=dev" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == *-hml ]]; then
+          elif [[ "$TAG_NAME" == *-hml ]]; then
             echo "env=hml" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == *-prd ]]; then
+          elif [[ "$TAG_NAME" == *-prd ]]; then
             echo "env=prd" >> $GITHUB_OUTPUT
           else
-            echo "❌ Tag sem ambiente conhecido. Encerrando..."
-            echo "Ambiente desconhecido: $GITHUB_REF_NAME"
+            echo "❌ Tag with no known environment. Closing..."
+            echo "Current Environment: $TAG_NAME"
             exit 1
           fi
 
