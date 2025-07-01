@@ -27,8 +27,8 @@ jobs:
       - name: 🧠 Detect environment
         id: env-detect
         run: |
-          TAG_NAME="${GITHUB_REF##*/}"  # Extrai somente o nome da tag
-          ENV_SUFFIX="${TAG_NAME##*-}"  # Pega somente o final após o último hífen
+          TAG_NAME="${GITHUB_REF##*/}"
+          ENV_SUFFIX="${TAG_NAME##*-}"
 
           echo "TAG_NAME=$TAG_NAME"
           echo "ENV_SUFFIX=$ENV_SUFFIX"
@@ -40,7 +40,6 @@ jobs:
             echo "❌ Unknown environment: $ENV_SUFFIX"
             exit 1
           fi
-      
 
       - name: 🚀 Deploy to Heroku
         if: steps.env-detect.outputs.env != ''
