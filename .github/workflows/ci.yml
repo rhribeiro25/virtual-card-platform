@@ -1,4 +1,7 @@
-name: Java CI with Maven in Docker
+# -----------------------------------------------
+# 🧪 CI - Quality Gate for Virtual Card Platform
+# -----------------------------------------------
+name: CI - Quality Gate for Virtual Card Platform
 
 on:
   push:
