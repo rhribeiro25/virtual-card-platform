@@ -37,7 +37,7 @@ jobs:
             echo "env=$ENV_SUFFIX" >> $GITHUB_OUTPUT
             echo "APP_NAME=virtual-card-platform-$ENV_SUFFIX" >> $GITHUB_OUTPUT
           else
-            echo "❌ Ambiente desconhecido: $ENV_SUFFIX"
+            echo "❌ Unknown environment: $ENV_SUFFIX"
             exit 1
           fi
       
