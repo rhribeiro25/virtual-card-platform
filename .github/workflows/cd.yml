@@ -27,19 +27,20 @@ jobs:
       - name: 🧠 Detect environment
         id: env-detect
         run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          TAG_NAME="${GITHUB_REF##*/}"  # Extrai somente o nome da tag
+          ENV_SUFFIX="${TAG_NAME##*-}"  # Pega somente o final após o último hífen
 
-          if [[ "$TAG_NAME" == *-dev ]]; then
-            echo "env=dev" >> $GITHUB_OUTPUT
-          elif [[ "$TAG_NAME" == *-hml ]]; then
-            echo "env=hml" >> $GITHUB_OUTPUT
-          elif [[ "$TAG_NAME" == *-prd ]]; then
-            echo "env=prd" >> $GITHUB_OUTPUT
+          echo "TAG_NAME=$TAG_NAME"
+          echo "ENV_SUFFIX=$ENV_SUFFIX"
+
+          if [[ "$ENV_SUFFIX" =~ ^(dev|hml|prd)$ ]]; then
+            echo "env=$ENV_SUFFIX" >> $GITHUB_OUTPUT
+            echo "APP_NAME=virtual-card-platform-$ENV_SUFFIX" >> $GITHUB_OUTPUT
           else
-            echo "❌ Tag with no known environment. Closing..."
-            echo "Current Environment: $TAG_NAME"
+            echo "❌ Ambiente desconhecido: $ENV_SUFFIX"
             exit 1
           fi
+      
 
       - name: 🚀 Deploy to Heroku
         if: steps.env-detect.outputs.env != ''
@@ -48,18 +49,12 @@ jobs:
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
           SPRING_PROFILES_ACTIVE: ${{ steps.env-detect.outputs.env }}
         run: |
-          echo "Deploying to ${{ steps.env-detect.outputs.env }}..."
+          echo "Deploying to '${{ steps.env-detect.outputs.env }}'..."
+          echo "Using app name: '${{ steps.env-detect.outputs.APP_NAME }}'"
+
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku container:login
 
-          # Mapeando app name com base no ambiente
-          if [ "${{ steps.env-detect.outputs.env }}" == "dev" ]; then
-            APP_NAME=${{ secrets.HEROKU_APP_NAME_DEV }}
-          elif [ "${{ steps.env-detect.outputs.env }}" == "hml" ]; then
-            APP_NAME=${{ secrets.HEROKU_APP_NAME_HML }}
-          elif [ "${{ steps.env-detect.outputs.env }}" == "prd" ]; then
-            APP_NAME=${{ secrets.HEROKU_APP_NAME_PRD }}
-          fi
-
-          heroku container:push web --app "$APP_NAME"
-          heroku container:release web --app "$APP_NAME"
+          heroku config:set SPRING_PROFILES_ACTIVE=${{ steps.env-detect.outputs.env }} --app "${{ steps.env-detect.outputs.APP_NAME }}"
+          heroku container:push web --app "${{ steps.env-detect.outputs.APP_NAME }}"
+          heroku container:release web --app "${{ steps.env-detect.outputs.APP_NAME }}"
