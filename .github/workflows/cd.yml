@@ -57,8 +57,6 @@ jobs:
           elif [ "${{ steps.env-detect.outputs.env }}" == "prd" ]; then
             APP_NAME=${{ secrets.HEROKU_APP_NAME_PRD }}
           fi
-          
-          heroku config:set SPRING_PROFILES_ACTIVE=${{ steps.env-detect.outputs.env }} --app "$APP_NAME"
 
           heroku container:push web --app "$APP_NAME"
           heroku container:release web --app "$APP_NAME"
