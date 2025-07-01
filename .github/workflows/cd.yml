@@ -1,36 +1,63 @@
-name: Java CD with Maven in Docker to Heroku
+# -----------------------------------------------
+# 🚀 CD - Deploy to Heroku by tag environment
+# -----------------------------------------------
+name: CD - Deploy to Heroku by tag environment
 
 on:
-  workflow_run:
-    workflows: ["Java CI with Maven in Docker"]
-    types:
-      - completed
+  release:
+    types: [created]
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
+      - name: 🛠️ Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Deploy to Heroku
+      - name: 🧠 Detect environment
+        id: env-detect
+        run: |
+          if [[ "${{ github.ref_name }}" == *-dev ]]; then
+            echo "env=dev" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == *-hml ]]; then
+            echo "env=hml" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == *-prd ]]; then
+            echo "env=prd" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Tag sem ambiente conhecido. Encerrando..."
+            exit 1
+          fi
+
+      - name: 🚀 Deploy to Heroku
+        if: steps.env-detect.outputs.env != ''
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME_DEV }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          SPRING_PROFILES_ACTIVE: ${{ steps.env-detect.outputs.env }}
         run: |
+          echo "Deploying to ${{ steps.env-detect.outputs.env }}..."
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku container:login
-          heroku container:push web --app $HEROKU_APP_NAME
-          heroku container:release web --app $HEROKU_APP_NAME
+
+          # Mapeando app name com base no ambiente
+          if [ "${{ steps.env-detect.outputs.env }}" == "dev" ]; then
+            APP_NAME=${{ secrets.HEROKU_APP_NAME_DEV }}
+          elif [ "${{ steps.env-detect.outputs.env }}" == "hml" ]; then
+            APP_NAME=${{ secrets.HEROKU_APP_NAME_HML }}
+          elif [ "${{ steps.env-detect.outputs.env }}" == "prd" ]; then
+            APP_NAME=${{ secrets.HEROKU_APP_NAME_PRD }}
+          fi
+
+          heroku container:push web --app "$APP_NAME"
+          heroku container:release web --app "$APP_NAME"
