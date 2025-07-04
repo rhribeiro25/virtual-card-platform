@@ -12,25 +12,45 @@ on:
         description: 'Tag (v1.0.0)'
         required: true
       to_env:
-        description: 'Env (hml or prd)'
+        description: 'Env (dev, hml or prd)'
         required: true
         default: hml
         type: choice
         options:
+          - dev
           - hml
           - prd
 
 jobs:
-  deploy-dev:
-    if: github.event_name == 'release'
+  deploy:
     runs-on: ubuntu-latest
     env:
-      DEPLOY_ENV: dev
-      TAG_NAME: ${{ github.ref_name }}
-      APP_NAME: virtual-card-platform-dev
+      TAG_NAME: ${{ github.event_name == 'release' && github.ref_name || github.event.inputs.from_tag }}
     steps:
-      - name: 📥 Checkout code
+      - name: 📆 Determine Environment
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
+            echo "APP_NAME=virtual-card-platform-dev" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_ENV=${{ github.event.inputs.to_env }}" >> $GITHUB_ENV
+            if [[ "${{ github.event.inputs.to_env }}" == "dev" ]]; then
+              echo "APP_NAME=virtual-card-platform-dev" >> $GITHUB_ENV
+            elif [[ "${{ github.event.inputs.to_env }}" == "hml" ]]; then
+              echo "APP_NAME=virtual-card-platform-hml" >> $GITHUB_ENV
+            elif [[ "${{ github.event.inputs.to_env }}" == "prd" ]]; then
+              echo "APP_NAME=virtual-card-platform-prd" >> $GITHUB_ENV
+            else
+              echo "Invalid environment: ${{ github.event.inputs.to_env }}"
+              exit 1
+            fi
+          fi
+
+      - name: 📅 Checkout Code from Tag
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG_NAME }}
 
       - name: ☕ Set up JDK 17
         uses: actions/setup-java@v3
@@ -41,44 +61,17 @@ jobs:
       - name: 🛠️ Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: 🐳 Deploy to Heroku (dev)
+      - name: 🐳 Build Docker Image
+        run: docker build -t virtual-card-platform .
+
+      - name: 🚀 Deploy to Heroku (${{ env.DEPLOY_ENV }})
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          SPRING_PROFILES_ACTIVE: dev
         run: |
-          echo "Deploying ${TAG_NAME} to development..."
+          echo "Deploying ${TAG_NAME} to ${DEPLOY_ENV}..."
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku container:login
-          heroku config:set SPRING_PROFILES_ACTIVE=dev --app $APP_NAME
+          heroku config:set SPRING_PROFILES_ACTIVE=${DEPLOY_ENV} --app $APP_NAME
           heroku container:push web --app $APP_NAME
           heroku container:release web --app $APP_NAME
-
-  promote:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    env:
-      TAG_NAME: ${{ github.event.inputs.from_tag }}
-      DEPLOY_ENV: ${{ github.event.inputs.to_env }}
-    steps:
-      - name: 🔁 Promote from ${{ env.TAG_NAME }} to ${{ env.DEPLOY_ENV }}
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-        run: |
-          echo "Promoting $TAG_NAME to $DEPLOY_ENV..."
-
-          if [[ "$DEPLOY_ENV" == "hml" ]]; then
-            APP_NAME=virtual-card-platform-hml
-          elif [[ "$DEPLOY_ENV" == "prd" ]]; then
-            APP_NAME=virtual-card-platform-prd
-          else
-            echo "❌ Invalid target environment: $DEPLOY_ENV"
-            exit 1
-          fi
-
-          curl https://cli-assets.heroku.com/install.sh | sh
-          heroku container:login
-          heroku config:set SPRING_PROFILES_ACTIVE=$DEPLOY_ENV --app "$APP_NAME"
-          heroku container:push web --app "$APP_NAME"
-          heroku container:release web --app "$APP_NAME"
