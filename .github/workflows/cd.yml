@@ -40,14 +40,14 @@ jobs:
             echo "Invalid environment: ${{ github.event.inputs.to_env }}"
             exit 1
           fi
-          echo "release-${TAG_NAME#v}" >> $CURRENT_RELEASE
+          echo "CURRENT_RELEASE=release-${TAG_NAME#v}" >> $GITHUB_ENV
 
       - name: 📅 Checkout Code from Tag
         uses: actions/checkout@v4
         with:
           ref: ${{ env.TAG_NAME }}
 
-      - name: 📦 Create GitHub (${{ env.DEPLOY_ENV }}) (if not exists)
+      - name: 📦 Create GitHub (${{ env.CURRENT_RELEASE }}) (if not exists)
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
