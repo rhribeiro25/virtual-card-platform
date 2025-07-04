@@ -50,12 +50,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          echo "Checking if release '${{ env.TAG_NAME }}' exists..."
-          if gh release view "${{ env.TAG_NAME }}" > /dev/null 2>&1; then
-            echo "Release already exists."
+          RELEASE_NAME="release-${TAG_NAME#v}"
+          
+          echo "🔍 Checking if release '$RELEASE_NAME' exists..."
+          if gh release view "$RELEASE_NAME" > /dev/null 2>&1; then
+            echo "✅ Release already exists: $RELEASE_NAME"
           else
-            echo "Creating release for tag '${{ env.TAG_NAME }}'..."
-            gh release create "${{ env.TAG_NAME }}" --title "${{ env.TAG_NAME }}" --notes "Auto-created release"
+            echo "🚀 Creating release: $RELEASE_NAME"
+            gh release create "${TAG_NAME}" \
+              --title "$RELEASE_NAME" \
+              --notes "Auto-created release for $TAG_NAME" \
+              --latest=false
           fi
 
       - name: ☕ Set up JDK 17
