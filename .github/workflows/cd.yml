@@ -4,8 +4,6 @@
 name: CD - Deploy and Promote to Heroku
 
 on:
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
       from_tag:
@@ -14,7 +12,7 @@ on:
       to_env:
         description: 'Env (dev, hml or prd)'
         required: true
-        default: hml
+        default: dev
         type: choice
         options:
           - dev
@@ -30,21 +28,16 @@ jobs:
       - name: 📆 Determine Environment
         id: set-env
         run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
+          echo "DEPLOY_ENV=${{ github.event.inputs.to_env }}" >> $GITHUB_ENV
+          if [[ "${{ github.event.inputs.to_env }}" == "dev" ]]; then
             echo "APP_NAME=virtual-card-platform-dev" >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.to_env }}" == "hml" ]]; then
+            echo "APP_NAME=virtual-card-platform-hml" >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.to_env }}" == "prd" ]]; then
+            echo "APP_NAME=virtual-card-platform-prd" >> $GITHUB_ENV
           else
-            echo "DEPLOY_ENV=${{ github.event.inputs.to_env }}" >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.to_env }}" == "dev" ]]; then
-              echo "APP_NAME=virtual-card-platform-dev" >> $GITHUB_ENV
-            elif [[ "${{ github.event.inputs.to_env }}" == "hml" ]]; then
-              echo "APP_NAME=virtual-card-platform-hml" >> $GITHUB_ENV
-            elif [[ "${{ github.event.inputs.to_env }}" == "prd" ]]; then
-              echo "APP_NAME=virtual-card-platform-prd" >> $GITHUB_ENV
-            else
-              echo "Invalid environment: ${{ github.event.inputs.to_env }}"
-              exit 1
-            fi
+            echo "Invalid environment: ${{ github.event.inputs.to_env }}"
+            exit 1
           fi
 
       - name: 📅 Checkout Code from Tag
