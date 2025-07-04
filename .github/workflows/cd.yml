@@ -47,7 +47,7 @@ jobs:
         with:
           ref: ${{ env.TAG_NAME }}
 
-      - name: 📦 Create GitHub (${{ env.CURRENT_RELEASE }}) (if not exists)
+      - name: 📦 Creating ${{ env.CURRENT_RELEASE }}
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
@@ -69,13 +69,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🛠️ Build with Maven
+      - name: 🛠️ Building with Maven
         run: mvn clean package -DskipTests
 
-      - name: 🐳 Build Docker Image
+      - name: 🐳 Building Docker Image
         run: docker build -t virtual-card-platform .
 
-      - name: 🚀 Deploy to Heroku (${{ env.DEPLOY_ENV }})
+      - name: 🚀 Deploy to Heroku in (${{ env.DEPLOY_ENV }})
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
