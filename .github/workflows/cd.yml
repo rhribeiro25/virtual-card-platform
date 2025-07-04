@@ -1,7 +1,7 @@
 # -----------------------------------------------
 # 🚀 CD - Deploy and Promote to Heroku
 # -----------------------------------------------
-name: CD - Deploy and Promote to Heroku
+name: CD - Promoting ${{ env.CURRENT_RELEASE }} to ${{ env.DEPLOY_ENV }}
 
 on:
   workflow_dispatch:
