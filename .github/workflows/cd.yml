@@ -25,6 +25,19 @@ jobs:
     env:
       TAG_NAME: ${{ github.event_name == 'release' && github.ref_name || github.event.inputs.from_tag }}
     steps:
+
+      - name: 📦 Create GitHub Release (if not exists)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking if release '${{ env.TAG_NAME }}' exists..."
+          if gh release view "${{ env.TAG_NAME }}" > /dev/null 2>&1; then
+            echo "Release already exists."
+          else
+            echo "Creating release for tag '${{ env.TAG_NAME }}'..."
+            gh release create "${{ env.TAG_NAME }}" --title "${{ env.TAG_NAME }}" --notes "Auto-created release"
+          fi
+
       - name: 📆 Determine Environment
         id: set-env
         run: |
