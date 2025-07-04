@@ -7,11 +7,21 @@ on:
   workflow_dispatch:
     inputs:
       from_tag:
-        description: 'Tag name to promote from (e.g. v1.0.0-dev)'
+        description: 'Origin:'
         required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - hml
       to_env:
-        description: 'Target environment (hml or prd)'
+        description: 'Destination:'
         required: true
+        default: dev
+        type: choice
+        options:
+          - hml
+          - prd
 
 jobs:
   promote:
