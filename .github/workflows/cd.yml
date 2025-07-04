@@ -1,60 +1,64 @@
 # -----------------------------------------------
-# 🚀 CD - Deploy to Heroku by tag environment
+# 🔁 CD - Promote Docker Image Between Heroku Environments
 # -----------------------------------------------
-name: CD - Deploy to Heroku by tag environment
+name: CD - Promote Heroku Release by Tag
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: 'Tag name to promote from (e.g. v1.0.0-dev)'
+        required: true
+      to_env:
+        description: 'Target environment (hml or prd)'
+        required: true
 
 jobs:
-  deploy:
+  promote:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: ☕ Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: 🛠️ Build with Maven
-        run: mvn clean package -DskipTests
-
-      - name: 🧠 Detect environment
-        id: env-detect
+      - name: 🧠 Parse inputs
+        id: parse
         run: |
-          TAG_NAME="${GITHUB_REF##*/}"  # Extrai somente o nome da tag
-          ENV_SUFFIX="${TAG_NAME##*-}"  # Pega somente o final após o último hífen
+          echo "FROM_TAG=${{ github.event.inputs.from_tag }}" >> $GITHUB_ENV
+          echo "TO_ENV=${{ github.event.inputs.to_env }}" >> $GITHUB_ENV
 
-          echo "TAG_NAME=$TAG_NAME"
-          echo "ENV_SUFFIX=$ENV_SUFFIX"
+          ENV_SUFFIX="${{ github.event.inputs.from_tag##*- }}"
+          echo "SOURCE_ENV=$ENV_SUFFIX" >> $GITHUB_ENV
 
           if [[ "$ENV_SUFFIX" =~ ^(dev|hml|prd)$ ]]; then
-            echo "env=$ENV_SUFFIX" >> $GITHUB_OUTPUT
-            echo "APP_NAME=virtual-card-platform-$ENV_SUFFIX" >> $GITHUB_OUTPUT
+            echo "SOURCE_APP=virtual-card-platform-$ENV_SUFFIX" >> $GITHUB_ENV
           else
-            echo "❌ Unknown environment: $ENV_SUFFIX"
-            exit 1
+            echo "❌ Invalid source tag format"; exit 1
           fi
-      
 
-      - name: 🚀 Deploy to Heroku
-        if: steps.env-detect.outputs.env != ''
+          if [[ "${{ github.event.inputs.to_env }}" =~ ^(hml|prd)$ ]]; then
+            echo "TARGET_APP=virtual-card-platform-${{ github.event.inputs.to_env }}" >> $GITHUB_ENV
+          else
+            echo "❌ Invalid target environment"; exit 1
+          fi
+
+      - name: ☁️ Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          heroku --version
+
+      - name: 🔐 Login to Heroku Container Registry
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
+
+      - name: ⏩ Promote Docker image
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          SPRING_PROFILES_ACTIVE: ${{ steps.env-detect.outputs.env }}
         run: |
-          echo "Deploying to '${{ steps.env-detect.outputs.env }}'..."
-          echo "Using app name: '${{ steps.env-detect.outputs.APP_NAME }}'"
+          echo "Promoting Docker image from $SOURCE_APP to $TARGET_APP"
 
-          curl https://cli-assets.heroku.com/install.sh | sh
-          heroku container:login
+          docker pull registry.heroku.com/$SOURCE_APP/web
+          docker tag registry.heroku.com/$SOURCE_APP/web registry.heroku.com/$TARGET_APP/web
+          docker push registry.heroku.com/$TARGET_APP/web
+          heroku container:release web --app $TARGET_APP
 
-          heroku config:set SPRING_PROFILES_ACTIVE=${{ steps.env-detect.outputs.env }} --app "${{ steps.env-detect.outputs.APP_NAME }}"
-          heroku container:push web --app "${{ steps.env-detect.outputs.APP_NAME }}"
-          heroku container:release web --app "${{ steps.env-detect.outputs.APP_NAME }}"
+          echo "✅ Promotion complete from $SOURCE_APP to $TARGET_APP"
