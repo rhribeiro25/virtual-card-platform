@@ -40,18 +40,18 @@ jobs:
             echo "Invalid environment: ${{ github.event.inputs.to_env }}"
             exit 1
           fi
+          echo "release-${TAG_NAME#v}" >> $CURRENT_RELEASE
 
       - name: 📅 Checkout Code from Tag
         uses: actions/checkout@v4
         with:
           ref: ${{ env.TAG_NAME }}
 
-      - name: 📦 Create GitHub Release (if not exists)
+      - name: 📦 Create GitHub (${{ env.DEPLOY_ENV }}) (if not exists)
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           RELEASE_NAME="release-${TAG_NAME#v}"
-          
           echo "🔍 Checking if release '$RELEASE_NAME' exists..."
           if gh release view "$RELEASE_NAME" > /dev/null 2>&1; then
             echo "✅ Release already exists: $RELEASE_NAME"
