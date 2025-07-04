@@ -48,7 +48,7 @@ jobs:
 
       - name: 📦 Create GitHub Release (if not exists)
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
           echo "Checking if release '${{ env.TAG_NAME }}' exists..."
           if gh release view "${{ env.TAG_NAME }}" > /dev/null 2>&1; then
