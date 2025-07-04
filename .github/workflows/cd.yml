@@ -1,7 +1,7 @@
 # -----------------------------------------------
-# 🚀 CD - Deploy and Promote to Heroku by Tag
+# 🚀 CD - Deploy and Promote to Heroku
 # -----------------------------------------------
-name: CD - Deploy and Promote to Heroku by Tag
+name: CD - Deploy and Promote to Heroku
 
 on:
   release:
@@ -9,20 +9,25 @@ on:
   workflow_dispatch:
     inputs:
       from_tag:
-        description: 'Tag to promote from (e.g. v1.0.0-dev)'
-        required: false
+        description: 'Tag (v1.0.0)'
+        required: true
       to_env:
-        description: 'Target environment (hml or prd)'
-        required: false
+        description: 'Env (hml or prd)'
+        required: true
+        default: hml
         type: choice
         options:
           - hml
           - prd
 
 jobs:
-  deploy:
+  deploy-dev:
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
-
+    env:
+      DEPLOY_ENV: dev
+      TAG_NAME: ${{ github.ref_name }}
+      APP_NAME: virtual-card-platform-dev
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -33,37 +38,47 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🧠 Detect context (release or manual)
-        id: detect
-        run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            TAG_NAME="${GITHUB_REF##*/}"
-            ENV_SUFFIX="${TAG_NAME##*-}"
-          else
-            TAG_NAME="${{ inputs.from_tag }}"
-            ENV_SUFFIX="${{ inputs.to_env }}"
-            git fetch --tags
-            git checkout tags/${TAG_NAME} -b promote-${ENV_SUFFIX}
-          fi
-
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-          echo "ENV_SUFFIX=$ENV_SUFFIX" >> $GITHUB_ENV
-          echo "APP_NAME=virtual-card-platform-$ENV_SUFFIX" >> $GITHUB_ENV
-
       - name: 🛠️ Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: 🚀 Deploy to Heroku
+      - name: 🐳 Deploy to Heroku (dev)
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          SPRING_PROFILES_ACTIVE: ${{ env.ENV_SUFFIX }}
+          SPRING_PROFILES_ACTIVE: dev
         run: |
-          echo "Deploying tag $TAG_NAME to '$ENV_SUFFIX'..."
-          echo "Using app name: '$APP_NAME'"
+          echo "Deploying ${TAG_NAME} to development..."
+          curl https://cli-assets.heroku.com/install.sh | sh
+          heroku container:login
+          heroku config:set SPRING_PROFILES_ACTIVE=dev --app $APP_NAME
+          heroku container:push web --app $APP_NAME
+          heroku container:release web --app $APP_NAME
+
+  promote:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      TAG_NAME: ${{ github.event.inputs.from_tag }}
+      DEPLOY_ENV: ${{ github.event.inputs.to_env }}
+    steps:
+      - name: 🔁 Promote from ${{ env.TAG_NAME }} to ${{ env.DEPLOY_ENV }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+        run: |
+          echo "Promoting $TAG_NAME to $DEPLOY_ENV..."
+
+          if [[ "$DEPLOY_ENV" == "hml" ]]; then
+            APP_NAME=virtual-card-platform-hml
+          elif [[ "$DEPLOY_ENV" == "prd" ]]; then
+            APP_NAME=virtual-card-platform-prd
+          else
+            echo "❌ Invalid target environment: $DEPLOY_ENV"
+            exit 1
+          fi
 
           curl https://cli-assets.heroku.com/install.sh | sh
           heroku container:login
-          heroku config:set SPRING_PROFILES_ACTIVE=$ENV_SUFFIX --app "$APP_NAME"
+          heroku config:set SPRING_PROFILES_ACTIVE=$DEPLOY_ENV --app "$APP_NAME"
           heroku container:push web --app "$APP_NAME"
           heroku container:release web --app "$APP_NAME"
