@@ -306,7 +306,7 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 6. After **two approvals**, the Pull Request is merged into the `main` branch.
 
----
+#
 
 ##### 🏷️ Version Tagging
 
@@ -315,13 +315,13 @@ After the `main` branch is updated, a new version of the system is tagged using 
 ```bash
 git checkout main
 git pull origin main
-git tag v1.30.0
-git push origin v1.30.0
+git tag vX.X.X
+git push origin vX.X.X
 ```
 
 > 🎯 This triggers the **CI pipeline**, which builds, tests, and packages the application.
 
----
+#
 
 ##### 🚚 Promotion to Environments (CD)
 
