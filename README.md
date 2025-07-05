@@ -526,4 +526,3 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 
 > Developed by Renan Henrique Ribeiro\
 > [LinkedIn](https://www.linkedin.com/in/rhribeiro25)
-
