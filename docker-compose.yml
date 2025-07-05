@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  ms:
+    container_name: ms
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./vcp_data/ms/tmp:/var/lib/app
+
+networks:
+  default:
+    name: vcp-net
+    driver: bridge
