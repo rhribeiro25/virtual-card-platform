@@ -386,9 +386,6 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
    ```bash
    gh pr create --base main --head feature/task-name --title "feat: description" --body "Implementation details"
    ```
-
-5. After **two approvals**, the Pull Request is merged into the `main` branch.
-
 ###### 📝 Pull Request List
 
 ![Pull Request list](src/main/resources/static/docs/images/devops/pr-list.png)
@@ -397,7 +394,9 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 ![Pull request openned](src/main/resources/static/docs/images/devops/pr-open.png)
 
-###### 🔀 Merging the Pull Request in main branch
+5. After **two approvals**, the Pull Request is merged into the `main` branch.
+
+###### 🔀 Merging the Pull Request into main branch
 
 ![Merging pull request](src/main/resources/static/docs/images/devops/pr-merge.png)
 
