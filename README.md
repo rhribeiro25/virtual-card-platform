@@ -277,7 +277,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    🚀 Release Management and DevOps
+    🔄 Release Management and DevOps
   </span></strong></summary>
 
 <br>
