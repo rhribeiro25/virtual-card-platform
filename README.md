@@ -400,6 +400,14 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 ![Merging pull request](src/main/resources/static/docs/images/devops/pr-merge.png)
 
+###### 🔄 CI Workflow in Progress
+
+![Workflow CD running](src/main/resources/static/docs/images/devops/workflow-ci-running.png)
+
+###### 🔍 CI Workflow Steps
+
+![Workflow CD steps](src/main/resources/static/docs/images/devops/workflow-ci-staps.png)
+
 #
 
 ##### 🏷️ Version Tagging
