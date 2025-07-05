@@ -236,7 +236,7 @@ This uses the `Dockerfile` located at the project root, which builds the Spring 
   </span></strong></summary>
 
 
-- Run using Container Docker
+###### 🐳 Run using Container Docker
 
 To run the application with a specific Spring profile (`dev`, `hml`, or `prd`):
 
@@ -251,7 +251,7 @@ docker run --rm -it -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 virtual-card-plat
 
 #
 
-- Run using Maven
+###### 📦 Run using Maven
 
   ```bash
     mvn spring-boot:run
