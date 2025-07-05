@@ -234,7 +234,7 @@ This uses the `Dockerfile` located at the project root, which builds the Spring 
   </span></strong></summary>
 
 
-###### 🐳 Run using Container Docker
+###### 🐳 Run using Docker container
 
 To run the application with a specific Spring profile (`dev`, `hml`, or `prd`):
 
