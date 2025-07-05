@@ -628,7 +628,6 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 
 </details>
 
-
 <details>
   <summary><strong><span style="font-size: 1.1em;">
     🚀 Future Improvements
