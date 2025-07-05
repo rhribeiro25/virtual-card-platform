@@ -391,6 +391,36 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 #
 
+###### 📝 Pull Request List
+
+![Pull Request list](src/main/resources/static/docs/images/devops/pr-list.png)
+
+###### 🧑‍💻 Opening a Pull Request
+
+![Pull request openned](src/main/resources/static/docs/images/devops/pr-open.png)
+
+###### 🔀 Merging the Pull Request
+
+![Merging pull request](src/main/resources/static/docs/images/devops/pr-merge.png)
+
+###### 🛠️ GitHub Actions Workflow List
+
+![Workflow list](src/main/resources/static/docs/images/devops/workflow-list.png)
+
+###### 🚀 CD Workflow Trigger
+
+![Workflow for CD](src/main/resources/static/docs/images/devops/workflow-cd.png)
+
+###### 🔄 CD Workflow in Progress
+
+![Workflow CD running](src/main/resources/static/docs/images/devops/workflow-cd-running.png)
+
+###### 🔍 CD Workflow Steps
+
+![Workflow CD steps](src/main/resources/static/docs/images/devops/workflow-cd-staps.png)
+
+#
+
 ##### 🏷️ Version Tagging
 
 After the `main` branch is updated, a new version of the system is tagged using Git:
