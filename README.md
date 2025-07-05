@@ -206,8 +206,6 @@ This section presents the key backend flows through sequence diagrams, covering 
 <details>
   <summary><strong><span style="font-size: 1.1em;">🐳 Containerization with Docker</span></strong></summary>
 
-<br>
-
 ###### 📦 Docker Overview
 
 This project provides a ready-to-use Docker setup to build and run the application in a containerized environment. Docker ensures consistency across environments and simplifies both local development and deployment.
