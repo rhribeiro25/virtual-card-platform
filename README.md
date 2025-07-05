@@ -125,61 +125,61 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-### ✅ Create Card – Success
+###### ✅ Create Card – Success
 
 ![Create Card – Success](src/main/resources/static/docs/images/diagrams/create_card_sequence.png)
 
 #
 
-### ❌ Create Card – Errors
+###### ❌ Create Card – Errors
 
 ![Create Card – Errors](src/main/resources/static/docs/images/diagrams/create_card_errors.png)
 
 #
 
-### ✅ Get Card – Success
+###### ✅ Get Card – Success
 
 ![Get Card – Success](src/main/resources/static/docs/images/diagrams/get_card_sequence.png)
 
 #
 
-### ❌ Get Card – Errors
+###### ❌ Get Card – Errors
 
 ![Get Card – Errors](src/main/resources/static/docs/images/diagrams/get_card_errors.png)
 
 #
 
-### ✅ Get Transactions – Success
+###### ✅ Get Transactions – Success
 
 ![Get Transactions – Success](src/main/resources/static/docs/images/diagrams/get_transactions_sequence.png)
 
 #
 
-### ❌ Get Transactions – Errors
+###### ❌ Get Transactions – Errors
 
 ![Get Transactions – Errors](src/main/resources/static/docs/images/diagrams/get_transactions_errors.png)
 
 #
 
-### ✅ Spend Card – Success
+###### ✅ Spend Card – Success
 
 ![Spend Card – Success](src/main/resources/static/docs/images/diagrams/spend_card_sequence.png)
 
 #
 
-### ❌ Spend Card – Errors
+###### ❌ Spend Card – Errors
 
 ![Spend Card – Errors](src/main/resources/static/docs/images/diagrams/spend_card_errors.png)
 
 #
 
-### ✅ Top-Up Card – Success
+###### ✅ Top-Up Card – Success
 
 ![Top-Up Card – Success](src/main/resources/static/docs/images/diagrams/topup_card_sequence.png)
 
 #
 
-### ❌ Top-Up Card – Errors
+###### ❌ Top-Up Card – Errors
 
 ![Top-Up Card – Errors](src/main/resources/static/docs/images/diagrams/topup_card_errors.png)
 
@@ -203,6 +203,32 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 </details>
 
+<details>
+  <summary><strong><span style="font-size: 1.1em;">🐳 Containerization with Docker</span></strong></summary>
+
+<br>
+
+###### 📦 Docker Overview
+
+This project provides a ready-to-use Docker setup to build and run the application in a containerized environment. Docker ensures consistency across environments and simplifies both local development and deployment.
+
+#
+
+###### 🛠️ Build the Docker Image
+
+To build the Docker image locally:
+
+```bash
+docker build -t virtual-card-platform .
+```
+
+This uses the `Dockerfile` located at the project root, which builds the Spring Boot application and packages it into a minimal runtime image.
+
+
+#
+
+</details>
+
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
@@ -210,6 +236,23 @@ This section presents the key backend flows through sequence diagrams, covering 
   </span></strong></summary>
 
   <br>
+
+###### ▶ Run using Container Docker
+
+To run the application with a specific Spring profile (`dev`, `hml`, or `prd`):
+
+```bash
+docker run --rm -it -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 virtual-card-platform
+```
+
+- `--rm`: automatically removes the container after stopping.
+- `-it`: interactive terminal mode (logs appear in your console).
+- `-e SPRING_PROFILES_ACTIVE=dev`: defines the Spring Boot environment.
+- `-p 8080:8080`: maps container port 8080 to host port 8080.
+
+#
+
+###### ▶ Run using Maven
 
   ```bash
     mvn spring-boot:run
@@ -258,9 +301,55 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 ![Transaction History Screenshot](src/main/resources/static/docs/images/postman/get-transactions-page.png)
 
+
+###### 🌐 API Access Guide
+
+> 💡 **Accessing the API**
+>
+> If you are running the application **locally**, use the following HOST:  
+> `http://localhost:8080`
+>
+> If you want to access the deployed application via **Heroku**, use one of the following URLs based on the environment:
+>
+> - **Development Environment HOST:**  
+    >   `https://virtual-card-platform-dev-7c9a917ba5c1.herokuapp.com`
+>
+> - **Staging environment HOST:**  
+    >   `https://virtual-card-platform-hml-a00fc4bcb4b4.herokuapp.com`
+>
+> - **Production Environment HOST:**  
+    >   `https://virtual-card-platform-prd-36e5f3160255.herokuapp.com`
+
 #
 
 </details> 
+
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
+    🌐 API Usage via Swagger UI
+  </span></strong></summary>
+
+<br>
+
+This project includes **Swagger UI** to help developers explore and test the available endpoints.
+
+---
+
+###### 🚀 Access Swagger via Heroku and local
+
+| Environment               | Swagger URL                                                                                               |
+|---------------------------|-----------------------------------------------------------------------------------------------------------|
+| 🧪 Local                  | [virtual-card-platform-dev](http://localhost:8080/swagger-ui.html)                          |
+| 🧪 Development            | [virtual-card-platform-dev](https://virtual-card-platform-dev-7c9a917ba5c1.herokuapp.com/swagger-ui.html) |
+| 🚧 Staging (Homologation) | [virtual-card-platform-hml](https://virtual-card-platform-hml-a00fc4bcb4b4.herokuapp.com/swagger-ui.html) |
+| ✅ Production              | [virtual-card-platform-prd](https://virtual-card-platform-prd-36e5f3160255.herokuapp.com/swagger-ui.html) |
+
+
+#
+
+</details>
+
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
