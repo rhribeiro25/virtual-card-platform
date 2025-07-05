@@ -125,61 +125,63 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 #
 
-##### ✅ Create Card – Success
+
+###### ✅ Create Card – Success
 
 ![Create Card – Success](src/main/resources/static/docs/images/diagrams/create_card_sequence.png)
 
 #
 
-##### ❌ Create Card – Errors
+
+###### ❌ Create Card – Errors
 
 ![Create Card – Errors](src/main/resources/static/docs/images/diagrams/create_card_errors.png)
 
 #
 
-##### ✅ Get Card – Success
+###### ✅ Get Card – Success
 
 ![Get Card – Success](src/main/resources/static/docs/images/diagrams/get_card_sequence.png)
 
 #
 
-##### ❌ Get Card – Errors
+###### ❌ Get Card – Errors
 
 ![Get Card – Errors](src/main/resources/static/docs/images/diagrams/get_card_errors.png)
 
 #
 
-##### ✅ Get Transactions – Success
+###### ✅ Get Transactions – Success
 
 ![Get Transactions – Success](src/main/resources/static/docs/images/diagrams/get_transactions_sequence.png)
 
 #
 
-##### ❌ Get Transactions – Errors
+###### ❌ Get Transactions – Errors
 
 ![Get Transactions – Errors](src/main/resources/static/docs/images/diagrams/get_transactions_errors.png)
 
 #
 
-##### ✅ Spend Card – Success
+###### ✅ Spend Card – Success
 
 ![Spend Card – Success](src/main/resources/static/docs/images/diagrams/spend_card_sequence.png)
 
 #
 
-##### ❌ Spend Card – Errors
+###### ❌ Spend Card – Errors
 
 ![Spend Card – Errors](src/main/resources/static/docs/images/diagrams/spend_card_errors.png)
 
 #
 
-##### ✅ Top-Up Card – Success
+###### ✅ Top-Up Card – Success
 
 ![Top-Up Card – Success](src/main/resources/static/docs/images/diagrams/topup_card_sequence.png)
 
 #
 
-##### ❌ Top-Up Card – Errors
+###### ❌ Top-Up Card – Errors
 
 ![Top-Up Card – Errors](src/main/resources/static/docs/images/diagrams/topup_card_errors.png)
 
@@ -203,13 +205,53 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 </details>
 
+<details>
+  <summary><strong><span style="font-size: 1.1em;">🐳 Containerization with Docker</span></strong></summary>
+
+###### 📦 Docker Overview
+
+This project provides a ready-to-use Docker setup to build and run the application in a containerized environment. Docker ensures consistency across environments and simplifies both local development and deployment.
+
+#
+
+###### 🛠️ Build the Docker Image
+
+To build the Docker image locally:
+
+```bash
+docker build -t virtual-card-platform .
+```
+
+This uses the `Dockerfile` located at the project root, which builds the Spring Boot application and packages it into a minimal runtime image.
+
+
+#
+
+</details>
+
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
     ▶️ How to Run
   </span></strong></summary>
 
-  <br>
+
+###### 🐳 Run using Docker container
+
+To run the application with a specific Spring profile (`dev`, `hml`, or `prd`):
+
+```bash
+docker run --rm -it -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 virtual-card-platform
+```
+
+- `--rm`: automatically removes the container after stopping.
+- `-it`: interactive terminal mode (logs appear in your console).
+- `-e SPRING_PROFILES_ACTIVE=dev`: defines the Spring Boot environment.
+- `-p 8080:8080`: maps container port 8080 to host port 8080.
+
+#
+
+###### 📦 Run using Maven
 
   ```bash
     mvn spring-boot:run
@@ -232,7 +274,7 @@ This section presents the key backend flows through sequence diagrams, covering 
 
   <br>
 
-- his project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
+This project includes a complete [Postman collection](https://github.com/rhribeiro25/virtual-card-platform/blob/main/src/main/resources/static/docs/virtual-card-platform.postman_collection.json) to help test and explore the API.
 
 1. Import the collection into Postman
 2. Run the application using:
@@ -258,9 +300,51 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 ![Transaction History Screenshot](src/main/resources/static/docs/images/postman/get-transactions-page.png)
 
+
+###### 🌐 API Access Guide
+
+> 💡 **Accessing the API**
+>
+> If you are running the application **locally**, use the following HOST:  
+> `http://localhost:8080`
+>
+> If you want to access the deployed application via **Heroku**, use one of the following URLs based on the environment:
+>
+> - **Development Environment HOST:**  
+    >   `https://virtual-card-platform-dev-7c9a917ba5c1.herokuapp.com`
+>
+> - **Staging environment HOST:**  
+    >   `https://virtual-card-platform-hml-a00fc4bcb4b4.herokuapp.com`
+>
+> - **Production Environment HOST:**  
+    >   `https://virtual-card-platform-prd-36e5f3160255.herokuapp.com`
+
 #
 
 </details> 
+
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
+    🌐 API Usage via Swagger UI
+  </span></strong></summary>
+
+<br>
+
+This project includes **Swagger UI** to help developers explore and test the available endpoints.
+
+| Environment               | Swagger URL                                                                                               |
+|---------------------------|-----------------------------------------------------------------------------------------------------------|
+| 🖥️ Local                  | [virtual-card-platform-dev](http://localhost:8080/swagger-ui.html)                          |
+| 🧪 Development            | [virtual-card-platform-dev](https://virtual-card-platform-dev-7c9a917ba5c1.herokuapp.com/swagger-ui.html) |
+| 🚧 Staging (Homologation) | [virtual-card-platform-hml](https://virtual-card-platform-hml-a00fc4bcb4b4.herokuapp.com/swagger-ui.html) |
+| ✅ Production              | [virtual-card-platform-prd](https://virtual-card-platform-prd-36e5f3160255.herokuapp.com/swagger-ui.html) |
+
+
+#
+
+</details>
+
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
@@ -285,26 +369,36 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 ##### 📌 Development Flow
 
-1. Finish your task locally.
-2. Create a new branch:
+1. Create a new task branch:
    ```bash
    git checkout -b "feature/task-name"
    ```
-3. Add and commit your changes:
+2. Add and commit your changes:
    ```bash
    git add .
    git commit -m "feat: task description"
    ```
-4. Push the branch:
+3. Push the branch:
    ```bash
    git push origin "feature/task-name"
    ```
-5. Open a Pull Request (via GitHub or CLI):
+4. Open a Pull Request (via GitHub or CLI):
    ```bash
    gh pr create --base main --head feature/task-name --title "feat: description" --body "Implementation details"
    ```
+###### 📝 Pull Request List
 
-6. After **two approvals**, the Pull Request is merged into the `main` branch.
+![Pull Request list](src/main/resources/static/docs/images/devops/pr-list.png)
+
+###### 🧑‍💻 Opening a Pull Request
+
+![Pull request openned](src/main/resources/static/docs/images/devops/pr-open.png)
+
+5. After **two approvals**, the Pull Request is merged into the `main` branch.
+
+###### 🔀 Merging the Pull Request into main branch
+
+![Merging pull request](src/main/resources/static/docs/images/devops/pr-merge.png)
 
 #
 
@@ -319,8 +413,6 @@ git tag vX.X.X
 git push origin vX.X.X
 ```
 
-> 🎯 This triggers the **CI pipeline**, which builds, tests, and packages the application.
-
 #
 
 ##### 🚚 Promotion to Environments (CD)
@@ -333,6 +425,22 @@ With the image generated by the tag, you can promote the version to different en
 > 🧠 **Note:** If the release **does not exist**, it will be **automatically created** during the first deployment to the `dev` environment. This ensures consistency throughout the promotion cycle.
 
 > ✅ After deployment to `dev`, the same version can be promoted to `hml` and `prd` manually without rebuilding.
+
+###### 🛠️ GitHub Actions Workflow List
+
+![Workflow list](src/main/resources/static/docs/images/devops/workflow-list.png)
+
+###### 🚀 CD Workflow Trigger
+
+![Workflow for CD](src/main/resources/static/docs/images/devops/workflow-cd.png)
+
+###### 🔄 CD Workflow in Progress
+
+![Workflow CD running](src/main/resources/static/docs/images/devops/workflow-cd-running.png)
+
+###### 🔍 CD Workflow Steps
+
+![Workflow CD steps](src/main/resources/static/docs/images/devops/workflow-cd-staps.png)
 
 #
 
@@ -515,7 +623,6 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 
 </details>
 
-
 <details>
   <summary><strong><span style="font-size: 1.1em;">
     🚀 Future Improvements
@@ -583,7 +690,6 @@ Using a rich domain model with full `Card` object instead of just `cardId` enabl
 #
 
 </details>
-
 
 #
 
