@@ -277,6 +277,68 @@ This section presents the key backend flows through sequence diagrams, covering 
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
+    🚀 Release Management and DevOps
+  </span></strong></summary>
+
+Para garantir que o ciclo de desenvolvimento seja fluido e confiável, seguimos boas práticas de controle de versão, integração contínua (CI) e entrega contínua (CD).
+
+### 📌 Fluxo de Desenvolvimento
+
+1. Finalize a task localmente.
+2. Crie uma nova branch:
+   ```bash
+   git checkout -b "feature/nome-da-task"
+   ```
+3. Adicione e commite as mudanças:
+   ```bash
+   git add .
+   git commit -m "feat: descrição da task"
+   ```
+4. Faça o push da branch:
+   ```bash
+   git push origin "feature/nome-da-task"
+   ```
+5. Crie o Pull Request (via GitHub ou CLI):
+   ```bash
+   gh pr create --base main --head feature/nome-da-task --title "feat: descrição" --body "Detalhes da implementação"
+   ```
+
+6. Após **duas aprovações**, o Pull Request é mergiado na branch `main`.
+
+---
+
+### 🏷️ Criação de Versão
+
+Depois que a `main` é atualizada, criamos uma nova versão do sistema usando **tags Git**:
+
+```bash
+git checkout main
+git pull origin main
+git tag v1.30.0
+git push origin v1.30.0
+```
+
+> 🎯 Isso dispara o pipeline de **CI**, responsável por buildar, testar e empacotar a aplicação.
+
+---
+
+### 🚚 Promover para Ambientes (CD)
+
+Com a imagem gerada pela tag, você pode promover essa versão para diferentes ambientes através do pipeline de **CD manual**, que permite selecionar:
+
+- Versão (tag) criada
+- Ambiente de destino (`dev`, `hml`, ou `prd`)
+
+> 🧠 **Nota:** Se a release ainda **não existir**, ela será **criada automaticamente** durante a primeira execução para o ambiente `dev`. Isso garante consistência entre os ciclos de promoção.
+
+> ✅ Após a execução em `dev`, a mesma versão pode ser promovida para `hml` e `prd` via botão manual, sem necessidade de rebuild.
+
+#
+
+</details>
+
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
     ⚙ Implementations
   </span></strong></summary>
 
