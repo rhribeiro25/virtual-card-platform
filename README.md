@@ -331,13 +331,9 @@ his project includes a complete [Postman collection](https://github.com/rhribeir
 
 This project includes **Swagger UI** to help developers explore and test the available endpoints.
 
----
-
-###### 🚀 Access Swagger via Heroku and local
-
 | Environment               | Swagger URL                                                                                               |
 |---------------------------|-----------------------------------------------------------------------------------------------------------|
-| 🧪 Local                  | [virtual-card-platform-dev](http://localhost:8080/swagger-ui.html)                          |
+| 🖥️ Local                  | [virtual-card-platform-dev](http://localhost:8080/swagger-ui.html)                          |
 | 🧪 Development            | [virtual-card-platform-dev](https://virtual-card-platform-dev-7c9a917ba5c1.herokuapp.com/swagger-ui.html) |
 | 🚧 Staging (Homologation) | [virtual-card-platform-hml](https://virtual-card-platform-hml-a00fc4bcb4b4.herokuapp.com/swagger-ui.html) |
 | ✅ Production              | [virtual-card-platform-prd](https://virtual-card-platform-prd-36e5f3160255.herokuapp.com/swagger-ui.html) |
