@@ -369,26 +369,25 @@ To ensure a smooth and reliable development cycle, we follow best practices for 
 
 ##### 📌 Development Flow
 
-1. Finish your task locally.
-2. Create a new branch:
+1. Create a new task branch:
    ```bash
    git checkout -b "feature/task-name"
    ```
-3. Add and commit your changes:
+2. Add and commit your changes:
    ```bash
    git add .
    git commit -m "feat: task description"
    ```
-4. Push the branch:
+3. Push the branch:
    ```bash
    git push origin "feature/task-name"
    ```
-5. Open a Pull Request (via GitHub or CLI):
+4. Open a Pull Request (via GitHub or CLI):
    ```bash
    gh pr create --base main --head feature/task-name --title "feat: description" --body "Implementation details"
    ```
 
-6. After **two approvals**, the Pull Request is merged into the `main` branch.
+5. After **two approvals**, the Pull Request is merged into the `main` branch.
 
 #
 
