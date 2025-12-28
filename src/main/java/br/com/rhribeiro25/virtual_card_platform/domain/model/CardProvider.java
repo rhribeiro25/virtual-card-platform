@@ -17,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class CardProvider {
 
     @Id
@@ -51,16 +52,4 @@ public class CardProvider {
     @Column(nullable = false)
     private Boolean enabled;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CardProvider)) return false;
-        CardProvider that = (CardProvider) o;
-        return Objects.equals(card, that.card) && Objects.equals(provider, that.provider);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(card, provider);
-    }
 }
