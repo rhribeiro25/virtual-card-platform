@@ -1,23 +1,22 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "providers")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Transaction {
+public class Provider {
 
     @Id
     @GeneratedValue
@@ -31,18 +30,12 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "card_id", nullable = false)
-    private Card card;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TransactionType type;
-
-    @Column(nullable = false)
-    private BigDecimal amount;
-
     @Column(nullable = false, unique = true)
-    private UUID requestId;
+    private String name;
 
+    @Column(nullable = false)
+    private String country;
+
+    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CardProvider> cardProviders;
 }
