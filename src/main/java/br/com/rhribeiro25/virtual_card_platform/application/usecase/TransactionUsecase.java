@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +24,7 @@ public class TransactionUsecase {
         this.transactionRepository = transactionRepository;
     }
 
-    public Transaction create(Transaction transaction){
+    public Transaction create(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
@@ -35,16 +34,7 @@ public class TransactionUsecase {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime rangeStart = now.minusMinutes(rangeTimeTransaction);
 
-        Timestamp start = Timestamp.valueOf(rangeStart);
-        Timestamp end = Timestamp.valueOf(now);
-
-        Optional<?> existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
-                amount,
-                card.getId(),
-                start,
-                end,
-                type
-        );
+        Optional<?> existingTransaction = transactionRepository.findDuplicateBetweenRangeTimeTransaction(amount, card.getId(), rangeStart, now, type);
 
         if (existingTransaction.isPresent()) {
             String duplicateTransactionMessage = MessageUtils.getMessage("card.conflict");
@@ -55,11 +45,8 @@ public class TransactionUsecase {
     public long countRecentSpends(UUID cardId, TransactionType transactionType) {
         int spendRecentMinutes = Integer.parseInt(MessageUtils.getMessage("card.spend.recent.minutes"));
 
-        return transactionRepository.countRecentTransactions(
-                cardId,
-                transactionType,
-                Timestamp.valueOf(LocalDateTime.now().minusMinutes(spendRecentMinutes))
-        );
+        LocalDateTime from = LocalDateTime.now().minusMinutes(spendRecentMinutes);
+        return transactionRepository.countRecentTransactions(cardId, transactionType, from);
     }
 
     public Page<Transaction> getTransactionsByCardId(UUID cardId, Pageable pageable) {

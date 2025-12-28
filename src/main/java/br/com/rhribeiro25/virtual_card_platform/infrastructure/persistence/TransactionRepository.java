@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,8 +26,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     Optional<Transaction> findDuplicateBetweenRangeTimeTransaction(
             @Param("amount") BigDecimal amount,
             @Param("cardId") UUID cardId,
-            @Param("start") Timestamp start,
-            @Param("end") Timestamp end,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
             @Param("type") TransactionType type
     );
 
@@ -37,7 +37,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "AND t.createdAt >= :since")
     long countRecentTransactions(@Param("cardId") UUID cardId,
                            @Param("type") TransactionType type,
-                           @Param("since") Timestamp since);
+                           @Param("since") LocalDateTime since);
 
     Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
 

@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record CardResponse(
@@ -11,5 +12,5 @@ public record CardResponse(
         String cardholderName,
         CardStatus status,
         BigDecimal balance,
-        Timestamp createdAt
+        LocalDateTime createdAt
 ) {}

@@ -7,7 +7,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 public class CardMapper {
 
     public static Card toEntity(CardRequest request) {
-        return new Card.Builder()
+        return Card.builder()
                 .cardholderName(request.cardholderName())
                 .balance(request.initialBalance())
                 .build();

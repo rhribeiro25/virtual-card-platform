@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class TransactionMapper {
 
     public static Transaction toEntity(TransactionRequest transaction, Card card, TransactionType type) {
-        return new Transaction.Builder()
+        return Transaction.builder()
                 .card(card)
                 .amount(transaction.amount())
                 .requestId(transaction.requestId())
