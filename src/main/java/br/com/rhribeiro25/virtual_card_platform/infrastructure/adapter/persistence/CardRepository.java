@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import org.springframework.data.jpa.repository.JpaRepository;

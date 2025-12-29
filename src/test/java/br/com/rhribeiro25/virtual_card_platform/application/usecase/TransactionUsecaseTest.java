@@ -5,7 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionDuplicateUnexpectedImpl;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.CacheUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
