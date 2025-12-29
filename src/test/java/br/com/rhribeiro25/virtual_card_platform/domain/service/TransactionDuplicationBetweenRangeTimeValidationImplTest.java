@@ -33,7 +33,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
@@ -42,7 +42,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     @Test
     @DisplayName("Should delegate duplication check to TransactionUsecase")
     void shouldCallTransactionUsecaseForDuplicationCheck() {
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         validation.validate(transaction);
 
         verify(transactionUsecase, times(1))
@@ -54,7 +54,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     void shouldThrowExceptionWhenDuplicateTransactionDetected() {
         doThrow(new BadRequestException("duplicate"))
                 .when(transactionUsecase).isDuplicateTransaction(card, BigDecimal.TEN, TransactionType.SPEND);
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
     }

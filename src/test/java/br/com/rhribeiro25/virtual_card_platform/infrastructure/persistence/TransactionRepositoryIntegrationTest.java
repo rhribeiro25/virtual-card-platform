@@ -14,9 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,9 +34,12 @@ class TransactionRepositoryIntegrationTest {
 
     @BeforeEach
     void setup() {
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(500))
+                .active(true)
+                .internationalAllowed(true)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         card = cardRepository.save(card);
@@ -45,18 +48,18 @@ class TransactionRepositoryIntegrationTest {
     @Test
     @DisplayName("Should find duplicate transaction")
     void shouldFindDuplicateBetweenRangeTimeTransaction() {
-        Transaction tx = new Transaction.Builder()
+        Transaction tx = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
                 .type(TransactionType.SPEND)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-
+                .createdAt(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
                 .build();
 
         transactionRepository.save(tx);
 
-        Timestamp start = Timestamp.valueOf(LocalDateTime.now().minusMinutes(5));
-        Timestamp end = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
+        LocalDateTime start = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime end = LocalDateTime.now().plusMinutes(5);
 
         Optional<Transaction> result = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
                 BigDecimal.TEN,
@@ -72,17 +75,17 @@ class TransactionRepositoryIntegrationTest {
     @Test
     @DisplayName("Should count recent transactions")
     void shouldCountRecentTransactions() {
-        Transaction tx = new Transaction.Builder()
+        Transaction tx = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.valueOf(25))
                 .type(TransactionType.TOPUP)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-
+                .createdAt(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
                 .build();
 
         transactionRepository.save(tx);
 
-        Timestamp since = Timestamp.valueOf(LocalDateTime.now().minusMinutes(10));
+        LocalDateTime since = LocalDateTime.now().minusMinutes(10);
         long count = transactionRepository.countRecentTransactions(
                 card.getId(),
                 TransactionType.TOPUP,
@@ -95,12 +98,12 @@ class TransactionRepositoryIntegrationTest {
     @Test
     @DisplayName("Should return paginated transactions")
     void shouldReturnPaginatedTransactions() {
-        Transaction tx1 = new Transaction.Builder()
+        Transaction tx1 = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.valueOf(30))
                 .type(TransactionType.TOPUP)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-
+                .createdAt(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
                 .build();
 
         transactionRepository.save(tx1);
@@ -113,8 +116,8 @@ class TransactionRepositoryIntegrationTest {
     @Test
     @DisplayName("Should return empty on no duplicate")
     void shouldReturnEmptyOnNoDuplicateTransaction() {
-        Timestamp start = Timestamp.valueOf(LocalDateTime.now().minusMinutes(5));
-        Timestamp end = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
+        LocalDateTime start = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime end = LocalDateTime.now().plusMinutes(5);
 
         Optional<Transaction> result = transactionRepository.findDuplicateBetweenRangeTimeTransaction(
                 BigDecimal.TEN,

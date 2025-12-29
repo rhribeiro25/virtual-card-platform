@@ -51,7 +51,7 @@ class TransactionUsecaseTest {
         MockitoAnnotations.openMocks(this);
 
         cardId = UUID.randomUUID();
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
@@ -138,7 +138,7 @@ class TransactionUsecaseTest {
     @DisplayName("Should NOT throw exception when existingTransaction is empty")
     void shouldNotThrowWhenNoExistingTransaction() {
         UUID requestId = UUID.randomUUID();
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .requestId(requestId)
                 .build();

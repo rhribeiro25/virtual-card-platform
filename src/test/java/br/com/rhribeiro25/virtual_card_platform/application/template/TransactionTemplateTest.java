@@ -47,12 +47,12 @@ class TransactionTemplateTest {
         CardRepository cardRepository = mock(CardRepository.class);
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
                 .build();
@@ -78,12 +78,12 @@ class TransactionTemplateTest {
         CardRepository cardRepository = mock(CardRepository.class);
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
                 .build();
@@ -112,7 +112,7 @@ class TransactionTemplateTest {
         ReflectionTestUtils.setField(spendTransactionProcessor, "cardRepository", cardRepository);
         ReflectionTestUtils.setField(spendTransactionProcessor, "transactionUsecase", transactionUsecase);
 
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
@@ -123,7 +123,7 @@ class TransactionTemplateTest {
             mocked.when(() -> MessageUtils.getMessage("card.conflict"))
                     .thenReturn("Card already updated by another transaction");
 
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.TEN).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.TEN).build();
 
             ConflictException exception = assertThrows(ConflictException.class, () -> spendTransactionProcessor.process(transaction));
             assertEquals("Card already updated by another transaction", exception.getMessage());

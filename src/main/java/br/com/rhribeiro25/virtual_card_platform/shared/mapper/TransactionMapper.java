@@ -16,6 +16,7 @@ public class TransactionMapper {
                 .amount(transaction.amount())
                 .requestId(transaction.requestId())
                 .type(type)
+                .createdAt(transaction.createdAt())
                 .build();
     }
 

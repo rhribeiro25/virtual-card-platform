@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record TransactionRequest(
@@ -12,7 +13,10 @@ public record TransactionRequest(
         BigDecimal amount,
 
         @NotNull(message = "{transaction.requestId.notNull}")
-        UUID requestId
+        UUID requestId,
+
+        LocalDateTime createdAt
+
 ) {}
 
 

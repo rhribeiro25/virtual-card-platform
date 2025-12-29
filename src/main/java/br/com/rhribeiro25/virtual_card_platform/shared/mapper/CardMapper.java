@@ -4,11 +4,16 @@ import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.CardResponse;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 
+import java.time.LocalDateTime;
+
 public class CardMapper {
 
     public static Card toEntity(CardRequest request) {
         return Card.builder()
                 .cardholderName(request.cardholderName())
+                .active(request.isActive())
+                .internationalAllowed(request.isInternationalAllowed())
+                .createdAt(request.createdAt())
                 .balance(request.initialBalance())
                 .build();
     }

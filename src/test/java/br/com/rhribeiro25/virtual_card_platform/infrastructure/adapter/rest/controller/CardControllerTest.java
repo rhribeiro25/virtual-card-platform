@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,9 +62,12 @@ class CardControllerTest {
 
     @BeforeEach
     void setup() {
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Renan")
                 .balance(BigDecimal.valueOf(200))
+                .active(true)
+                .internationalAllowed(true)
+                .createdAt(LocalDateTime.now())
                 .build();
         card = cardUsecase.create(card);
 
@@ -72,7 +76,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Should create a card successfully")
     void createCardShouldSucceed() throws Exception {
-        CardRequest request = new CardRequest(VALID_NAME, VALID_AMOUNT);
+        CardRequest request = new CardRequest(VALID_NAME, VALID_AMOUNT,
+                true, true, LocalDateTime.now());
         mvc.perform(post(BASE_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJson(request)))
@@ -83,7 +88,8 @@ class CardControllerTest {
     @Test
     @DisplayName("Should fail to create card without required attributes")
     void createCardShouldFailWithoutRequiredAttributes() throws Exception {
-        CardRequest request = new CardRequest(INVALID_NAME, VALID_AMOUNT);
+        CardRequest request = new CardRequest(INVALID_NAME, VALID_AMOUNT,
+                true, true, LocalDateTime.now());
         mvc.perform(post(BASE_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJson(request)))
@@ -223,10 +229,12 @@ class CardControllerTest {
     @DisplayName("Should return paginated transactions for valid card")
     void shouldReturnTransactionsSuccessfully() throws Exception {
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.valueOf(50))
                 .type(TransactionType.SPEND)
+                .createdAt(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
                 .build();
 
         transactionRepository.save(transaction);
@@ -251,7 +259,7 @@ class CardControllerTest {
     }
 
     private ResultActions performTransactionPost(UUID id, String endpoint, BigDecimal amount, UUID requestId) throws Exception {
-        TransactionRequest request = new TransactionRequest(amount, requestId);
+        TransactionRequest request = new TransactionRequest(amount, requestId, LocalDateTime.now());
         return mvc.perform(post( BASE_PATH + "/" + id + "/" + endpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJson(request)));

@@ -33,7 +33,7 @@ class TransactionLimitInXTimeValidationImplTest {
         transactionUsecase = mock(TransactionUsecase.class);
         validation = new TransactionLimitInXTimeValidationImpl(transactionUsecase);
 
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
@@ -47,7 +47,7 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtils.getMessage(eq("card.spend.rateLimit"), any())).thenReturn("Rate limit exceeded");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(5L);
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertThrows(BadRequestException.class, () ->
                     validation.validate(transaction));
         }
@@ -60,7 +60,7 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtils.getMessage("card.spend.limitPerMinute")).thenReturn("5");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(3L);
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertDoesNotThrow(() ->
                     validation.validate(transaction));
         }

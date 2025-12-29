@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record CardRequest(
         @NotBlank(message = "{cardholderName.notBlank}")
@@ -12,5 +13,11 @@ public record CardRequest(
 
         @NotNull(message = "{initialBalance.notNull}")
         @DecimalMin(value = "0.0", inclusive = true, message = "{initialBalance.decimalMin}")
-        BigDecimal initialBalance
-) {}
+        BigDecimal initialBalance,
+
+        Boolean isActive,
+        Boolean isInternationalAllowed,
+        LocalDateTime createdAt
+
+        ) {
+}

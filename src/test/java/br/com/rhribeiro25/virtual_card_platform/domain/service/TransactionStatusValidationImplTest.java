@@ -38,12 +38,12 @@ class TransactionStatusValidationImplTest {
     @Test
     @DisplayName("Should throw BadRequestException when card is blocked")
     void shouldThrowWhenCardBlocked() {
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Blocked User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.BLOCKED)
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
     }
@@ -51,12 +51,12 @@ class TransactionStatusValidationImplTest {
     @Test
     @DisplayName("Should not throw when card is active")
     void shouldNotThrowWhenCardIsActive() {
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Active User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.ACTIVE)
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertDoesNotThrow(() ->
                 validation.validate(transaction));
     }

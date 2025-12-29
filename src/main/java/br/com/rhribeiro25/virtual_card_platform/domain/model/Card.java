@@ -31,7 +31,7 @@ public class Card {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
@@ -76,10 +76,10 @@ public class Card {
     @Column(nullable = true)
     private String notes; // internal or administrative notes
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<CardProvider> cardProviders;
 
     @Version

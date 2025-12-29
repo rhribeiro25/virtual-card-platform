@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,7 +60,7 @@ class CardUsecaseTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         cardId = UUID.randomUUID();
-        card = new Card.Builder()
+        card = Card.builder()
                 .cardholderName("Renan")
                 .balance(BigDecimal.valueOf(100))
                 .build();
@@ -116,7 +117,7 @@ class CardUsecaseTest {
         when(cardRepository.findById(any())).thenReturn(Optional.of(card));
         when(spendProcessor.process(any())).thenReturn(card);
 
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID(), LocalDateTime.now());
 
         Card result = cardUsecase.spend(cardId, transaction);
 
@@ -127,7 +128,7 @@ class CardUsecaseTest {
     @DisplayName("Should throw NotFoundException when spending with card not found")
     void spendShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID(), LocalDateTime.now());
         assertThrows(NotFoundException.class, () -> cardUsecase.spend(cardId, transaction));
     }
 
@@ -139,7 +140,7 @@ class CardUsecaseTest {
         when(cardRepository.findById(any())).thenReturn(Optional.of(card));
         when(topUpProcessor.process(any())).thenReturn(card);
 
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID(), LocalDateTime.now());
 
         Card result = cardUsecase.topUp(cardId, transaction);
 
@@ -150,7 +151,7 @@ class CardUsecaseTest {
     @DisplayName("Should throw NotFoundException when top up with card not found")
     void topUpShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID(), LocalDateTime.now());
         assertThrows(NotFoundException.class, () -> cardUsecase.topUp(cardId, transaction));
     }
 

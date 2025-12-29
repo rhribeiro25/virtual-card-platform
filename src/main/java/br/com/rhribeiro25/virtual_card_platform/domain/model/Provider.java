@@ -28,7 +28,7 @@ public class Provider {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime updatedAt;
 
     @Column(nullable = false, unique = true)
@@ -37,6 +37,6 @@ public class Provider {
     @Column(nullable = false)
     private String country;
 
-    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<CardProvider> cardProviders;
 }

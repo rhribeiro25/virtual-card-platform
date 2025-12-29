@@ -25,7 +25,7 @@ class CardRepositoryIntegrationTest {
     @Test
     @DisplayName("Should save and retrieve a card by ID")
     void shouldSaveAndFindCardById() {
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Integration Test User")
                 .balance(BigDecimal.valueOf(200))
                 .build();
@@ -49,7 +49,7 @@ class CardRepositoryIntegrationTest {
     @Test
     @DisplayName("Should delete card successfully")
     void shouldDeleteCard() {
-        Card card = new Card.Builder()
+        Card card = Card.builder()
                 .cardholderName("Delete Test")
                 .balance(BigDecimal.valueOf(100))
                 .build();
