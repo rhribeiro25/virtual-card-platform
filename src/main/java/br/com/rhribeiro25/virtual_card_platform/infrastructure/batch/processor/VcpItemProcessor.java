@@ -8,7 +8,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.config.BatchEntityCache;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.config.BatchCacheConfig;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VcpModelsGroup;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VirtualCardsCsvRow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -19,70 +20,73 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.UUID;
 
 @Component
 @JobScope
 @RequiredArgsConstructor
-public class VcpItemProcessor implements ItemProcessor<VirtualCardsCsvRow, Card> {
+public class VcpItemProcessor implements ItemProcessor<VirtualCardsCsvRow, VcpModelsGroup> {
 
-    private final BatchEntityCache<String, Card> cardCache;
+    private final BatchCacheConfig batchCacheConfig;
 
     @Override
-    public Card process(VirtualCardsCsvRow csvRow) {
+    public VcpModelsGroup process(VirtualCardsCsvRow csvRow) {
 
-        Transaction transaction = Transaction.builder()
-                .type(mapTransactionType(csvRow.txKind()))
-                .createdAt(LocalDateTime.now())
-                .amount(new BigDecimal(csvRow.txAmountTxt().replace(",", ".")))
-                .requestId(UUID.fromString(csvRow.txRequestRef()))
-                .build();
+        Transaction transaction = batchCacheConfig.transactionCache().get(csvRow.txRequestRef());
+        if (transaction == null) {
+            transaction = Transaction.builder()
+                    .type(mapTransactionType(csvRow.txKind()))
+                    .createdAt(LocalDateTime.now())
+                    .amount(new BigDecimal(csvRow.txAmountTxt().replace(",", ".")))
+                    .requestId(UUID.fromString(csvRow.txRequestRef()))
+                    .build();
+        }
 
-        Card card = cardCache.getOrCreate(csvRow.cardRef(), () ->
-                Card.builder()
-                .externalId(csvRow.cardRef())
-                .createdAt(LocalDateTime.now())
-                .status(mapCardStatus(csvRow.state()))
-                .brand(mapBrand(csvRow.brandCode()))
-                .holderName(csvRow.holderNameRaw())
-                .balance(new BigDecimal(csvRow.balanceTxt().replace(",", ".")))
-                .internationalAllowed(mapBooleanAttribute(csvRow.internationalFlag()))
-                .expiryDate(parseExpiry(csvRow.expiryTxt()))
-                .cvv(Integer.parseInt(csvRow.cvvTxt()))
-                .pinCode(csvRow.pinTxt())
-                .maxDailyTransactions(Integer.parseInt(csvRow.maxDailyTxTxt()))
-                .maxTransactionAmount(new BigDecimal(csvRow.maxTxAmountTxt().replace(",", ".")))
-                .country(csvRow.issuingCountryCode())
-                .notes(csvRow.notesRaw())
-                .build()
-        );
+        Card card = batchCacheConfig.cardCache().get(csvRow.cardRef());
+        if (card == null) {
+            card = Card.builder()
+                    .externalId(csvRow.cardRef())
+                    .createdAt(LocalDateTime.now())
+                    .status(mapCardStatus(csvRow.state()))
+                    .brand(mapBrand(csvRow.brandCode()))
+                    .holderName(csvRow.holderNameRaw())
+                    .balance(new BigDecimal(csvRow.balanceTxt().replace(",", ".")))
+                    .internationalAllowed(mapBooleanAttribute(csvRow.internationalFlag()))
+                    .expiryDate(parseExpiry(csvRow.expiryTxt()))
+                    .cvv(Integer.parseInt(csvRow.cvvTxt()))
+                    .pinCode(csvRow.pinTxt())
+                    .maxDailyTransactions(Integer.parseInt(csvRow.maxDailyTxTxt()))
+                    .maxTransactionAmount(new BigDecimal(csvRow.maxTxAmountTxt().replace(",", ".")))
+                    .country(csvRow.issuingCountryCode())
+                    .notes(csvRow.notesRaw())
+                    .build();
+        }
 
-        Provider provider = Provider.builder()
-                .code(csvRow.providerCode())
-                .createdAt(LocalDateTime.now())
-                .status(mapProviderStatus(csvRow.providerState()))
-                .country(csvRow.providerCountry())
-                .build();
+        Provider provider = batchCacheConfig.providerCache().get(csvRow.providerCode());
+        if (provider == null) {
+            provider = Provider.builder()
+                    .code(csvRow.providerCode())
+                    .createdAt(LocalDateTime.now())
+                    .status(mapProviderStatus(csvRow.providerState()))
+                    .country(csvRow.providerCountry())
+                    .build();
+        }
 
         CardProvider cardProvider = CardProvider.builder()
                 .card(card)
-                .createdAt(LocalDateTime.now())
                 .provider(provider)
+                .createdAt(LocalDateTime.now())
                 .feePercentage(new BigDecimal(csvRow.providerFeePctTxt().replace(",", ".")))
                 .dailyLimit(new BigDecimal(csvRow.providerDailyLimitTxt().replace(",", ".")))
                 .priority(Integer.parseInt(csvRow.providerPriorityTxt()))
                 .build();
 
-        if(card.getTransactions() == null) card.setTransactions(new ArrayList<>());
-        card.getTransactions().add(transaction);
-
-        if(card.getCardProviders() == null) card.setCardProviders(new ArrayList<>());
-        card.getCardProviders().add(cardProvider);
-
-        if(provider.getCardProviders() == null) provider.setCardProviders(new ArrayList<>());
-        provider.getCardProviders().add(cardProvider);
-
-        return card;
+        return VcpModelsGroup.builder()
+                .card(card)
+                .cardProvider(cardProvider)
+                .provider(provider)
+                .transaction(transaction)
+                .build();
     }
 
 

@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.config;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VcpModelsGroup;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VirtualCardsCsvRow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -19,17 +19,19 @@ public class VcpStepConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final ItemReader<VirtualCardsCsvRow> read;
-    private final ItemProcessor<VirtualCardsCsvRow, Card> process;
-    private final ItemWriter<Card> write;
+    private final ItemProcessor<VirtualCardsCsvRow, VcpModelsGroup> process;
+    private final ItemWriter<VcpModelsGroup> write;
+//    private final TaskExecutor task;
 
     @Bean
     public Step importVcpStep() {
-        return new StepBuilder("importVcpStep", jobRepository)
-                .<VirtualCardsCsvRow, Card>chunk(5000, transactionManager)
+        return new StepBuilder("importVcpStep", jobRepository).
+                <VirtualCardsCsvRow, VcpModelsGroup>chunk(5000, transactionManager)
                 .reader(read)
                 .processor(process)
                 .writer(write)
-                .build();
+//                .taskExecutor(task)
+        .build();
     }
 
 }

@@ -77,10 +77,10 @@ public class Card {
     @Column(nullable = true)
     private String notes; // internal or administrative notes
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<CardProvider> cardProviders;
 
     @Version
