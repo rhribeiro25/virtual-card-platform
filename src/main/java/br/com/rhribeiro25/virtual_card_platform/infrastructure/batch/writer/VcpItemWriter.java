@@ -1,8 +1,5 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.writer;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.CardProviderRepository;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.ProviderRepository;
