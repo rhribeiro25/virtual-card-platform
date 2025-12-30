@@ -63,9 +63,9 @@ class CardControllerTest {
     @BeforeEach
     void setup() {
         card = Card.builder()
-                .cardholderName("Renan")
+                .holderName("Renan")
                 .balance(BigDecimal.valueOf(200))
-                .active(true)
+                .status(CardStatus.ACTIVE)
                 .internationalAllowed(true)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -208,7 +208,7 @@ class CardControllerTest {
     void shouldReturnCardByIdSuccessfully() throws Exception {
 
         UUID cardId = card.getId();
-        String expectedName = card.getCardholderName();
+        String expectedName = card.getHolderName();
 
         mvc.perform(get(BASE_PATH + "/" + cardId))
                 .andExpect(status().isOk())

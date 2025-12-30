@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.ProviderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,15 +29,18 @@ public class Provider {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = true)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false, unique = true, length = 50)
+    private String code;
 
     @Column(nullable = false)
     private String country;
 
+    @Enumerated(EnumType.STRING)
+    private ProviderStatus status;
+
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private List<CardProvider> cardProviders;
 }
+

@@ -36,7 +36,7 @@ class TransactionDuplicateUnexpectedImplTest {
         transactionUsecase = mock(TransactionUsecase.class);
         validation = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
 
-        card = Card.builder().id(cardId).cardholderName("Test User").build();
+        card = Card.builder().id(cardId).holderName("Test User").build();
     }
 
     @Test

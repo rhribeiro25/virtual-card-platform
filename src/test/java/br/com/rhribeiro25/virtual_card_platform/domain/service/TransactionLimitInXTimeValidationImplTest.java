@@ -34,7 +34,7 @@ class TransactionLimitInXTimeValidationImplTest {
         validation = new TransactionLimitInXTimeValidationImpl(transactionUsecase);
 
         card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
     }

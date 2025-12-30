@@ -52,7 +52,7 @@ class TransactionUsecaseTest {
 
         cardId = UUID.randomUUID();
         card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

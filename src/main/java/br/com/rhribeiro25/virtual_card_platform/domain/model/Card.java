@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +27,9 @@ public class Card {
     @GeneratedValue
     private UUID id;
 
+    @Column(unique = true)
+    private String externalId;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -41,13 +45,10 @@ public class Card {
     private CardBrand brand;
 
     @Column(nullable = false)
-    private String cardholderName;
+    private String holderName;
 
     @Column(nullable = false)
     private BigDecimal balance;
-
-    @Column(nullable = false)
-    private Boolean active; // indicates if the card is active or blocked
 
     @Column(nullable = true)
     private String pinCode; // optional PIN code

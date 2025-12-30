@@ -26,7 +26,7 @@ class CardRepositoryIntegrationTest {
     @DisplayName("Should save and retrieve a card by ID")
     void shouldSaveAndFindCardById() {
         Card card = Card.builder()
-                .cardholderName("Integration Test User")
+                .holderName("Integration Test User")
                 .balance(BigDecimal.valueOf(200))
                 .build();
 
@@ -34,7 +34,7 @@ class CardRepositoryIntegrationTest {
         Optional<Card> retrievedCard = cardRepository.findById(savedCard.getId());
 
         assertTrue(retrievedCard.isPresent());
-        assertEquals("Integration Test User", retrievedCard.get().getCardholderName());
+        assertEquals("Integration Test User", retrievedCard.get().getHolderName());
         assertEquals(BigDecimal.valueOf(200), retrievedCard.get().getBalance());
     }
 
@@ -50,7 +50,7 @@ class CardRepositoryIntegrationTest {
     @DisplayName("Should delete card successfully")
     void shouldDeleteCard() {
         Card card = Card.builder()
-                .cardholderName("Delete Test")
+                .holderName("Delete Test")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

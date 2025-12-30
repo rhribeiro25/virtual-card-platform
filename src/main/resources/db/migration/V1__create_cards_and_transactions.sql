@@ -1,13 +1,13 @@
 CREATE TABLE cards
 (
     id                     UUID           PRIMARY KEY,
+    external_id            VARCHAR(50)    NOT NULL,
     created_at             TIMESTAMP      NOT NULL,
     updated_at             TIMESTAMP,
     status                 VARCHAR(50)    NOT NULL,
     brand                  VARCHAR(50),
-    cardholder_name        VARCHAR(255)   NOT NULL,
+    holder_name            VARCHAR(255)   NOT NULL,
     balance                DECIMAL(19, 2) NOT NULL,
-    active                 BOOLEAN        NOT NULL DEFAULT TRUE,
     pin_code               VARCHAR(10),
     expiry_date            TIMESTAMP,
     cvv                    INTEGER,
@@ -17,7 +17,8 @@ CREATE TABLE cards
     max_daily_transactions INTEGER,
     max_transaction_amount DECIMAL(19, 2),
     notes                  TEXT,
-    version                BIGINT
+    version                BIGINT,
+    CONSTRAINT uk_card_external_id UNIQUE (external_id)
 );
 
 

@@ -1,6 +1,7 @@
 
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
@@ -35,9 +36,9 @@ class TransactionRepositoryIntegrationTest {
     @BeforeEach
     void setup() {
         card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(500))
-                .active(true)
+                .status(CardStatus.ACTIVE)
                 .internationalAllowed(true)
                 .createdAt(LocalDateTime.now())
                 .build();

@@ -34,7 +34,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
     }

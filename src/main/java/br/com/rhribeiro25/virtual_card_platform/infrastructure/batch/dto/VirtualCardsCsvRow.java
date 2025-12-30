@@ -8,7 +8,7 @@ import lombok.Builder;
  * explicit validation and normalization in the ItemProcessor.
  */
 @Builder
-public record ExternalCardCsvRow(
+public record VirtualCardsCsvRow(
 
         // === Card identification (legacy system) ===
         String cardRef,              // "VC-9981" (external card reference)
@@ -19,7 +19,6 @@ public record ExternalCardCsvRow(
         // === Card financial data (string-based formats) ===
         String balanceTxt,           // "1.234,56"
         String currencyCode,         // "BRL", "USD"
-        String activeFlag,           // "Y" | "N"
         String internationalFlag,    // "Y" | "N"
 
         // === Security & lifecycle ===
@@ -40,7 +39,8 @@ public record ExternalCardCsvRow(
         String providerFeePctTxt,     // "2.75"
         String providerDailyLimitTxt, // "10000"
         String providerPriorityTxt,   // "1"
-        String providerEnabledFlag,   // "Y" | "N"
+        String providerState,         // "A" | "B" (A=Active, B=Blocked)
+        String providerCountry,       // "Brazil" "France" "Portugal"
 
         // === Transaction snapshot (optional, legacy) ===
         String txKind,                // "P"=SPEND | "C"=TOPUP | "T"=TRANSFER

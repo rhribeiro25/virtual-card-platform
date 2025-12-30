@@ -39,7 +39,7 @@ class TransactionStatusValidationImplTest {
     @DisplayName("Should throw BadRequestException when card is blocked")
     void shouldThrowWhenCardBlocked() {
         Card card = Card.builder()
-                .cardholderName("Blocked User")
+                .holderName("Blocked User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.BLOCKED)
                 .build();
@@ -52,7 +52,7 @@ class TransactionStatusValidationImplTest {
     @DisplayName("Should not throw when card is active")
     void shouldNotThrowWhenCardIsActive() {
         Card card = Card.builder()
-                .cardholderName("Active User")
+                .holderName("Active User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.ACTIVE)
                 .build();

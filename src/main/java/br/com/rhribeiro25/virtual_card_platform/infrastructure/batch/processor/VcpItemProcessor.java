@@ -1,24 +1,162 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.processor;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardBrand;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.ProviderStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.ExternalCardCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.config.BatchEntityCache;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VirtualCardsCsvRow;
+import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 @Component
-public class VcpItemProcessor implements ItemProcessor<ExternalCardCsvRow, Card> {
+@JobScope
+@RequiredArgsConstructor
+public class VcpItemProcessor implements ItemProcessor<VirtualCardsCsvRow, Card> {
+
+    private final BatchEntityCache<String, Card> cardCache;
 
     @Override
-    public Card process(ExternalCardCsvRow externalCard) {
+    public Card process(VirtualCardsCsvRow csvRow) {
 
-//        if (!externalCard.state().equalsIgnoreCase("A")) {
-//            throw new IllegalArgumentException("Deactivated Card!");
-//        }
+        Transaction transaction = Transaction.builder()
+                .type(mapTransactionType(csvRow.txKind()))
+                .createdAt(LocalDateTime.now())
+                .amount(new BigDecimal(csvRow.txAmountTxt().replace(",", ".")))
+                .requestId(UUID.fromString(csvRow.txRequestRef()))
+                .build();
 
-        // normalização simples
-//        card.setFirstName(card.getFirstName().trim());
-//        card.setLastName(card.getLastName().trim());
+        Card card = cardCache.getOrCreate(csvRow.cardRef(), () ->
+                Card.builder()
+                .externalId(csvRow.cardRef())
+                .createdAt(LocalDateTime.now())
+                .status(mapCardStatus(csvRow.state()))
+                .brand(mapBrand(csvRow.brandCode()))
+                .holderName(csvRow.holderNameRaw())
+                .balance(new BigDecimal(csvRow.balanceTxt().replace(",", ".")))
+                .internationalAllowed(mapBooleanAttribute(csvRow.internationalFlag()))
+                .expiryDate(parseExpiry(csvRow.expiryTxt()))
+                .cvv(Integer.parseInt(csvRow.cvvTxt()))
+                .pinCode(csvRow.pinTxt())
+                .maxDailyTransactions(Integer.parseInt(csvRow.maxDailyTxTxt()))
+                .maxTransactionAmount(new BigDecimal(csvRow.maxTxAmountTxt().replace(",", ".")))
+                .country(csvRow.issuingCountryCode())
+                .notes(csvRow.notesRaw())
+                .build()
+        );
 
-        return Card.builder().build();
+        Provider provider = Provider.builder()
+                .code(csvRow.providerCode())
+                .createdAt(LocalDateTime.now())
+                .status(mapProviderStatus(csvRow.providerState()))
+                .country(csvRow.providerCountry())
+                .build();
+
+        CardProvider cardProvider = CardProvider.builder()
+                .card(card)
+                .createdAt(LocalDateTime.now())
+                .provider(provider)
+                .feePercentage(new BigDecimal(csvRow.providerFeePctTxt().replace(",", ".")))
+                .dailyLimit(new BigDecimal(csvRow.providerDailyLimitTxt().replace(",", ".")))
+                .priority(Integer.parseInt(csvRow.providerPriorityTxt()))
+                .build();
+
+        if(card.getTransactions() == null) card.setTransactions(new ArrayList<>());
+        card.getTransactions().add(transaction);
+
+        if(card.getCardProviders() == null) card.setCardProviders(new ArrayList<>());
+        card.getCardProviders().add(cardProvider);
+
+        if(provider.getCardProviders() == null) provider.setCardProviders(new ArrayList<>());
+        provider.getCardProviders().add(cardProvider);
+
+        return card;
     }
+
+
+    private CardBrand mapBrand(String brandCode) {
+
+        return switch (brandCode) {
+            case "01" -> CardBrand.VISA;
+            case "02" -> CardBrand.MASTERCARD;
+            case "03" -> CardBrand.AMEX;
+            case "04" -> CardBrand.ELO;
+            case "05" -> CardBrand.HIPERCARD;
+            default -> throw new IllegalArgumentException(
+                    "Unknown brand code: " + brandCode
+            );
+        };
+    }
+
+
+    private TransactionType mapTransactionType(String txKind) {
+
+        return switch (txKind) {
+            case "P" -> TransactionType.SPEND;
+            case "C" -> TransactionType.TOPUP;
+            case "T" -> TransactionType.TRANSFER;
+            default -> throw new IllegalArgumentException(
+                    "Invalid transaction type: " + txKind
+            );
+        };
+    }
+
+    private CardStatus mapCardStatus(String state) {
+
+        return switch (state) {
+            case "A" -> CardStatus.ACTIVE;
+            case "B" -> CardStatus.BLOCKED;
+            default -> throw new IllegalArgumentException(
+                    "Invalid Card: " + state
+            );
+        };
+    }
+
+    private boolean mapBooleanAttribute(String bool) {
+
+        return switch (bool) {
+            case "Y" -> true;
+            case "N" -> false;
+            default -> throw new IllegalArgumentException(
+                    "Invalid Card: " + bool
+            );
+        };
+    }
+
+    private static LocalDateTime parseExpiry(String expiryTxt) {
+        if (expiryTxt == null || expiryTxt.isBlank()) {
+            return null;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+        YearMonth yearMonth = YearMonth.parse(expiryTxt.trim(), formatter);
+
+        return yearMonth
+                .atEndOfMonth()
+                .atTime(23, 59, 59);
+    }
+
+    private ProviderStatus mapProviderStatus(String state) {
+
+        return switch (state) {
+            case "A" -> ProviderStatus.ACTIVE;
+            case "B" -> ProviderStatus.BLOCKED;
+            default -> throw new IllegalArgumentException(
+                    "Invalid Provider: " + state
+            );
+        };
+    }
+
 }

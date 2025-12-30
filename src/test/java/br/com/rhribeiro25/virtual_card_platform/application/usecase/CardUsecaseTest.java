@@ -61,7 +61,7 @@ class CardUsecaseTest {
         MockitoAnnotations.openMocks(this);
         cardId = UUID.randomUUID();
         card = Card.builder()
-                .cardholderName("Renan")
+                .holderName("Renan")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -76,7 +76,7 @@ class CardUsecaseTest {
     void createCardSuccessfully() {
         when(cardRepository.save(any())).thenReturn(card);
         Card result = cardUsecase.create(card);
-        assertEquals("Renan", result.getCardholderName());
+        assertEquals("Renan", result.getHolderName());
         verify(cardRepository).save(card);
     }
 

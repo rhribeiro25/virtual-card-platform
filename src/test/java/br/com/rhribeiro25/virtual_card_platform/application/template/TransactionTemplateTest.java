@@ -48,7 +48,7 @@ class TransactionTemplateTest {
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
         Card card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -79,7 +79,7 @@ class TransactionTemplateTest {
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
         Card card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -113,7 +113,7 @@ class TransactionTemplateTest {
         ReflectionTestUtils.setField(spendTransactionProcessor, "transactionUsecase", transactionUsecase);
 
         Card card = Card.builder()
-                .cardholderName("Test User")
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 

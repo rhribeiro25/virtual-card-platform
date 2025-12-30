@@ -36,7 +36,7 @@ class TransactionBalanceValidationImplTest {
     @DisplayName("Should throw BadRequestException when balance is insufficient")
     void shouldThrowWhenBalanceIsInsufficient() {
         Card card = Card.builder()
-                .cardholderName("Test")
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(50))
                 .build();
         Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
@@ -48,7 +48,7 @@ class TransactionBalanceValidationImplTest {
     @DisplayName("Should not throw when balance is sufficient")
     void shouldNotThrowWhenBalanceIsSufficient() {
         Card card = Card.builder()
-                .cardholderName("Test")
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(200))
                 .build();
         Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
@@ -60,7 +60,7 @@ class TransactionBalanceValidationImplTest {
     @DisplayName("Should not throw when transaction is SPEND and validation passes")
     void shouldNotThrowWhenSpendTransactionIsValid() {
         Card card = Card.builder()
-                .cardholderName("Test")
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(200))
                 .build();
 
