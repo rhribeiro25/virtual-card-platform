@@ -17,7 +17,7 @@ public class VcpAuditReader {
     public FlatFileItemReader<VirtualCardsCsvRow> auditReader() {
         return new FlatFileItemReaderBuilder<VirtualCardsCsvRow>()
                 .name("vcpAuditReader")
-                .resource(new ClassPathResource("input/virtual_cards_25000.csv"))
+                .resource(new ClassPathResource("input/virtual_cards_100k.csv"))
                 .linesToSkip(1)
                 .delimited()
                 .delimiter(",")

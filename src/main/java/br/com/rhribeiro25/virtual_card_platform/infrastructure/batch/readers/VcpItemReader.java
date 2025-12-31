@@ -16,7 +16,7 @@ public class VcpItemReader {
     @StepScope
     public FlatFileItemReader<VirtualCardsCsvRow> itemReader() {
         FlatFileItemReader<VirtualCardsCsvRow> itemReader = new FlatFileItemReader<>();
-        itemReader.setResource(new FileSystemResource("src/main/resources/input/virtual_cards_25000.csv"));
+        itemReader.setResource(new FileSystemResource("src/main/resources/input/virtual_cards_100k.csv"));
         itemReader.setLinesToSkip(1);
 
         DefaultLineMapper<VirtualCardsCsvRow> mapper = new DefaultLineMapper<>();
