@@ -45,9 +45,11 @@ public class VcpItemWriter {
 
             // Persisting Transactions
             itemWriter.forEach(item -> item.transaction().setCard(batchCacheConfig.cardCache().get(item.card().getExternalId())));
-            var persistedTransactions = transactionRepository.saveAll(
-                    itemWriter.getItems().stream().map(VcpModelsGroup::transaction).toList()
-            );
+            itemWriter.getItems().stream()
+                    .map(VcpModelsGroup::transaction)
+                    .distinct()
+                    .forEach(transaction -> batchCacheConfig.transactionCache().put(transaction.getRequestId().toString(), transaction));
+            var persistedTransactions = transactionRepository.saveAll(new ArrayList<>(batchCacheConfig.transactionCache().values()));
             persistedTransactions.forEach(tx -> batchCacheConfig.transactionCache().put(tx.getRequestId().toString(), tx));
 
             // Persisting CardProviders
@@ -55,9 +57,7 @@ public class VcpItemWriter {
                 item.cardProvider().setCard(batchCacheConfig.cardCache().get(item.card().getExternalId()));
                 item.cardProvider().setProvider(batchCacheConfig.providerCache().get(item.provider().getCode()));
             });
-            cardProviderRepository.saveAll(
-                    itemWriter.getItems().stream().map(VcpModelsGroup::cardProvider).toList()
-            );
+            cardProviderRepository.saveAll(itemWriter.getItems().stream().map(VcpModelsGroup::cardProvider).toList());
 
         };
     }
