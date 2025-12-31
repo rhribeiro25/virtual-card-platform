@@ -1,7 +1,7 @@
-package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.reader;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.readers;
 
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dto.VirtualCardsCsvRow;
-import lombok.RequiredArgsConstructor;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 @Configuration
-@RequiredArgsConstructor
 public class VcpItemReader {
 
     @Bean
-    public FlatFileItemReader<VirtualCardsCsvRow> read() {
+    @StepScope
+    public FlatFileItemReader<VirtualCardsCsvRow> itemReader() {
         FlatFileItemReader<VirtualCardsCsvRow> itemReader = new FlatFileItemReader<>();
         itemReader.setResource(new FileSystemResource("src/main/resources/input/virtual_cards_25000.csv"));
-        itemReader.setLinesToSkip(1); // pula o cabeçalho
+        itemReader.setLinesToSkip(1);
 
         DefaultLineMapper<VirtualCardsCsvRow> mapper = new DefaultLineMapper<>();
         DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
@@ -86,5 +86,4 @@ public class VcpItemReader {
         itemReader.setLineMapper(mapper);
         return itemReader;
     }
-
 }

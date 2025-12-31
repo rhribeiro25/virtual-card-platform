@@ -1,6 +1,7 @@
-package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.config;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class BatchCacheConfig {
+public class BatchCacheUtils {
     @Bean
     @JobScope
     public Map<String, Provider> providerCache() {
@@ -30,4 +31,9 @@ public class BatchCacheConfig {
         return new HashMap<>();
     }
 
+    @Bean
+    @JobScope
+    public Map<String, CardProvider> cardProviderCache() {
+        return new HashMap<>();
+    }
 }

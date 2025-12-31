@@ -7,7 +7,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -32,11 +31,11 @@ public class CardProvider {
     @Column(nullable = true)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "provider_id", nullable = false)
     private Provider provider;
 
@@ -48,5 +47,9 @@ public class CardProvider {
 
     @Column(nullable = false)
     private Integer priority;
+
+    @Transient
+    private String keyMap;
+
 
 }

@@ -40,7 +40,7 @@ public class Provider {
     @Enumerated(EnumType.STRING)
     private ProviderStatus status;
 
-    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<CardProvider> cardProviders;
 }
 

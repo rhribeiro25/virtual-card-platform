@@ -1,9 +1,9 @@
 cardRef,state,brandCode,holderNameRaw,balanceTxt,currencyCode,internationalFlag,expiryTxt,cvvTxt,pinTxt,maxDailyTxTxt,maxTxAmountTxt,issuingCountryCode,notesRaw,providerCode,providerFeePctTxt,providerDailyLimitTxt,providerPriorityTxt,providerState,providerCountry,txKind,txAmountTxt,txRequestRef
-VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,T,"53,53",80a8399f-ee58-4cf7-9033-81c9b09bb570
+VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,SQUARE,0.72,8266,1,B,France,T,"53,53",80a8399f-ee58-4cf7-9033-81c9b09bb570
 VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,P,"2969,28",ba810a19-4f8d-4086-8d9e-ce934a1e8ac3
-VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,T,"6324,03",e10941db-3ec6-4fc8-819b-76ad3ce62dc9
+VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,PAYPAL,0.72,8266,1,B,France,T,"6324,03",e10941db-3ec6-4fc8-819b-76ad3ce62dc9
 VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,P,"6154,02",2b762f0b-feff-4b5d-a4a2-211d77d662af
-VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,C,"9562,58",30df9dd1-f2aa-48d8-869f-9d6e91d09bcb
+VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,STRIPE,0.72,8266,1,B,France,C,"9562,58",30df9dd1-f2aa-48d8-869f-9d6e91d09bcb
 VC-00006,A,01,USER 6,"3925,98",USD,Y,01/33,875,6352,33,"1027,65",PT,Legacy note 6,STRIPE,0.68,4698,2,A,France,C,"1850,45",38d7b1e4-11a2-4d0f-8421-043daede2b53
 VC-00007,A,05,USER 7,"2173,78",BRL,Y,09/30,281,7919,27,"3357,38",PT,Legacy note 7,ADYEN,3.63,6411,2,B,Portugal,P,"8831,56",92b9997f-6a45-4c51-b3e2-e61433aa47f2
 VC-00008,B,05,USER 8,"6656,81",EUR,Y,04/26,536,4441,45,"2807,05",US,Legacy note 8,PAYPAL,2.51,12108,5,B,France,P,"6810,57",a894e7b4-2138-49b5-9d53-0a4160f0a6a9

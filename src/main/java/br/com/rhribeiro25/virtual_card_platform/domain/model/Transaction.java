@@ -32,7 +32,7 @@ public class Transaction {
     @Column(nullable = true)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
@@ -45,5 +45,8 @@ public class Transaction {
 
     @Column(nullable = false, unique = true)
     private UUID requestId;
+
+    @Transient
+    private String cardExternalId;
 
 }
