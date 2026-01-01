@@ -3,7 +3,8 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.writers;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
@@ -24,19 +25,20 @@ import java.util.stream.Collectors;
 public class VcpTransactionWriter implements ItemWriter<Transaction> {
 
     private final TransactionRepository transactionRepository;
-    private final BatchCacheUtils batchCacheUtils;
+    private final JobScopeCacheUtils jobScopeCacheUtils;
+    private final StepScopeCacheUtils stepScopeCacheUtils;
     private final JdbcTemplate jdbcTemplate;
 
     @Value("#{stepExecution.stepName}")
     private String step;
 
     @Override
-    public void write(Chunk<? extends Transaction> chunk) throws Exception {
+    public void write(Chunk<? extends Transaction> chunk) {
 
         // Remove duplicates and check if exists inside cache
         Set<String> keyFilter = new HashSet<>();
         var uniqueList = chunk.getItems().stream()
-                .filter(item -> !batchCacheUtils.transactionCache().containsKey(item.getCardExternalId()))
+                .filter(item -> !jobScopeCacheUtils.transactionCache().containsKey(item.getCardExternalId()))
                 .filter(item -> keyFilter.add(item.getCardExternalId()))
                 .collect(Collectors.toList());
 
@@ -44,10 +46,10 @@ public class VcpTransactionWriter implements ItemWriter<Transaction> {
         var persisted = transactionRepository.saveAll(uniqueList);
 
         // Refresh cache with persisted entities to ensure consistency
-        persisted.forEach(item -> batchCacheUtils.transactionCache().put(item.getRequestId().toString(), item));
+        persisted.forEach(item -> jobScopeCacheUtils.transactionCache().put(item.getRequestId().toString(), item));
 
         // Updating audit step
-        List<String> auditIds = new ArrayList<>(batchCacheUtils.auditCache().keySet());
+        List<String> auditIds = new ArrayList<>(stepScopeCacheUtils.auditCache().keySet());
         jdbcTemplate.batchUpdate(
                 "UPDATE audit_import SET processed_step = ?, is_processed = ? WHERE id = ?",
                 auditIds,
@@ -58,6 +60,6 @@ public class VcpTransactionWriter implements ItemWriter<Transaction> {
                     ps.setString(3, id);
                 }
         );
-        batchCacheUtils.auditCache().clear();
+        stepScopeCacheUtils.auditCache().clear();
     }
 }

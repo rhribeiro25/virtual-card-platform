@@ -3,7 +3,8 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.writers;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.ProviderRepository;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
@@ -24,19 +25,20 @@ import java.util.stream.Collectors;
 public class VcpProviderWriter implements ItemWriter<Provider> {
 
     private final ProviderRepository providerRepository;
-    private final BatchCacheUtils batchCacheUtils;
+    private final JobScopeCacheUtils jobScopeCacheUtils;
+    private final StepScopeCacheUtils stepScopeCacheUtils;
     private final JdbcTemplate jdbcTemplate;
 
     @Value("#{stepExecution.stepName}")
     private String step;
 
     @Override
-    public void write(Chunk<? extends Provider> chunk) throws Exception {
+    public void write(Chunk<? extends Provider> chunk) {
 
         // Remove duplicates and check if exists inside cache
         Set<String> keyFilter = new HashSet<>();
         var uniqueList = chunk.getItems().stream()
-                .filter(item -> !batchCacheUtils.providerCache().containsKey(item.getCode()))
+                .filter(item -> !jobScopeCacheUtils.providerCache().containsKey(item.getCode()))
                 .filter(item -> keyFilter.add(item.getCode()))
                 .collect(Collectors.toList());
 
@@ -44,10 +46,10 @@ public class VcpProviderWriter implements ItemWriter<Provider> {
         var persisted = providerRepository.saveAll(uniqueList);
 
         // Refresh cache with persisted entities to ensure consistency
-        persisted.forEach(item -> batchCacheUtils.providerCache().put(item.getCode(), item));
+        persisted.forEach(item -> jobScopeCacheUtils.providerCache().put(item.getCode(), item));
 
         // Updating audit step
-        List<String> auditIds = new ArrayList<>(batchCacheUtils.auditCache().keySet());
+        List<String> auditIds = new ArrayList<>(stepScopeCacheUtils.auditCache().keySet());
         jdbcTemplate.batchUpdate(
                 "UPDATE audit_import SET processed_step = ?, is_processed = ? WHERE id = ?",
                 auditIds,
@@ -58,6 +60,6 @@ public class VcpProviderWriter implements ItemWriter<Provider> {
                     ps.setString(3, id);
                 }
         );
-        batchCacheUtils.auditCache().clear();
+        stepScopeCacheUtils.auditCache().clear();
     }
 }

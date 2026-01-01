@@ -5,7 +5,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VcpTransactionProcessor implements ItemProcessor<AuditImport, Transaction> {
 
-    private final BatchCacheUtils batchCacheUtils;
+    private final JobScopeCacheUtils jobScopeCacheUtils;
+    private final StepScopeCacheUtils stepScopeCacheUtils;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -30,9 +32,9 @@ public class VcpTransactionProcessor implements ItemProcessor<AuditImport, Trans
 
         CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
 
-        Transaction transaction = batchCacheUtils.transactionCache().get(csvRow.getTxRequestRef());
+        Transaction transaction = jobScopeCacheUtils.transactionCache().get(csvRow.getTxRequestRef());
         if (transaction == null) {
-            Card card = batchCacheUtils.cardCache().get(csvRow.getCardRef());
+            Card card = jobScopeCacheUtils.cardCache().get(csvRow.getCardRef());
             transaction = Transaction.builder()
                     .card(card)
                     .type(mapTransactionType(csvRow.getTxKind()))
@@ -42,7 +44,7 @@ public class VcpTransactionProcessor implements ItemProcessor<AuditImport, Trans
                     .cardExternalId(csvRow.getCardRef())
                     .build();
         }
-        batchCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
+        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
         return transaction;
     }
 

@@ -12,6 +12,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -22,6 +23,7 @@ public class VcpCardProviderStep {
     public Step cardProviderStep(
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
+            TaskExecutor task,
 
             ItemReader<AuditImport> jbcReader,
 
@@ -36,6 +38,7 @@ public class VcpCardProviderStep {
                 .reader(jbcReader)
                 .processor(processor)
                 .writer(writer)
+//                .taskExecutor(task)
                 .build();
     }
 

@@ -5,7 +5,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class VcpCardProviderProcessor implements ItemProcessor<AuditImport, CardProvider> {
 
-    private final BatchCacheUtils batchCacheUtils;
+    private final JobScopeCacheUtils jobScopeCacheUtils;
+    private final StepScopeCacheUtils stepScopeCacheUtils;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -30,10 +32,10 @@ public class VcpCardProviderProcessor implements ItemProcessor<AuditImport, Card
         CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
 
         String keyMap = csvRow.getCardRef() + "_" + csvRow.getProviderCode();
-        CardProvider cardProvider = batchCacheUtils.cardProviderCache().get(keyMap);
+        CardProvider cardProvider = jobScopeCacheUtils.cardProviderCache().get(keyMap);
         if (cardProvider == null) {
-            Card card = batchCacheUtils.cardCache().get(csvRow.getCardRef());
-            Provider provider = batchCacheUtils.providerCache().get(csvRow.getProviderCode());
+            Card card = jobScopeCacheUtils.cardCache().get(csvRow.getCardRef());
+            Provider provider = jobScopeCacheUtils.providerCache().get(csvRow.getProviderCode());
             cardProvider = CardProvider.builder()
                     .card(card)
                     .provider(provider)
@@ -44,7 +46,7 @@ public class VcpCardProviderProcessor implements ItemProcessor<AuditImport, Card
                     .keyMap(keyMap)
                     .build();
         }
-        batchCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
+        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
         return cardProvider;
     }
 }

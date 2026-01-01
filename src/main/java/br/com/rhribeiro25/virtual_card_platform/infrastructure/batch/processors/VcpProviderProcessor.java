@@ -4,7 +4,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.enums.ProviderStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class VcpProviderProcessor implements ItemProcessor<AuditImport, Provider> {
 
-    private final BatchCacheUtils batchCacheUtils;
+    private final JobScopeCacheUtils jobScopeCacheUtils;
+    private final StepScopeCacheUtils stepScopeCacheUtils;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -27,7 +29,7 @@ public class VcpProviderProcessor implements ItemProcessor<AuditImport, Provider
 
         CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
 
-        Provider provider = batchCacheUtils.providerCache().get(csvRow.getProviderCode());
+        Provider provider = jobScopeCacheUtils.providerCache().get(csvRow.getProviderCode());
         if (provider == null) {
             provider = Provider.builder()
                     .code(csvRow.getProviderCode())
@@ -36,7 +38,7 @@ public class VcpProviderProcessor implements ItemProcessor<AuditImport, Provider
                     .country(csvRow.getProviderCountry())
                     .build();
         }
-        batchCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
+        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
         return provider;
     }
 

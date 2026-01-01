@@ -4,9 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class BatchCacheUtils {
+public class JobScopeCacheUtils {
+
     @Bean
     @JobScope
     public Map<String, Provider> providerCache() {
@@ -39,9 +38,4 @@ public class BatchCacheUtils {
         return new HashMap<>();
     }
 
-    @Bean
-    @StepScope
-    public Map<String, AuditImport> auditCache() {
-        return new HashMap<>();
-    }
 }
