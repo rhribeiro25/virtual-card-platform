@@ -1,7 +1,8 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditVcpRow;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,21 +16,22 @@ import java.util.UUID;
 @Component
 @StepScope
 @RequiredArgsConstructor
-public class VcpAuditProcessor implements ItemProcessor<VirtualCardsCsvRow, AuditVcpRow> {
+public class VcpAuditProcessor implements ItemProcessor<CsvRow, AuditImport> {
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public AuditVcpRow process(VirtualCardsCsvRow item) throws JsonProcessingException {
+    public AuditImport process(CsvRow item) throws JsonProcessingException {
 
-        return AuditVcpRow.builder()
+        return AuditImport.builder()
                 .id(UUID.randomUUID())
                 .cardRef(item.getCardRef())
                 .providerCode(item.getProviderCode())
                 .txRequestRef(item.getTxRequestRef() != null ? UUID.fromString(item.getTxRequestRef()) : null)
                 .rawPayload(objectMapper.writeValueAsString(item))
                 .createdAt(LocalDateTime.now())
-                .processed(false)
+                .processedStep(AuditImportProcessedStep.CARD.getStepName())
+                .isProcessed(false)
                 .build();
     }
 

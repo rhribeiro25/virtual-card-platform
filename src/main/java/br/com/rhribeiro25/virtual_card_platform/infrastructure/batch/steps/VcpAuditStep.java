@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.steps;
 
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditVcpRow;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -9,7 +9,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +16,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
+@RequiredArgsConstructor
 public class VcpAuditStep {
 
     @Bean
@@ -26,18 +26,18 @@ public class VcpAuditStep {
             PlatformTransactionManager transactionManager,
             TaskExecutor task,
 
-            ItemReader<VirtualCardsCsvRow> auditReader,
+            ItemReader<CsvRow> fileReader,
 
             @Qualifier("vcpAuditProcessor")
-            ItemProcessor<VirtualCardsCsvRow, AuditVcpRow> processor,
+            ItemProcessor<CsvRow, AuditImport> processor,
 
             @Qualifier("vcpAuditWriter")
-            ItemWriter<AuditVcpRow> writer
+            ItemWriter<AuditImport> writer
 
     ) {
         return new StepBuilder("auditStep", jobRepository)
-                .<VirtualCardsCsvRow, AuditVcpRow>chunk(1000, transactionManager)
-                .reader(auditReader)
+                .<CsvRow, AuditImport>chunk(5000, transactionManager)
+                .reader(fileReader)
                 .processor(processor)
                 .writer(writer)
                 .taskExecutor(task)

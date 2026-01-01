@@ -2,24 +2,32 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.processors
 
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.ProviderStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@StepScope
 @RequiredArgsConstructor
-public class VcpProviderProcessor implements ItemProcessor<VirtualCardsCsvRow, Provider> {
+public class VcpProviderProcessor implements ItemProcessor<AuditImport, Provider> {
 
     private final BatchCacheUtils batchCacheUtils;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public Provider process(VirtualCardsCsvRow csvRow) {
+    public Provider process(AuditImport auditImport) throws JsonProcessingException {
 
-       Provider provider = batchCacheUtils.providerCache().get(csvRow.getProviderCode());
+        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
+
+        Provider provider = batchCacheUtils.providerCache().get(csvRow.getProviderCode());
         if (provider == null) {
             provider = Provider.builder()
                     .code(csvRow.getProviderCode())
@@ -28,6 +36,7 @@ public class VcpProviderProcessor implements ItemProcessor<VirtualCardsCsvRow, P
                     .country(csvRow.getProviderCountry())
                     .build();
         }
+        batchCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
         return provider;
     }
 

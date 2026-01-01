@@ -3,9 +3,13 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.processors
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardBrand;
 import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.CsvRow;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -15,14 +19,17 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 @Component
+@StepScope
 @RequiredArgsConstructor
-public class VcpCardProcessor implements ItemProcessor<VirtualCardsCsvRow, Card> {
+public class VcpCardProcessor implements ItemProcessor<AuditImport, Card> {
 
     private final BatchCacheUtils batchCacheUtils;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public Card process(VirtualCardsCsvRow csvRow) {
+    public Card process(AuditImport auditImport) throws JsonProcessingException {
 
+        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
         Card card = batchCacheUtils.cardCache().get(csvRow.getCardRef());
         if (card == null) {
             card = Card.builder()
@@ -40,8 +47,12 @@ public class VcpCardProcessor implements ItemProcessor<VirtualCardsCsvRow, Card>
                     .maxTransactionAmount(new BigDecimal(csvRow.getMaxTxAmountTxt().replace(",", ".")))
                     .country(csvRow.getIssuingCountryCode())
                     .notes(csvRow.getNotesRaw())
+                    .auditId(auditImport.getId().toString())
                     .build();
         }
+
+        batchCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
+
         return card;
 
     }

@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.steps;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.VirtualCardsCsvRow;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -23,17 +23,17 @@ public class VcpTransactionStep {
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
 
-            ItemReader<VirtualCardsCsvRow> itemReader,
+            ItemReader<AuditImport> jbcReader,
 
             @Qualifier("vcpTransactionProcessor")
-            ItemProcessor<VirtualCardsCsvRow, Transaction> processor,
+            ItemProcessor<AuditImport, Transaction> processor,
 
             @Qualifier("vcpTransactionWriter")
             ItemWriter<Transaction> writer
     ) {
         return new StepBuilder("transactionStep", jobRepository).
-                <VirtualCardsCsvRow, Transaction>chunk(5000, transactionManager)
-                .reader(itemReader)
+                <AuditImport, Transaction>chunk(5000, transactionManager)
+                .reader(jbcReader)
                 .processor(processor)
                 .writer(writer)
                 .build();

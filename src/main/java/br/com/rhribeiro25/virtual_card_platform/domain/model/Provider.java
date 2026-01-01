@@ -42,5 +42,8 @@ public class Provider {
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<CardProvider> cardProviders;
+
+    @Transient
+    private String auditId;
 }
 

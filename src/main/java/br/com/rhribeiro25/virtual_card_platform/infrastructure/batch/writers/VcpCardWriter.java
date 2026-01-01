@@ -2,40 +2,62 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.writers;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.BatchCacheUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@StepScope
 @RequiredArgsConstructor
 public class VcpCardWriter implements ItemWriter<Card> {
 
     private final CardRepository cardRepository;
     private final BatchCacheUtils batchCacheUtils;
+    private final JdbcTemplate jdbcTemplate;
+
+    @Value("#{stepExecution.stepName}")
+    private String step;
 
     @Override
     public void write(Chunk<? extends Card> chunk) throws Exception {
-        // Convert to mutable list
-        List<? extends Card> cardList = chunk.getItems();
 
-        // Remove duplicates
-        List<Card> uniqueCards = cardList.stream()
-                .distinct()
+        // Remove duplicates and check if exists inside cache
+        Set<String> keyFilter = new HashSet<>();
+        var uniqueList = chunk.getItems().stream()
+                .filter(item -> !batchCacheUtils.cardCache().containsKey(item.getExternalId()))
+                .filter(item -> keyFilter.add(item.getExternalId()))
                 .collect(Collectors.toList());
 
-        // Update cache with incoming cards
-        uniqueCards.forEach(card -> batchCacheUtils.cardCache().put(card.getExternalId(), card));
+        // Persist all entities
+        var persisted = cardRepository.saveAll(uniqueList);
 
-        // Persist all cards
-        List<Card> persistedCards = cardRepository.saveAll(new ArrayList<>(batchCacheUtils.cardCache().values()));
+        // Refresh cache with persisted entities to ensure consistency
+        persisted.forEach(item -> batchCacheUtils.cardCache().put(item.getExternalId(), item));
 
-        // Refresh cache with persisted cards to ensure consistency
-        persistedCards.forEach(card -> batchCacheUtils.cardCache().put(card.getExternalId(), card));
+        // Updating audit step
+        List<String> auditIds = new ArrayList<>(batchCacheUtils.auditCache().keySet());
+        jdbcTemplate.batchUpdate(
+                "UPDATE audit_import SET processed_step = ?, is_processed = ? WHERE id = ?",
+                auditIds,
+                auditIds.size(),
+                (ps, id) -> {
+                    ps.setString(1, AuditImportProcessedStep.fromStepName(step).getNextStep());
+                    ps.setString(2, "false");
+                    ps.setString(3, id);
+                }
+        );
+        batchCacheUtils.auditCache().clear();
     }
 }
