@@ -49,7 +49,6 @@ public class VcpCardProcessor implements ItemProcessor<AuditImport, Card> {
                     .maxTransactionAmount(new BigDecimal(csvRow.getMaxTxAmountTxt().replace(",", ".")))
                     .country(csvRow.getIssuingCountryCode())
                     .notes(csvRow.getNotesRaw())
-                    .auditId(auditImport.getId().toString())
                     .build();
         }
 

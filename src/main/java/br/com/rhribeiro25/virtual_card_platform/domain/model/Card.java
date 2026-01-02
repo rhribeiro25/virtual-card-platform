@@ -86,9 +86,6 @@ public class Card {
     @Version
     private Long version = 0L;
 
-    @Transient
-    private String auditId;
-
     @PrePersist
     protected void onCreate() {
         if (this.status == null) {

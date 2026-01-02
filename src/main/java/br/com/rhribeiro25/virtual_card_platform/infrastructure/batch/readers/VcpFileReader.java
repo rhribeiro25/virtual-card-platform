@@ -17,7 +17,7 @@ public class VcpFileReader {
     public FlatFileItemReader<CsvRow> fileReader() {
         return new FlatFileItemReaderBuilder<CsvRow>()
                 .name("fileReader")
-                .resource(new ClassPathResource("input/virtual_cards_225k.csv"))
+                .resource(new ClassPathResource("input/virtual_cards_25k.csv"))
                 .linesToSkip(1)
                 .delimited()
                 .delimiter(",")

@@ -51,8 +51,4 @@ public class CardProvider {
     @Transient
     private String keyMap;
 
-    @Transient
-    private String auditId;
-
-
 }

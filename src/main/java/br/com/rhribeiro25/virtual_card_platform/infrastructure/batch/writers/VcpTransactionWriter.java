@@ -37,8 +37,8 @@ public class VcpTransactionWriter implements ItemWriter<Transaction> {
         // Remove duplicates and check if exists inside cache
         Set<String> keyFilter = new HashSet<>();
         var uniqueList = chunk.getItems().stream()
-                .filter(item -> !jobScopeCacheUtils.transactionCache().containsKey(item.getCardExternalId()))
-                .filter(item -> keyFilter.add(item.getCardExternalId()))
+                .filter(item -> !jobScopeCacheUtils.transactionCache().containsKey(item.getRequestId()))
+                .filter(item -> keyFilter.add(item.getRequestId().toString()))
                 .collect(Collectors.toList());
 
         // Persist all entities

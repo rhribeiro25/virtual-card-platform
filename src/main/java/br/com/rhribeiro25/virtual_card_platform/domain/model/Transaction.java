@@ -49,7 +49,4 @@ public class Transaction {
     @Transient
     private String cardExternalId;
 
-    @Transient
-    private String auditId;
-
 }
