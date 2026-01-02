@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardBrand;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardBrand;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

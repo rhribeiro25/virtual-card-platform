@@ -1,0 +1,273 @@
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest;
+
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.application.dto.CardRequest;
+import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.rest.CardController;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.TransactionRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class CardControllerTest {
+
+    private static final String BASE_PATH = "/cards";
+    private static final BigDecimal VALID_AMOUNT = BigDecimal.valueOf(50);
+    private static final BigDecimal INVALID_AMOUNT = BigDecimal.valueOf(-10);
+    private static final String VALID_NAME = "William";
+    private static final String INVALID_NAME = "";
+    private static final String ENDPOINT_SPEND =  "spend";
+    private static final String ENDPOINT_TOPUP =  "topup";
+
+    @Autowired
+    private MockMvc mvc;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private CardController cardController;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private Card card;
+
+    @Autowired
+    private CardUsecase cardUsecase;
+
+    @BeforeEach
+    void setup() {
+        card = Card.builder()
+                .holderName("Renan")
+                .externalId(UUID.randomUUID().toString())
+                .balance(BigDecimal.valueOf(200))
+                .status(CardStatus.ACTIVE)
+                .internationalAllowed(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+        card = cardUsecase.create(card);
+
+    }
+
+    @Test
+    @DisplayName("Should create a card successfully")
+    void createCardShouldSucceed() throws Exception {
+        CardRequest request = new CardRequest(VALID_NAME, VALID_AMOUNT,
+                true, true, LocalDateTime.now());
+        mvc.perform(post(BASE_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJson(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.cardholderName").value(VALID_NAME));
+    }
+
+    @Test
+    @DisplayName("Should fail to create card without required attributes")
+    void createCardShouldFailWithoutRequiredAttributes() throws Exception {
+        CardRequest request = new CardRequest(INVALID_NAME, VALID_AMOUNT,
+                true, true, LocalDateTime.now());
+        mvc.perform(post(BASE_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJson(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should complete a SPEND transaction successfully")
+    void spendShouldSucceed() throws Exception {
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, UUID.randomUUID())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.balance").value("150.0"))
+                .andExpect(jsonPath("$.cardholderName").value("Renan"));
+    }
+
+    @Test
+    @DisplayName("Should fail SPEND with insufficient balance")
+    void spendShouldFailWithInsufficientBalance() throws Exception {
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(250), UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail SPEND with invalid amount")
+    void spendShouldFailWithInvalidAmount() throws Exception {
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, INVALID_AMOUNT, UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail on duplicate SPEND transaction")
+    void spendShouldFailWithDuplicate() throws Exception {
+        UUID requestId = UUID.randomUUID();
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, requestId)
+                .andExpect(status().isOk());
+
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, requestId)
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("Should enforce SPEND rate limit of 5 per minute")
+    void spendShouldRespectRateLimit() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(i), UUID.randomUUID())
+                    .andExpect(status().isOk());
+        }
+
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, BigDecimal.valueOf(6), UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should fail SPEND when card is blocked")
+    void spendShouldFailWhenCardIsBlocked() throws Exception {
+        card.setStatus(CardStatus.BLOCKED);
+        cardUsecase.create(card);
+
+        performTransactionPost(card.getId(),  ENDPOINT_SPEND, VALID_AMOUNT, UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should complete a TOPUP transaction successfully")
+    void topupShouldSucceed() throws Exception {
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, BigDecimal.valueOf(300), UUID.randomUUID())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.balance").value("500.0"))
+                .andExpect(jsonPath("$.cardholderName").value("Renan"));
+    }
+
+    @Test
+    @DisplayName("Should fail TOPUP with invalid amount")
+    void topupShouldFailWithInvalidAmount() throws Exception {
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, INVALID_AMOUNT, UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return 400 BadRequest on duplicate TOPUP transaction with same requestId")
+    void topupShouldFailWithDuplicateRequestId() throws Exception {
+        UUID requestId = UUID.randomUUID();
+
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, VALID_AMOUNT, requestId)
+                .andExpect(status().isOk());
+
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, VALID_AMOUNT, requestId)
+                .andExpect(status().isConflict());
+    }
+
+
+    @Test
+    @DisplayName("Successfully TOPUP rate limit of 5 per minute")
+    void topupShouldRespectRateLimit() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            performTransactionPost(card.getId(), ENDPOINT_TOPUP, BigDecimal.valueOf(i), UUID.randomUUID())
+                    .andExpect(status().isOk());
+        }
+
+        performTransactionPost(card.getId(), ENDPOINT_TOPUP, BigDecimal.valueOf(6), UUID.randomUUID())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Should fail TOPUP when card is blocked")
+    void topupShouldFailWhenCardIsBlocked() throws Exception {
+        card.setStatus(CardStatus.BLOCKED);
+        cardUsecase.create(card);
+
+        performTransactionPost(card.getId(),  ENDPOINT_TOPUP, VALID_AMOUNT, UUID.randomUUID())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return card By ID Successfully")
+    void shouldReturnCardByIdSuccessfully() throws Exception {
+
+        UUID cardId = card.getId();
+        String expectedName = card.getHolderName();
+
+        mvc.perform(get(BASE_PATH + "/" + cardId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardholderName").value(expectedName));
+    }
+
+    @Test
+    @DisplayName("Should return card By ID Not Found")
+    void shouldReturnNotFoundWhenCardDoesNotExist() throws Exception {
+
+        UUID nonexistentId = UUID.randomUUID();
+
+        mvc.perform(get(BASE_PATH + "/" + nonexistentId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return paginated transactions for valid card")
+    void shouldReturnTransactionsSuccessfully() throws Exception {
+
+        Transaction transaction = Transaction.builder()
+                .card(card)
+                .amount(BigDecimal.valueOf(50))
+                .type(TransactionType.SPEND)
+                .createdAt(LocalDateTime.now())
+                .requestId(UUID.randomUUID())
+                .build();
+
+        transactionRepository.save(transaction);
+
+        mvc.perform(get(BASE_PATH + "/" + card.getId() + "/transactions")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].amount").value("50.0"))
+                .andExpect(jsonPath("$.content[0].type").value("SPEND"));
+    }
+
+    @Test
+    @DisplayName("Should return empty transaction page when none exist")
+    void shouldReturnEmptyTransactionList() throws Exception {
+        mvc.perform(get(BASE_PATH + "/" + card.getId() + "/transactions")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty());
+    }
+
+    private ResultActions performTransactionPost(UUID id, String endpoint, BigDecimal amount, UUID requestId) throws Exception {
+        TransactionRequest request = new TransactionRequest(amount, requestId, LocalDateTime.now());
+        return mvc.perform(post( BASE_PATH + "/" + id + "/" + endpoint)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJson(request)));
+    }
+
+    private String asJson(Object obj) throws Exception {
+        return objectMapper.writeValueAsString(obj);
+    }
+}

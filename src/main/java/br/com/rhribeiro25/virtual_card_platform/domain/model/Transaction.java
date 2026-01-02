@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,0 +1,42 @@
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
+
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
+import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+
+@Configuration
+@RequiredArgsConstructor
+public class VcpCardStep {
+
+    @Bean
+    public Step cardStep(
+            JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
+
+            ItemReader<AuditImport> jbcReader,
+
+            @Qualifier("vcpCardProcessor")
+            ItemProcessor<AuditImport, Card> processor,
+
+            @Qualifier("vcpCardWriter")
+            ItemWriter<Card> writer
+    ) {
+        return new StepBuilder("cardStep", jobRepository).
+                <AuditImport, Card>chunk(5000, transactionManager)
+                .reader(jbcReader)
+                .processor(processor)
+                .writer(writer)
+                .build();
+    }
+
+}

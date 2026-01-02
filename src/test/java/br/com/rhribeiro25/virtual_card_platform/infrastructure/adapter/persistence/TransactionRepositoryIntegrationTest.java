@@ -1,10 +1,12 @@
 
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ class TransactionRepositoryIntegrationTest {
     void setup() {
         card = Card.builder()
                 .holderName("Test User")
+                .externalId(UUID.randomUUID().toString())
                 .balance(BigDecimal.valueOf(500))
                 .status(CardStatus.ACTIVE)
                 .internationalAllowed(true)
