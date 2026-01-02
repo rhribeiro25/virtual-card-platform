@@ -15,8 +15,8 @@ public class VcpTaskConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(0);
-        executor.setThreadNamePrefix("vcp-thread-");
+        executor.setQueueCapacity(10);
+        executor.setThreadNamePrefix("batch-thread-");
         executor.initialize();
         return executor;
     }

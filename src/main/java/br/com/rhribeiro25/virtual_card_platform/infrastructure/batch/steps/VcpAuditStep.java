@@ -24,7 +24,6 @@ public class VcpAuditStep {
 
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
-            TaskExecutor task,
 
             ItemReader<CsvRow> fileReader,
 
@@ -40,7 +39,6 @@ public class VcpAuditStep {
                 .reader(fileReader)
                 .processor(processor)
                 .writer(writer)
-                .taskExecutor(task)
                 .build();
     }
 }

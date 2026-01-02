@@ -1,6 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.readers;
 
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
@@ -22,6 +23,20 @@ public class VcpJdbcReader {
             DataSource dataSource,
             @Value("#{stepExecution.stepName}") String step
     ) {
+        String clause = "";
+        if (step.equals(AuditImportProcessedStep.CARD.getStepName())) {
+            clause = "is_processed_card = :is_processed";
+        }
+        if (step.equals(AuditImportProcessedStep.PROVIDER.getStepName())) {
+            clause = "is_processed_provider = :is_processed";
+        }
+        if (step.equals(AuditImportProcessedStep.CARD_PROVIDER.getStepName())) {
+            clause = "is_processed_card_provider = :is_processed";
+        }
+        if (step.equals(AuditImportProcessedStep.TRANSACTION.getStepName())) {
+            clause = "is_processed_transaction = :is_processed";
+        }
+
         return new JdbcPagingItemReaderBuilder<AuditImport>()
                 .name("jdbcReader")
                 .dataSource(dataSource)
@@ -33,13 +48,15 @@ public class VcpJdbcReader {
                                 provider_code,
                                 tx_request_ref,
                                 raw_payload,
-                                processed_step,
-                                is_processed,
+                                is_processed_card,
+                                is_processed_provider,
+                                is_processed_card_provider,
+                                is_processed_transaction,
                                 created_at
                         """)
                 .fromClause("FROM audit_import")
-                .whereClause("processed_step = :step and is_processed = false")
-                .parameterValues(Map.of("step", step))
+                .whereClause(clause)
+                .parameterValues(Map.of("is_processed", "false"))
                 .sortKeys(Map.of(
                         "created_at", Order.ASCENDING,
                         "id", Order.ASCENDING

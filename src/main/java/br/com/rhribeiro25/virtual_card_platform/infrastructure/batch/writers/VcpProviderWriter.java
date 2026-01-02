@@ -51,13 +51,12 @@ public class VcpProviderWriter implements ItemWriter<Provider> {
         // Updating audit step
         List<String> auditIds = new ArrayList<>(stepScopeCacheUtils.auditCache().keySet());
         jdbcTemplate.batchUpdate(
-                "UPDATE audit_import SET processed_step = ?, is_processed = ? WHERE id = ?",
+                "UPDATE audit_import SET is_processed_provider = ? WHERE id = ?",
                 auditIds,
                 auditIds.size(),
                 (ps, id) -> {
-                    ps.setString(1, AuditImportProcessedStep.fromStepName(step).getNextStep());
-                    ps.setString(2, "false");
-                    ps.setString(3, id);
+                    ps.setString(1, "true");
+                    ps.setString(2, id);
                 }
         );
         stepScopeCacheUtils.auditCache().clear();

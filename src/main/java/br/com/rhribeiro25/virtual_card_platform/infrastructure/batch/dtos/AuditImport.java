@@ -35,9 +35,10 @@ public class AuditImport {
 
     private String rawPayload;
 
-    private String processedStep;
-
-    private Boolean isProcessed;
+    private Boolean isProcessedCard;
+    private Boolean isProcessedProvider;
+    private Boolean isProcessedCardProvider;
+    private Boolean isProcessedTransaction;
 
     private LocalDateTime createdAt;
 }

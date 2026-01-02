@@ -32,8 +32,8 @@ public class VcpAuditWriter implements ItemWriter<AuditImport> {
                     .dataSource(dataSource)
                     .sql("""
                         INSERT INTO audit_import
-                                (id, card_ref, provider_code, tx_request_ref, raw_payload, processed_step, is_processed, created_at)
-                                VALUES (:id, :cardRef, :providerCode, :txRequestRef, :rawPayload, :processedStep, :isProcessed, :createdAt)
+                                (id, card_ref, provider_code, tx_request_ref, raw_payload)
+                                VALUES (:id, :cardRef, :providerCode, :txRequestRef, :rawPayload)
                     """)
                     .beanMapped()
                     .build();
