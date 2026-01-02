@@ -1,7 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.readers;
 
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportStep;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
@@ -24,16 +24,16 @@ public class VcpJdbcReader {
             @Value("#{stepExecution.stepName}") String step
     ) {
         String clause = "";
-        if (step.equals(AuditImportProcessedStep.CARD.getStepName())) {
+        if (step.equals(AuditImportStep.CARD.getName())) {
             clause = "is_processed_card = :is_processed";
         }
-        if (step.equals(AuditImportProcessedStep.PROVIDER.getStepName())) {
+        if (step.equals(AuditImportStep.PROVIDER.getName())) {
             clause = "is_processed_provider = :is_processed";
         }
-        if (step.equals(AuditImportProcessedStep.CARD_PROVIDER.getStepName())) {
+        if (step.equals(AuditImportStep.CARD_PROVIDER.getName())) {
             clause = "is_processed_card_provider = :is_processed";
         }
-        if (step.equals(AuditImportProcessedStep.TRANSACTION.getStepName())) {
+        if (step.equals(AuditImportStep.TRANSACTION.getName())) {
             clause = "is_processed_transaction = :is_processed";
         }
 

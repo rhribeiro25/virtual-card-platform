@@ -26,19 +26,13 @@ import java.util.UUID;
 public class AuditImport {
 
     private UUID id;
-
     private String cardRef;
-
     private String providerCode;
-
     private UUID txRequestRef;
-
     private String rawPayload;
-
     private Boolean isProcessedCard;
     private Boolean isProcessedProvider;
     private Boolean isProcessedCardProvider;
     private Boolean isProcessedTransaction;
-
     private LocalDateTime createdAt;
 }

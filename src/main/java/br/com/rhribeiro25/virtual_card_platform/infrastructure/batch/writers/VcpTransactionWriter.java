@@ -2,7 +2,6 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.writers;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence.TransactionRepository;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.dtos.AuditImportProcessedStep;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.JobScopeCacheUtils;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.batch.utils.StepScopeCacheUtils;
 import lombok.RequiredArgsConstructor;
