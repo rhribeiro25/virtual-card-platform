@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class Transaction {
 
     @Id
@@ -46,7 +46,19 @@ public class Transaction {
     @Column(nullable = false, unique = true)
     private UUID requestId;
 
-    @Transient
-    private String cardExternalId;
+    public String getRequestIdString() {
+        return requestId.toString();
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(requestId, that.requestId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(requestId);
+    }
 }

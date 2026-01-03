@@ -8,7 +8,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.dto.CardRequest;
 import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.rest.CardController;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

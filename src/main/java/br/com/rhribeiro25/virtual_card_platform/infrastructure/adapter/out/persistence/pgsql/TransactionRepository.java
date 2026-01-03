@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence;
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;

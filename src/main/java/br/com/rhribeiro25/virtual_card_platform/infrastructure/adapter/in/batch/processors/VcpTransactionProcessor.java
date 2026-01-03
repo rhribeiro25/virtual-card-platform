@@ -1,14 +1,14 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -16,36 +16,35 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Component(SpringBatchProcessor.TRANSACTION)
 @StepScope
 @RequiredArgsConstructor
-public class VcpTransactionProcessor implements ItemProcessor<AuditImport, Transaction> {
+public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final ObjectMapper objectMapper;
+    private final CardRepository cardRepository;
+    private final TransactionRepository transactionRepository;
 
     @Override
-    public Transaction process(AuditImport auditImport) throws JsonProcessingException {
+    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
-        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
+        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
+        Optional<Card> card = getCardByExternalId(batchAuditImport);
 
-        Transaction transaction = jobScopeCacheUtils.transactionCache().get(csvRow.getTxRequestRef());
-        if (transaction == null) {
-            Card card = jobScopeCacheUtils.cardCache().get(csvRow.getCardRef());
-            transaction = Transaction.builder()
-                    .card(card)
-                    .type(mapTransactionType(csvRow.getTxKind()))
-                    .createdAt(LocalDateTime.now())
-                    .amount(new BigDecimal(csvRow.getTxAmountTxt().replace(",", ".")))
-                    .requestId(UUID.fromString(csvRow.getTxRequestRef()))
-                    .cardExternalId(csvRow.getCardRef())
-                    .build();
-        }
-        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
-        return transaction;
+        if (card.isEmpty()) return null;
+        if (transactionRepository.existsByRequestId(UUID.fromString(csvFileRow.getTxRequestRef()))) return batchAuditImport;
+
+        batchAuditImport.setTransaction(Transaction.builder()
+                .type(mapTransactionType(csvFileRow.getTxKind()))
+                .createdAt(LocalDateTime.now())
+                .amount(new BigDecimal(csvFileRow.getTxAmountTxt().replace(",", ".")))
+                .requestId(UUID.fromString(csvFileRow.getTxRequestRef()))
+                .card(card.get())
+                .build());
+
+        return batchAuditImport;
     }
 
     private TransactionType mapTransactionType(String txKind) {
@@ -58,6 +57,11 @@ public class VcpTransactionProcessor implements ItemProcessor<AuditImport, Trans
                     "Invalid transaction type: " + txKind
             );
         };
+    }
+
+    private Optional<Card> getCardByExternalId(BatchAuditImport item) {
+        if (item.getCardRef().isEmpty()) return Optional.empty();
+        return cardRepository.findByExternalId(item.getCardRef());
     }
 
 }

@@ -1,63 +1,46 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.ProviderRepository;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.ProviderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Component
+@Slf4j
+@Component(SpringBatchWriter.PROVIDER)
 @StepScope
 @RequiredArgsConstructor
-public class VcpProviderWriter implements ItemWriter<Provider> {
+public class VcpProviderWriter implements ItemWriter<BatchAuditImport> {
 
     private final ProviderRepository providerRepository;
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final JdbcTemplate jdbcTemplate;
-
-    @Value("#{stepExecution.stepName}")
-    private String step;
+    private final BatchAuditMongoTemplate batchAuditMongoTemplate;
 
     @Override
-    public void write(Chunk<? extends Provider> chunk) {
-
-        // Remove duplicates and check if exists inside cache
-        Set<String> keyFilter = new HashSet<>();
-        var uniqueList = chunk.getItems().stream()
-                .filter(item -> !jobScopeCacheUtils.providerCache().containsKey(item.getCode()))
-                .filter(item -> keyFilter.add(item.getCode()))
-                .collect(Collectors.toList());
-
-        // Persist all entities
-        var persisted = providerRepository.saveAll(uniqueList);
-
-        // Refresh cache with persisted entities to ensure consistency
-        persisted.forEach(item -> jobScopeCacheUtils.providerCache().put(item.getCode(), item));
-
-        // Updating audit step
-        List<String> auditIds = new ArrayList<>(stepScopeCacheUtils.auditCache().keySet());
-        jdbcTemplate.batchUpdate(
-                "UPDATE audit_import SET is_processed_provider = ? WHERE id = ?",
-                auditIds,
-                auditIds.size(),
-                (ps, id) -> {
-                    ps.setString(1, "true");
-                    ps.setString(2, id);
+    public void write(Chunk<? extends BatchAuditImport> chunk) {
+        List<String> chunkCheck = new ArrayList<>();
+        for (BatchAuditImport item : chunk.getItems()) {
+            Provider provider = item.getProvider();
+            item.setAuxFlag(true);
+            if (provider != null && !chunkCheck.contains(provider.getCode())) {
+                try {
+                    chunkCheck.add(provider.getCode());
+                    providerRepository.save(provider);
+                } catch (DataIntegrityViolationException e) {
+                    item.setAuxFlag(false);
+                    log.warn("Provider already exists: {}", item.getId());
                 }
-        );
-        stepScopeCacheUtils.auditCache().clear();
+            }
+            batchAuditMongoTemplate.updateProcessedFlag(item, "isProcessedProvider");
+        }
     }
 }

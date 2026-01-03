@@ -1,13 +1,12 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.ProviderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -15,31 +14,27 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Component
+@Component(SpringBatchProcessor.PROVIDER)
 @StepScope
 @RequiredArgsConstructor
-public class VcpProviderProcessor implements ItemProcessor<AuditImport, Provider> {
+public class VcpProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final ObjectMapper objectMapper;
+    private final ProviderRepository providerRepository;
 
     @Override
-    public Provider process(AuditImport auditImport) throws JsonProcessingException {
+    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
-        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
+        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
+        if (providerRepository.existsByCode(csvFileRow.getProviderCode())) return batchAuditImport;
 
-        Provider provider = jobScopeCacheUtils.providerCache().get(csvRow.getProviderCode());
-        if (provider == null) {
-            provider = Provider.builder()
-                    .code(csvRow.getProviderCode())
-                    .createdAt(LocalDateTime.now())
-                    .status(mapProviderStatus(csvRow.getProviderState()))
-                    .country(csvRow.getProviderCountry())
-                    .build();
-        }
-        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
-        return provider;
+        batchAuditImport.setProvider(Provider.builder()
+                .code(csvFileRow.getProviderCode())
+                .createdAt(LocalDateTime.now())
+                .status(mapProviderStatus(csvFileRow.getProviderState()))
+                .country(csvFileRow.getProviderCountry())
+                .build());
+
+        return batchAuditImport;
     }
 
     private ProviderStatus mapProviderStatus(String state) {

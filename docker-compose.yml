@@ -1,20 +1,92 @@
-version: '3.8'
-
 services:
-  ms:
-    container_name: ms
+
+  api:
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-    restart: always
+    restart: unless-stopped
+
     ports:
-      - "8080:8080"
+      - "9090:9090"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+      # PostgreSQL
+      DATABASE_HOST: pgsql
+      DATABASE_PORT: 5432
+      DATABASE_NAME: virtual-card-platform
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+
+      # MongoDB
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      MONGO_DATABASE: virtual-card-platform
+
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+
+    networks:
+      - app-net
+
     volumes:
-      - ./vcp_data/ms/tmp:/var/lib/app
+      - app-data:/var/lib/app
+
+  pgsql:
+    container_name: pgsql
+    image: postgres:16
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: virtual-card-platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - app-net
+
+  mongo:
+    container_name: mongo
+    image: mongo:7
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongo-data:/data/db
+
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - app-net
 
 networks:
-  default:
-    name: vcp-net
+  app-net:
     driver: bridge
+
+volumes:
+  app-data:
+  pg-data:
+  mongo-data:

@@ -1,14 +1,11 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardProviderRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.ProviderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -16,37 +13,46 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-@Component
+@Component(SpringBatchProcessor.CARD_PROVIDER)
 @StepScope
 @RequiredArgsConstructor
-public class VcpCardProviderProcessor implements ItemProcessor<AuditImport, CardProvider> {
+public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final ObjectMapper objectMapper;
+    private final CardRepository cardRepository;
+    private final ProviderRepository providerRepository;
+    private final CardProviderRepository cardProviderRepository;
 
     @Override
-    public CardProvider process(AuditImport auditImport) throws JsonProcessingException {
+    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
-        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
+        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
+        Optional<Card> card = getCardByExternalId(batchAuditImport);
+        Optional<Provider> provider = getProviderByCode(batchAuditImport);
 
-        String keyMap = csvRow.getCardRef() + "_" + csvRow.getProviderCode();
-        CardProvider cardProvider = jobScopeCacheUtils.cardProviderCache().get(keyMap);
-        if (cardProvider == null) {
-            Card card = jobScopeCacheUtils.cardCache().get(csvRow.getCardRef());
-            Provider provider = jobScopeCacheUtils.providerCache().get(csvRow.getProviderCode());
-            cardProvider = CardProvider.builder()
-                    .card(card)
-                    .provider(provider)
-                    .createdAt(LocalDateTime.now())
-                    .feePercentage(new BigDecimal(csvRow.getProviderFeePctTxt().replace(",", ".")))
-                    .dailyLimit(new BigDecimal(csvRow.getProviderDailyLimitTxt().replace(",", ".")))
-                    .priority(Integer.parseInt(csvRow.getProviderPriorityTxt()))
-                    .keyMap(keyMap)
-                    .build();
-        }
-        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
-        return cardProvider;
+        if (card.isEmpty() || provider.isEmpty()) return null;
+        if (cardProviderRepository.existsByCardAndProvider(card.get(), provider.get())) return batchAuditImport;
+
+        batchAuditImport.setCardProvider(CardProvider.builder()
+                .createdAt(LocalDateTime.now())
+                .feePercentage(new BigDecimal(csvFileRow.getProviderFeePctTxt().replace(",", ".")))
+                .dailyLimit(new BigDecimal(csvFileRow.getProviderDailyLimitTxt().replace(",", ".")))
+                .priority(Integer.parseInt(csvFileRow.getProviderPriorityTxt()))
+                .card(card.get())
+                .provider(provider.get())
+                .build());
+
+        return batchAuditImport;
+    }
+
+    private Optional<Card> getCardByExternalId(BatchAuditImport item) {
+        if (item.getCardRef().isEmpty()) return Optional.empty();
+        return cardRepository.findByExternalId(item.getCardRef());
+    }
+
+    private Optional<Provider> getProviderByCode(BatchAuditImport item) {
+        if (item.getProviderCode().isEmpty()) return Optional.empty();
+        return providerRepository.findByCode(item.getProviderCode());
     }
 }

@@ -1,63 +1,49 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.TransactionRepository;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
-@Component
+@Slf4j
+@Component(SpringBatchWriter.TRANSACTION)
 @StepScope
 @RequiredArgsConstructor
-public class VcpTransactionWriter implements ItemWriter<Transaction> {
+public class VcpTransactionWriter implements ItemWriter<BatchAuditImport> {
 
     private final TransactionRepository transactionRepository;
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final JdbcTemplate jdbcTemplate;
-
-    @Value("#{stepExecution.stepName}")
-    private String step;
+    private final BatchAuditMongoTemplate batchAuditMongoTemplate;
 
     @Override
-    public void write(Chunk<? extends Transaction> chunk) {
-
-        // Remove duplicates and check if exists inside cache
-        Set<String> keyFilter = new HashSet<>();
-        var uniqueList = chunk.getItems().stream()
-                .filter(item -> !jobScopeCacheUtils.transactionCache().containsKey(item.getRequestId()))
-                .filter(item -> keyFilter.add(item.getRequestId().toString()))
-                .collect(Collectors.toList());
-
-        // Persist all entities
-        var persisted = transactionRepository.saveAll(uniqueList);
-
-        // Refresh cache with persisted entities to ensure consistency
-        persisted.forEach(item -> jobScopeCacheUtils.transactionCache().put(item.getRequestId().toString(), item));
-
-        // Updating audit step
-        List<String> auditIds = new ArrayList<>(stepScopeCacheUtils.auditCache().keySet());
-        jdbcTemplate.batchUpdate(
-                "UPDATE audit_import SET is_processed_transaction = ? WHERE id = ?",
-                auditIds,
-                auditIds.size(),
-                (ps, id) -> {
-                    ps.setString(1, "true");
-                    ps.setString(2, id);
+    public void write(Chunk<? extends BatchAuditImport> chunk) {
+        List<UUID> chunkCheck = new ArrayList<>();
+        for (BatchAuditImport item : chunk.getItems()) {
+            Transaction transaction = item.getTransaction();
+            item.setAuxFlag(true);
+            if (transaction != null && !chunkCheck.contains(transaction.getRequestId())) {
+                try {
+                    chunkCheck.add(transaction.getRequestId());
+                    transactionRepository.save(transaction);
+                } catch (DataIntegrityViolationException e) {
+                    item.setAuxFlag(false);
+                    log.warn("Transaction already exists: {}", item.getId());
                 }
-        );
-        stepScopeCacheUtils.auditCache().clear();
+            }
+            batchAuditMongoTemplate.updateProcessedFlag(item, "isProcessedTransaction");
+        }
     }
+
+
 }

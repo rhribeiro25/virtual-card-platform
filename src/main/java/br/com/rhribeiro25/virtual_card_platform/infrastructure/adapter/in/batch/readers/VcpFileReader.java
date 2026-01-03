@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.readers;
 
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
@@ -14,8 +14,8 @@ public class VcpFileReader {
 
     @Bean
     @StepScope
-    public FlatFileItemReader<CsvRow> fileReader() {
-        return new FlatFileItemReaderBuilder<CsvRow>()
+    public FlatFileItemReader<CsvFileRow> fileReader() {
+        return new FlatFileItemReaderBuilder<CsvFileRow>()
                 .name("fileReader")
                 .resource(new ClassPathResource("input/virtual_cards_25k.csv"))
                 .linesToSkip(1)
@@ -34,7 +34,7 @@ public class VcpFileReader {
                         "txKind", "txAmountTxt", "txRequestRef"
                 )
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(CsvRow.class);
+                    setTargetType(CsvFileRow.class);
                 }})
                 .build();
     }

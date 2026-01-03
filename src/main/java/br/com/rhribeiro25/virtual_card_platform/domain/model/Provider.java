@@ -1,6 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class Provider {
 
     @Id
@@ -31,7 +32,7 @@ public class Provider {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, length = 50)
     private String code;
 
     @Column(nullable = false)
@@ -42,6 +43,18 @@ public class Provider {
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<CardProvider> cardProviders;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Provider provider = (Provider) o;
+        return Objects.equals(code, provider.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(code);
+    }
 
 }
 

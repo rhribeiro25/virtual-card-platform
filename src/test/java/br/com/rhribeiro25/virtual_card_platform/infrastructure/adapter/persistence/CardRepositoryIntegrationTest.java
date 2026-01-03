@@ -2,7 +2,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.persistence;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,10 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchStep;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -22,17 +25,15 @@ public class VcpProviderStep {
     public Step providerStep(
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
+            ItemReader<BatchAuditImport> jbcReader,
 
-            ItemReader<AuditImport> jbcReader,
-
-            @Qualifier("vcpProviderProcessor")
-            ItemProcessor<AuditImport, Provider> processor,
-
-            @Qualifier("vcpProviderWriter")
-            ItemWriter<Provider> writer
+            @Qualifier(SpringBatchProcessor.PROVIDER)
+            ItemProcessor<BatchAuditImport, BatchAuditImport> processor,
+            @Qualifier(SpringBatchWriter.PROVIDER)
+            ItemWriter<BatchAuditImport> writer
     ) {
-        return new StepBuilder("providerStep", jobRepository).
-                <AuditImport, Provider>chunk(5000, transactionManager)
+        return new StepBuilder(SpringBatchStep.PROVIDER, jobRepository).
+                <BatchAuditImport, BatchAuditImport>chunk(1000, transactionManager)
                 .reader(jbcReader)
                 .processor(processor)
                 .writer(writer)

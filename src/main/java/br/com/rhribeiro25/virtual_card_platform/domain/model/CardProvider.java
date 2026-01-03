@@ -16,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class CardProvider {
 
     @Id
@@ -47,8 +46,4 @@ public class CardProvider {
 
     @Column(nullable = false)
     private Integer priority;
-
-    @Transient
-    private String keyMap;
-
 }

@@ -3,7 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.data.domain.Page;

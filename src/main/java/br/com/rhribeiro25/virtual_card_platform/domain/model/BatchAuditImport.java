@@ -1,9 +1,12 @@
-package br.com.rhribeiro25.virtual_card_platform.application.dto;
+package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,20 +22,38 @@ import java.util.UUID;
  * - JDBC only
  * - Chunk-oriented
  */
+@Document(collection = "batch_audit_import")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuditImport {
+public class BatchAuditImport {
 
+    @Id
     private UUID id;
     private String cardRef;
     private String providerCode;
     private UUID txRequestRef;
-    private String rawPayload;
+    private CsvFileRow csvFileRow;
     private Boolean isProcessedCard;
     private Boolean isProcessedProvider;
     private Boolean isProcessedCardProvider;
     private Boolean isProcessedTransaction;
     private LocalDateTime createdAt;
+
+    @Transient
+    private Boolean auxFlag;
+
+    @Transient
+    private Card card;
+
+    @Transient
+    private Provider provider;
+
+    @Transient
+    private CardProvider cardProvider;
+
+    @Transient
+    private Transaction transaction;
+
 }

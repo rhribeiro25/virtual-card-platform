@@ -1,7 +1,10 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
 
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchStep;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
@@ -26,17 +29,17 @@ public class VcpAuditStep {
             PlatformTransactionManager transactionManager,
             TaskExecutor task,
 
-            ItemReader<CsvRow> fileReader,
+            ItemReader<CsvFileRow> fileReader,
 
-            @Qualifier("vcpAuditProcessor")
-            ItemProcessor<CsvRow, AuditImport> processor,
+            @Qualifier(SpringBatchProcessor.AUDIT)
+            ItemProcessor<CsvFileRow, BatchAuditImport> processor,
 
-            @Qualifier("vcpAuditWriter")
-            ItemWriter<AuditImport> writer
+            @Qualifier(SpringBatchWriter.AUDIT)
+            ItemWriter<BatchAuditImport> writer
 
     ) {
-        return new StepBuilder("auditStep", jobRepository)
-                .<CsvRow, AuditImport>chunk(5000, transactionManager)
+        return new StepBuilder(SpringBatchStep.AUDIT, jobRepository)
+                .<CsvFileRow, BatchAuditImport>chunk(1000, transactionManager)
                 .reader(fileReader)
                 .processor(processor)
                 .writer(writer)

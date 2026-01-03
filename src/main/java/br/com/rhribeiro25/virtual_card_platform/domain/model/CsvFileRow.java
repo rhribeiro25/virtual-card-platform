@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.application.dto;
+package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CsvRow {
+public class CsvFileRow {
     // === Card identification (legacy system) ===
     private String cardRef;              // "VC-9981" (external card reference)
     private String state;                // "A" | "B" (A=Active, B=Blocked)

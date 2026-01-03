@@ -6,7 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransa
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;

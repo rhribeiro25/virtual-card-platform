@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -19,7 +20,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode
 public class Card {
 
     @Id
@@ -90,5 +90,17 @@ public class Card {
         if (this.status == null) {
             this.status = CardStatus.ACTIVE;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Objects.equals(externalId, card.externalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(externalId);
     }
 }

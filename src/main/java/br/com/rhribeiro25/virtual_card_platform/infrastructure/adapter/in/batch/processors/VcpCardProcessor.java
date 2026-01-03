@@ -1,14 +1,13 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardBrand;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.AuditImport;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.CsvRow;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.JobScopeCacheUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StepScopeCacheUtils;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -18,44 +17,39 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-@Component
+@Component(SpringBatchProcessor.CARD)
 @StepScope
 @RequiredArgsConstructor
-public class VcpCardProcessor implements ItemProcessor<AuditImport, Card> {
+public class VcpCardProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final JobScopeCacheUtils jobScopeCacheUtils;
-    private final StepScopeCacheUtils stepScopeCacheUtils;
-    private final ObjectMapper objectMapper;
+    private final CardRepository cardRepository;
 
     @Override
-    public Card process(AuditImport auditImport) throws JsonProcessingException {
+    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
-        CsvRow csvRow = objectMapper.readValue(auditImport.getRawPayload(), CsvRow.class);
-        Card card = jobScopeCacheUtils.cardCache().get(csvRow.getCardRef());
-        if (card == null) {
-            card = Card.builder()
-                    .externalId(csvRow.getCardRef())
-                    .createdAt(LocalDateTime.now())
-                    .status(mapCardStatus(csvRow.getState()))
-                    .brand(mapBrand(csvRow.getBrandCode()))
-                    .holderName(csvRow.getHolderNameRaw())
-                    .balance(new BigDecimal(csvRow.getBalanceTxt().replace(",", ".")))
-                    .internationalAllowed(mapBooleanAttribute(csvRow.getInternationalFlag()))
-                    .expiryDate(parseExpiry(csvRow.getExpiryTxt()))
-                    .cvv(Integer.parseInt(csvRow.getCvvTxt()))
-                    .pinCode(csvRow.getPinTxt())
-                    .maxDailyTransactions(Integer.parseInt(csvRow.getMaxDailyTxTxt()))
-                    .maxTransactionAmount(new BigDecimal(csvRow.getMaxTxAmountTxt().replace(",", ".")))
-                    .country(csvRow.getIssuingCountryCode())
-                    .notes(csvRow.getNotesRaw())
-                    .build();
-        }
+        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
+        if(cardRepository.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
 
-        stepScopeCacheUtils.auditCache().put(auditImport.getId().toString(), auditImport);
+        batchAuditImport.setCard(Card.builder()
+                .externalId(csvFileRow.getCardRef())
+                .createdAt(LocalDateTime.now())
+                .status(mapCardStatus(csvFileRow.getState()))
+                .brand(mapBrand(csvFileRow.getBrandCode()))
+                .holderName(csvFileRow.getHolderNameRaw())
+                .balance(new BigDecimal(csvFileRow.getBalanceTxt().replace(",", ".")))
+                .internationalAllowed(mapBooleanAttribute(csvFileRow.getInternationalFlag()))
+                .expiryDate(parseExpiry(csvFileRow.getExpiryTxt()))
+                .cvv(Integer.parseInt(csvFileRow.getCvvTxt()))
+                .pinCode(csvFileRow.getPinTxt())
+                .maxDailyTransactions(Integer.parseInt(csvFileRow.getMaxDailyTxTxt()))
+                .maxTransactionAmount(new BigDecimal(csvFileRow.getMaxTxAmountTxt().replace(",", ".")))
+                .country(csvFileRow.getIssuingCountryCode())
+                .notes(csvFileRow.getNotesRaw())
+                .build());
 
-        return card;
-
+        return batchAuditImport;
     }
 
 
