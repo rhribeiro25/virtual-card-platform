@@ -9,6 +9,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Set;
 
+@Slf4j
 @Component(SpringBatchProcessor.CARD)
 @StepScope
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class VcpCardProcessor implements ItemProcessor<BatchAuditImport, BatchAu
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
         CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        if(cardRepository.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
+        if (cardRepository.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
 
         batchAuditImport.setCard(Card.builder()
                 .externalId(csvFileRow.getCardRef())

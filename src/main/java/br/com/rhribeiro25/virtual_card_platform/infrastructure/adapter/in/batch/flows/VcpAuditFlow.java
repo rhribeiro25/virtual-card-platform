@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.flows;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchFlow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.FlowBuilder;
@@ -15,7 +16,7 @@ public class VcpAuditFlow {
     public Flow auditFlow(
             Step auditStep
     ) {
-        return new FlowBuilder<Flow>("auditFlow")
+        return new FlowBuilder<Flow>(SpringBatchFlow.AUDIT)
                 .start(auditStep)
                 .build();
     }

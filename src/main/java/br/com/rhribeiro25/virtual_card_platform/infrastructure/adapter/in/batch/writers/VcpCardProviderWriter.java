@@ -24,6 +24,7 @@ public class VcpCardProviderWriter implements ItemWriter<BatchAuditImport> {
 
     @Override
     public void write(Chunk<? extends BatchAuditImport> chunk) {
+        log.info("Starting: {}", SpringBatchWriter.CARD_PROVIDER);
         for (BatchAuditImport item : chunk.getItems()) {
             CardProvider cardProvider = item.getCardProvider();
             item.setAuxFlag(true);

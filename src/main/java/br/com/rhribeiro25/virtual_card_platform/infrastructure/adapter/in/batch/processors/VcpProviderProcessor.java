@@ -8,12 +8,14 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatu
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.ProviderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Component(SpringBatchProcessor.PROVIDER)
 @StepScope
 @RequiredArgsConstructor

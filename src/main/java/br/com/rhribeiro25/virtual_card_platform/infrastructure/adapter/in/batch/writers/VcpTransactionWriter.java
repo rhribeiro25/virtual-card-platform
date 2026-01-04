@@ -28,6 +28,7 @@ public class VcpTransactionWriter implements ItemWriter<BatchAuditImport> {
 
     @Override
     public void write(Chunk<? extends BatchAuditImport> chunk) {
+        log.info("Starting: {}", SpringBatchWriter.TRANSACTION);
         List<UUID> chunkCheck = new ArrayList<>();
         for (BatchAuditImport item : chunk.getItems()) {
             Transaction transaction = item.getTransaction();

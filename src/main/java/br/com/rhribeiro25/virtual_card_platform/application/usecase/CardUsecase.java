@@ -1,12 +1,13 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
+import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
 import br.com.rhribeiro25.virtual_card_platform.application.port.in.InputTransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BusinessException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
@@ -15,6 +16,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundExcepti
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -85,6 +88,29 @@ public class CardUsecase {
     public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
         getCardById(cardId);
         return transactionUsecase.getTransactionsByCardId(cardId, pageable);
+    }
+
+    @Cacheable(
+            value = "card-cache",
+            key = "#externalId",
+            unless = "#result == null"
+    )
+    public Optional<Card> getCardByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId);
+    }
+
+    @CachePut(
+            value = "card-cache",
+            key = "#card.externalId"
+    )
+    public Card saveByBatch(Card card) {
+        try {
+            return cardRepository.save(card);
+        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
+            throw new ConflictException(MessageUtils.getMessage("card.conflict"));
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
     }
 
 }

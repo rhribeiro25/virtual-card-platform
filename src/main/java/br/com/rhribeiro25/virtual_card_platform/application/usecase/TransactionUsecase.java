@@ -56,4 +56,6 @@ public class TransactionUsecase {
     public Optional<Transaction> verifyDuplicateTransaction(UUID cardId, UUID requestId) {
         return transactionRepository.findByCardIdAndRequestId(cardId, requestId);
     }
+
+
 }

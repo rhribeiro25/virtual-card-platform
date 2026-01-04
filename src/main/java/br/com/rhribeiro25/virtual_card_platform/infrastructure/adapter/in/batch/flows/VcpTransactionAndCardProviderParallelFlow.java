@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.flows;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchFlow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
@@ -17,7 +18,7 @@ public class VcpTransactionAndCardProviderParallelFlow {
             Flow transactionFlow,
             Flow cardProviderFlow
     ) {
-        return new FlowBuilder<Flow>("transactionAndCardProviderParallelFlow")
+        return new FlowBuilder<Flow>(SpringBatchFlow.CARD_PROVIDER_AND_TRANSACTION)
                 .split(task)
                 .add(transactionFlow, cardProviderFlow)
                 .build();
