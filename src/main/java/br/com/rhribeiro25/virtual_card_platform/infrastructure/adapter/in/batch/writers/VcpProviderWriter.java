@@ -31,13 +31,13 @@ public class VcpProviderWriter implements ItemWriter<BatchAuditImport> {
         List<String> chunkCheck = new ArrayList<>();
         for (BatchAuditImport item : chunk.getItems()) {
             Provider provider = item.getProvider();
-            item.setAuxFlag(true);
+            item.setIsTransientEntitySaved(true);
             if (provider != null && !chunkCheck.contains(provider.getCode())) {
                 try {
                     chunkCheck.add(provider.getCode());
                     providerUsecase.saveByBatch(provider);
                 } catch (DataIntegrityViolationException e) {
-                    item.setAuxFlag(false);
+                    item.setIsTransientEntitySaved(false);
                     log.warn("Provider already exists: {}", item.getId());
                 }
             }

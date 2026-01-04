@@ -1,13 +1,13 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
     private final CardUsecase cardUsecase;
-    private final TransactionRepository transactionRepository;
+    private final TransactionUsecase transactionUsecase;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
@@ -36,7 +36,7 @@ public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, 
         Optional<Card> card = cardUsecase.getCardByExternalId(batchAuditImport.getCardRef());
 
         if (card.isEmpty()) return null;
-        if (transactionRepository.existsByRequestId(UUID.fromString(csvFileRow.getTxRequestRef())))
+        if (transactionUsecase.existsByRequestId(UUID.fromString(csvFileRow.getTxRequestRef())))
             return batchAuditImport;
 
         batchAuditImport.setTransaction(Transaction.builder()

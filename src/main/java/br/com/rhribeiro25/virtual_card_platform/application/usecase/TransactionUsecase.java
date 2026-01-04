@@ -57,5 +57,14 @@ public class TransactionUsecase {
         return transactionRepository.findByCardIdAndRequestId(cardId, requestId);
     }
 
+    /*******************************************************************************************************************
+     SPRING BATCH METHODS
+     ********************************************************************************************************************/
+    public Transaction saveByBatch(Transaction transaction) {
+        return transactionRepository.save(transaction);
+    }
 
+    public boolean existsByRequestId(UUID requestId) {
+        return transactionRepository.existsByRequestId(requestId);
+    }
 }

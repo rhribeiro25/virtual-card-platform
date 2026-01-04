@@ -5,7 +5,6 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -32,13 +31,13 @@ public class VcpCardWriter implements ItemWriter<BatchAuditImport> {
         List<String> chunkCheck = new ArrayList<>();
         for (BatchAuditImport item : chunk.getItems()) {
             Card card = item.getCard();
-            item.setAuxFlag(true);
+            item.setIsTransientEntitySaved(true);
             if (card != null && !chunkCheck.contains(card.getExternalId())) {
                 try {
                     chunkCheck.add(card.getExternalId());
                     cardUsecase.saveByBatch(card);
                 } catch (DataIntegrityViolationException e) {
-                    item.setAuxFlag(false);
+                    item.setIsTransientEntitySaved(false);
                     log.warn("Card already exists: {}", item.getId());
                 }
             }

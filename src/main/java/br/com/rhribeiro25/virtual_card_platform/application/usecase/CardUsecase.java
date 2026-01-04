@@ -4,7 +4,6 @@ import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionReque
 import br.com.rhribeiro25.virtual_card_platform.application.port.in.InputTransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
@@ -90,14 +89,9 @@ public class CardUsecase {
         return transactionUsecase.getTransactionsByCardId(cardId, pageable);
     }
 
-    @Cacheable(
-            value = "card-cache",
-            key = "#externalId",
-            unless = "#result == null"
-    )
-    public Optional<Card> getCardByExternalId(String externalId) {
-        return cardRepository.findByExternalId(externalId);
-    }
+    /*******************************************************************************************************************
+     SPRING BATCH METHODS
+     ********************************************************************************************************************/
 
     @CachePut(
             value = "card-cache",
@@ -113,4 +107,16 @@ public class CardUsecase {
         }
     }
 
+    @Cacheable(
+            value = "card-cache",
+            key = "#externalId",
+            unless = "#result == null"
+    )
+    public Optional<Card> getCardByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId);
+    }
+
+    public boolean existsByExternalId(String externalId) {
+        return cardRepository.existsByExternalId(externalId);
+    }
 }

@@ -1,10 +1,10 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -23,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VcpTransactionWriter implements ItemWriter<BatchAuditImport> {
 
-    private final TransactionRepository transactionRepository;
+    private final TransactionUsecase transactionUsecase;
     private final BatchAuditMongoTemplate batchAuditMongoTemplate;
 
     @Override
@@ -32,13 +32,13 @@ public class VcpTransactionWriter implements ItemWriter<BatchAuditImport> {
         List<UUID> chunkCheck = new ArrayList<>();
         for (BatchAuditImport item : chunk.getItems()) {
             Transaction transaction = item.getTransaction();
-            item.setAuxFlag(true);
+            item.setIsTransientEntitySaved(true);
             if (transaction != null && !chunkCheck.contains(transaction.getRequestId())) {
                 try {
                     chunkCheck.add(transaction.getRequestId());
-                    transactionRepository.save(transaction);
+                    transactionUsecase.saveByBatch(transaction);
                 } catch (DataIntegrityViolationException e) {
-                    item.setAuxFlag(false);
+                    item.setIsTransientEntitySaved(false);
                     log.warn("Transaction already exists: {}", item.getId());
                 }
             }

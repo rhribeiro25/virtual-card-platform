@@ -42,7 +42,7 @@ public class BatchAuditImport {
     private LocalDateTime createdAt;
 
     @Transient
-    private Boolean auxFlag;
+    private Boolean isTransientEntitySaved;
 
     @Transient
     private Card card;

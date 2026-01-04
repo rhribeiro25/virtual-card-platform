@@ -18,7 +18,7 @@ public class BatchAuditMongoTemplate {
     public void updateProcessedFlag(BatchAuditImport auditImport, String fieldName) {
         mongoTemplate.updateMulti(
                 query(Criteria.where("_id").is(auditImport.getId())),
-                Update.update(fieldName, auditImport.getAuxFlag()),
+                Update.update(fieldName, auditImport.getIsTransientEntitySaved()),
                 BatchAuditImport.class
         );
     }

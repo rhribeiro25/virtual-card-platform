@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
@@ -25,13 +26,13 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class VcpCardProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final CardRepository cardRepository;
+    private final CardUsecase cardUsecase;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
         CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        if (cardRepository.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
+        if (cardUsecase.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
 
         batchAuditImport.setCard(Card.builder()
                 .externalId(csvFileRow.getCardRef())

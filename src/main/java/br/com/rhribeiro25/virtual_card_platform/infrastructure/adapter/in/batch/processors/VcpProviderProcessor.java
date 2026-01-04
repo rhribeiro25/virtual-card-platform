@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
@@ -21,13 +22,13 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class VcpProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
-    private final ProviderRepository providerRepository;
+    private final ProviderUsecase providerUsecase;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
 
         CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        if (providerRepository.existsByCode(csvFileRow.getProviderCode())) return batchAuditImport;
+        if (providerUsecase.existsByCode(csvFileRow.getProviderCode())) return batchAuditImport;
 
         batchAuditImport.setProvider(Provider.builder()
                 .code(csvFileRow.getProviderCode())

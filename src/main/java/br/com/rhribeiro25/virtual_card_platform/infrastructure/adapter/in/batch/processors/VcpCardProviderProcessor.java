@@ -1,10 +1,10 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardProviderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport,
 
     private final CardUsecase cardUsecase;
     private final ProviderUsecase providerUsecase;
-    private final CardProviderRepository cardProviderRepository;
+    private final CardProviderUsecase cardProviderUsecase;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
@@ -34,7 +34,7 @@ public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport,
         Optional<Provider> provider = providerUsecase.getProviderByCode(batchAuditImport.getProviderCode());
 
         if (card.isEmpty() || provider.isEmpty()) return null;
-        if (cardProviderRepository.existsByCardAndProvider(card.get(), provider.get())) return batchAuditImport;
+        if (cardProviderUsecase.existsByCardAndProvider(card.get(), provider.get())) return batchAuditImport;
 
         batchAuditImport.setCardProvider(CardProvider.builder()
                 .createdAt(LocalDateTime.now())

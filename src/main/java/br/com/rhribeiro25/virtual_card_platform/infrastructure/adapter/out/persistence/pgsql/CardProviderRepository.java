@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface CardProviderRepository extends JpaRepository<CardProvider, UUID> {
     boolean existsByCardAndProvider(Card card, Provider provider);
+
 }
