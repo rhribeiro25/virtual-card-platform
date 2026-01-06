@@ -1,10 +1,9 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchStep;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchStep;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;

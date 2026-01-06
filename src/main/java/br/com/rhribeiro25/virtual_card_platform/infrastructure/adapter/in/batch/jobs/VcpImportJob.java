@@ -1,6 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.jobs;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchJob;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchJob;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;

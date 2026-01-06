@@ -6,7 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;

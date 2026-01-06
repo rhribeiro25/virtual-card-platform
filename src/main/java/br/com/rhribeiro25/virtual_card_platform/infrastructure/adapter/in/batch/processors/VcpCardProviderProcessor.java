@@ -4,7 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardProvider
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.contants.SpringBatchWriter;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
