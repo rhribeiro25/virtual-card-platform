@@ -1,8 +1,8 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers;
 
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +10,12 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component(SpringBatchWriter.PROVIDER)
+@Component(SpringBatchWriter.CARD)
 @StepScope
 @RequiredArgsConstructor
-public class VcpProviderWriter extends VcpAbstractBatchWriter<Provider, String> {
+public class VcpCardWriterVcp extends VcpAbstractBatchWriter<Card, String> {
 
-    private final ProviderUsecase providerUsecase;
+    private final CardUsecase cardUsecase;
 
     @Override
     protected String writerName() {
@@ -23,22 +23,22 @@ public class VcpProviderWriter extends VcpAbstractBatchWriter<Provider, String> 
     }
 
     @Override
-    protected Provider extractEntity(BatchAuditImport item) {
-        return item.getProvider();
+    protected Card extractEntity(BatchAuditImport item) {
+        return item.getCard();
     }
 
     @Override
-    protected String extractKey(Provider provider) {
-        return provider.getCode();
+    protected String extractKey(Card card) {
+        return card.getExternalId();
     }
 
     @Override
-    protected void save(Provider provider) {
-        providerUsecase.saveByBatch(provider);
+    protected void save(Card card) {
+        cardUsecase.saveByBatch(card);
     }
 
     @Override
     protected String processedFlag() {
-        return BatchAuditImport.Fields.isProcessedProvider;
+        return BatchAuditImport.Fields.isProcessedCard;
     }
 }

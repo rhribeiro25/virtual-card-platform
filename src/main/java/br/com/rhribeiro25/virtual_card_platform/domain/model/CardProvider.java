@@ -46,4 +46,8 @@ public class CardProvider {
 
     @Column(nullable = false)
     private Integer priority;
+
+    public String getKey(){
+        return card.getExternalId() + "_" + provider.getCode();
+    }
 }
