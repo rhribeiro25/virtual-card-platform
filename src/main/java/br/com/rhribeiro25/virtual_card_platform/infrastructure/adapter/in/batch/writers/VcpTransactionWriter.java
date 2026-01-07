@@ -46,5 +46,4 @@ public class VcpTransactionWriter extends VcpAbstractBatchWriter<Transaction, St
     protected String processedFlag() {
         return BatchAuditImport.Fields.isProcessedTransaction;
     }
-
 }
