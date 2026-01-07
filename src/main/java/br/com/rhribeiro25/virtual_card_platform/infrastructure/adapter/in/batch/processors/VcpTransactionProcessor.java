@@ -6,8 +6,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, 
 
     private final CardUsecase cardUsecase;
     private final TransactionUsecase transactionUsecase;
+    private final TransactionService transactionService;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
@@ -40,7 +41,7 @@ public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, 
             return batchAuditImport;
 
         batchAuditImport.setTransaction(Transaction.builder()
-                .type(mapTransactionType(csvFileRow.getTxKind()))
+                .type(transactionService.mapType(csvFileRow.getTxKind()))
                 .createdAt(LocalDateTime.now())
                 .amount(new BigDecimal(csvFileRow.getTxAmountTxt().replace(",", ".")))
                 .requestId(UUID.fromString(csvFileRow.getTxRequestRef()))
@@ -50,17 +51,7 @@ public class VcpTransactionProcessor implements ItemProcessor<BatchAuditImport, 
         return batchAuditImport;
     }
 
-    private TransactionType mapTransactionType(String txKind) {
 
-        return switch (txKind) {
-            case "P" -> TransactionType.SPEND;
-            case "C" -> TransactionType.TOPUP;
-            case "T" -> TransactionType.TRANSFER;
-            default -> throw new IllegalArgumentException(
-                    "Invalid transaction type: " + txKind
-            );
-        };
-    }
 
 
 }

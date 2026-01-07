@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.domain.service;
+package br.com.rhribeiro25.virtual_card_platform.domain.service.validations;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;

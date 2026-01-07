@@ -41,7 +41,7 @@ public class VcpProviderWriter implements ItemWriter<BatchAuditImport> {
                     log.warn("Provider already exists: {}", item.getId());
                 }
             }
-            batchAuditMongoTemplate.updateProcessedFlag(item, "isProcessedProvider");
+            batchAuditMongoTemplate.updateProcessedFlag(item, BatchAuditImport.Fields.isProcessedProvider);
         }
     }
 }

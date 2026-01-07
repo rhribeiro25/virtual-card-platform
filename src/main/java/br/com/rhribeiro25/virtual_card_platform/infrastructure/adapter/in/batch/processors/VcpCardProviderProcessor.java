@@ -5,6 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport,
     private final CardUsecase cardUsecase;
     private final ProviderUsecase providerUsecase;
     private final CardProviderUsecase cardProviderUsecase;
+    private final BigDecimalUtils bigDecimalUtils;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
@@ -38,8 +40,8 @@ public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport,
 
         batchAuditImport.setCardProvider(CardProvider.builder()
                 .createdAt(LocalDateTime.now())
-                .feePercentage(new BigDecimal(csvFileRow.getProviderFeePctTxt().replace(",", ".")))
-                .dailyLimit(new BigDecimal(csvFileRow.getProviderDailyLimitTxt().replace(",", ".")))
+                .feePercentage(bigDecimalUtils.stringToBigDecimal(csvFileRow.getProviderFeePctTxt()))
+                .dailyLimit(bigDecimalUtils.stringToBigDecimal(csvFileRow.getProviderDailyLimitTxt()))
                 .priority(Integer.parseInt(csvFileRow.getProviderPriorityTxt()))
                 .card(card.get())
                 .provider(provider.get())

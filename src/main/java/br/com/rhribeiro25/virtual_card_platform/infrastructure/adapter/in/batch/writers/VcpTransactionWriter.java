@@ -42,7 +42,7 @@ public class VcpTransactionWriter implements ItemWriter<BatchAuditImport> {
                     log.warn("Transaction already exists: {}", item.getId());
                 }
             }
-            batchAuditMongoTemplate.updateProcessedFlag(item, "isProcessedTransaction");
+            batchAuditMongoTemplate.updateProcessedFlag(item, BatchAuditImport.Fields.isProcessedTransaction);
         }
     }
 

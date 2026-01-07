@@ -3,7 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.application.template;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionValidation;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionValidation;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

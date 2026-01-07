@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsec
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.ProviderService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 public class VcpProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
     private final ProviderUsecase providerUsecase;
+    private final ProviderService providerService;
 
     @Override
     public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
@@ -32,22 +34,13 @@ public class VcpProviderProcessor implements ItemProcessor<BatchAuditImport, Bat
         batchAuditImport.setProvider(Provider.builder()
                 .code(csvFileRow.getProviderCode())
                 .createdAt(LocalDateTime.now())
-                .status(mapProviderStatus(csvFileRow.getProviderState()))
+                .status(providerService.mapStatus(csvFileRow.getProviderState()))
                 .country(csvFileRow.getProviderCountry())
                 .build());
 
         return batchAuditImport;
     }
 
-    private ProviderStatus mapProviderStatus(String state) {
 
-        return switch (state) {
-            case "A" -> ProviderStatus.ACTIVE;
-            case "B" -> ProviderStatus.BLOCKED;
-            default -> throw new IllegalArgumentException(
-                    "Invalid Provider: " + state
-            );
-        };
-    }
 
 }

@@ -41,7 +41,7 @@ public class VcpCardWriter implements ItemWriter<BatchAuditImport> {
                     log.warn("Card already exists: {}", item.getId());
                 }
             }
-            batchAuditMongoTemplate.updateProcessedFlag(item, "isProcessedCard");
+            batchAuditMongoTemplate.updateProcessedFlag(item, BatchAuditImport.Fields.isProcessedCard);
         }
     }
 }
