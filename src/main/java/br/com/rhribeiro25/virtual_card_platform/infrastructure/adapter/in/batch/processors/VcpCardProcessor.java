@@ -8,12 +8,9 @@ import br.com.rhribeiro25.virtual_card_platform.domain.service.CardService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -21,7 +18,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component(SpringBatchProcessor.CARD)
 @StepScope
-@SuperBuilder
+@RequiredArgsConstructor
 public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
 
     private final CardUsecase cardUsecase;

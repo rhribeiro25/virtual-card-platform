@@ -33,7 +33,7 @@ public class VcpFileReader {
                 .delimited()
                 .delimiter(springBatchReader.DELIMITER)
                 .quoteCharacter(springBatchReader.QUOTE_CHARACTER.charAt(0))
-                .names(String.valueOf(springBatchReader.COLUMNS))
+                .names(springBatchReader.COLUMNS.toArray(new String[0]))
                 .fieldSetMapper(springBatchReader.FIELD_SET_MAPPER)
                 .build();
     }

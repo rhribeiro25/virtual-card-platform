@@ -2,12 +2,10 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
 
 @Slf4j
-@SuperBuilder
 public abstract class VcpAbstractBatchProcessor<T> implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
     @Override

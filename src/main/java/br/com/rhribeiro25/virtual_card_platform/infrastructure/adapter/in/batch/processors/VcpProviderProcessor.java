@@ -6,7 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.ProviderService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
-import lombok.experimental.SuperBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component(SpringBatchProcessor.PROVIDER)
 @StepScope
-@SuperBuilder
+@RequiredArgsConstructor
 public class VcpProviderProcessor extends VcpAbstractBatchProcessor<Provider> {
 
     private final ProviderUsecase providerUsecase;
