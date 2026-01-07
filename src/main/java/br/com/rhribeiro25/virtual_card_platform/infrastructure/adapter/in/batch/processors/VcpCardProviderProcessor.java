@@ -8,6 +8,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProce
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -20,8 +21,8 @@ import java.util.Optional;
 @Slf4j
 @Component(SpringBatchProcessor.CARD_PROVIDER)
 @StepScope
-@RequiredArgsConstructor
-public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
+@SuperBuilder
+public class VcpCardProviderProcessor extends VcpAbstractBatchProcessor<CardProvider> {
 
     private final CardUsecase cardUsecase;
     private final ProviderUsecase providerUsecase;
@@ -29,25 +30,37 @@ public class VcpCardProviderProcessor implements ItemProcessor<BatchAuditImport,
     private final BigDecimalUtils bigDecimalUtils;
 
     @Override
-    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
+    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
+        return cardProviderUsecase.existsByCardAndProvider(
+                cardUsecase.getCardByExternalId(item.getCardRef()).orElse(null),
+                providerUsecase.getProviderByCode(item.getProviderCode()).orElse(null)
+        );
+    }
 
-        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        Optional<Card> card = cardUsecase.getCardByExternalId(batchAuditImport.getCardRef());
-        Optional<Provider> provider = providerUsecase.getProviderByCode(batchAuditImport.getProviderCode());
+    @Override
+    protected boolean dependenciesResolved(BatchAuditImport item) {
+        return cardUsecase.getCardByExternalId(item.getCardRef()).isPresent()
+                && providerUsecase.getProviderByCode(item.getProviderCode()).isPresent();
+    }
 
-        if (card.isEmpty() || provider.isEmpty()) return null;
-        if (cardProviderUsecase.existsByCardAndProvider(card.get(), provider.get())) return batchAuditImport;
+    @Override
+    protected CardProvider buildEntity(CsvFileRow row, BatchAuditImport item) {
+        Card card = cardUsecase.getCardByExternalId(item.getCardRef()).orElseThrow();
+        Provider provider = providerUsecase.getProviderByCode(item.getProviderCode()).orElseThrow();
 
-        batchAuditImport.setCardProvider(CardProvider.builder()
+        return CardProvider.builder()
                 .createdAt(LocalDateTime.now())
-                .feePercentage(bigDecimalUtils.stringToBigDecimal(csvFileRow.getProviderFeePctTxt()))
-                .dailyLimit(bigDecimalUtils.stringToBigDecimal(csvFileRow.getProviderDailyLimitTxt()))
-                .priority(Integer.parseInt(csvFileRow.getProviderPriorityTxt()))
-                .card(card.get())
-                .provider(provider.get())
-                .build());
+                .feePercentage(bigDecimalUtils.stringToBigDecimal(row.getProviderFeePctTxt()))
+                .dailyLimit(bigDecimalUtils.stringToBigDecimal(row.getProviderDailyLimitTxt()))
+                .priority(Integer.parseInt(row.getProviderPriorityTxt()))
+                .card(card)
+                .provider(provider)
+                .build();
+    }
 
-        return batchAuditImport;
+    @Override
+    protected void attachEntity(BatchAuditImport item, CardProvider entity) {
+        item.setCardProvider(entity);
     }
 
 }

@@ -25,7 +25,7 @@ public class CardProviderUsecase {
         try {
             return cardProviderRepository.save(cardProvider);
         } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
-            throw new ConflictException(MessageUtils.getMessage("card.conflict"));
+            throw new ConflictException(MessageUtils.getMessage("card.provider.conflict"));
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }

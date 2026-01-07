@@ -2,23 +2,17 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
-@Component
-@StepScope
-@RequiredArgsConstructor
-@NoArgsConstructor(force = true)
+@SuperBuilder
 public abstract class VcpAbstractBatchWriter<T, K> implements ItemWriter<BatchAuditImport> {
 
     private final BatchAuditMongoTemplate batchAuditMongoTemplate;

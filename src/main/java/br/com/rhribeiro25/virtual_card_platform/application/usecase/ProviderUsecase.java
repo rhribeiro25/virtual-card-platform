@@ -40,7 +40,7 @@ public class ProviderUsecase {
         try {
             return providerRepository.save(provider);
         } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
-            throw new ConflictException(MessageUtils.getMessage("card.conflict"));
+            throw new ConflictException(MessageUtils.getMessage("provider.conflict"));
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }

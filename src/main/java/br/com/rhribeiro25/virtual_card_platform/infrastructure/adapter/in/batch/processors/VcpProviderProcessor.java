@@ -6,12 +6,9 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.ProviderService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -19,28 +16,35 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component(SpringBatchProcessor.PROVIDER)
 @StepScope
-@RequiredArgsConstructor
-public class VcpProviderProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
+@SuperBuilder
+public class VcpProviderProcessor extends VcpAbstractBatchProcessor<Provider> {
 
     private final ProviderUsecase providerUsecase;
     private final ProviderService providerService;
 
     @Override
-    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
-
-        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        if (providerUsecase.existsByCode(csvFileRow.getProviderCode())) return batchAuditImport;
-
-        batchAuditImport.setProvider(Provider.builder()
-                .code(csvFileRow.getProviderCode())
-                .createdAt(LocalDateTime.now())
-                .status(providerService.mapStatus(csvFileRow.getProviderState()))
-                .country(csvFileRow.getProviderCountry())
-                .build());
-
-        return batchAuditImport;
+    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
+        return providerUsecase.existsByCode(row.getProviderCode());
     }
 
+    @Override
+    protected boolean dependenciesResolved(BatchAuditImport item) {
+        return true;
+    }
 
+    @Override
+    protected Provider buildEntity(CsvFileRow row, BatchAuditImport item) {
+        return Provider.builder()
+                .code(row.getProviderCode())
+                .createdAt(LocalDateTime.now())
+                .status(providerService.mapStatus(row.getProviderState()))
+                .country(row.getProviderCountry())
+                .build();
+    }
+
+    @Override
+    protected void attachEntity(BatchAuditImport item, Provider provider) {
+        item.setProvider(provider);
+    }
 
 }

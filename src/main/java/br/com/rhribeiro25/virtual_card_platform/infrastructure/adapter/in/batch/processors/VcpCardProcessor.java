@@ -10,6 +10,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -20,40 +21,48 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component(SpringBatchProcessor.CARD)
 @StepScope
-@RequiredArgsConstructor
-public class VcpCardProcessor implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
+@SuperBuilder
+public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
 
     private final CardUsecase cardUsecase;
     private final CardService cardService;
     private final BigDecimalUtils bigDecimalUtils;
     private final DateUtils dateUtils;
 
+
     @Override
-    public BatchAuditImport process(BatchAuditImport batchAuditImport) throws JsonProcessingException {
-
-        CsvFileRow csvFileRow = batchAuditImport.getCsvFileRow();
-        if (cardUsecase.existsByExternalId(csvFileRow.getCardRef())) return batchAuditImport;
-
-        batchAuditImport.setCard(Card.builder()
-                .externalId(csvFileRow.getCardRef())
-                .createdAt(LocalDateTime.now())
-                .status(cardService.mapStatus(csvFileRow.getState()))
-                .brand(cardService.mapBrand(csvFileRow.getBrandCode()))
-                .holderName(csvFileRow.getHolderNameRaw())
-                .balance(bigDecimalUtils.stringToBigDecimal(csvFileRow.getBalanceTxt()))
-                .internationalAllowed(cardService.mapBooleanAttribute(csvFileRow.getInternationalFlag()))
-                .expiryDate(dateUtils.MM_YY_TO_LocalDateTime(csvFileRow.getExpiryTxt()))
-                .cvv(Integer.parseInt(csvFileRow.getCvvTxt()))
-                .pinCode(csvFileRow.getPinTxt())
-                .maxDailyTransactions(Integer.parseInt(csvFileRow.getMaxDailyTxTxt()))
-                .maxTransactionAmount(bigDecimalUtils.stringToBigDecimal(csvFileRow.getMaxTxAmountTxt()))
-                .country(csvFileRow.getIssuingCountryCode())
-                .notes(csvFileRow.getNotesRaw())
-                .build());
-
-        return batchAuditImport;
+    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
+        return cardUsecase.existsByExternalId(row.getCardRef());
     }
 
+    @Override
+    protected boolean dependenciesResolved(BatchAuditImport item) {
+        return true;
+    }
 
+    @Override
+    protected Card buildEntity(CsvFileRow row, BatchAuditImport item) {
+        return Card.builder()
+                .externalId(row.getCardRef())
+                .createdAt(LocalDateTime.now())
+                .status(cardService.mapStatus(row.getState()))
+                .brand(cardService.mapBrand(row.getBrandCode()))
+                .holderName(row.getHolderNameRaw())
+                .balance(bigDecimalUtils.stringToBigDecimal(row.getBalanceTxt()))
+                .internationalAllowed(cardService.mapBooleanAttribute(row.getInternationalFlag()))
+                .expiryDate(dateUtils.MM_YY_TO_LocalDateTime(row.getExpiryTxt()))
+                .cvv(Integer.parseInt(row.getCvvTxt()))
+                .pinCode(row.getPinTxt())
+                .maxDailyTransactions(Integer.parseInt(row.getMaxDailyTxTxt()))
+                .maxTransactionAmount(bigDecimalUtils.stringToBigDecimal(row.getMaxTxAmountTxt()))
+                .country(row.getIssuingCountryCode())
+                .notes(row.getNotesRaw())
+                .build();
+    }
+
+    @Override
+    protected void attachEntity(BatchAuditImport item, Card card) {
+        item.setCard(card);
+    }
 
 }

@@ -5,7 +5,11 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
+import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,7 +65,13 @@ public class TransactionUsecase {
      SPRING BATCH METHODS
      ********************************************************************************************************************/
     public Transaction saveByBatch(Transaction transaction) {
-        return transactionRepository.save(transaction);
+        try {
+            return transactionRepository.save(transaction);
+        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
+            throw new ConflictException(MessageUtils.getMessage("transaction.conflict"));
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
     }
 
     public boolean existsByRequestId(UUID requestId) {
