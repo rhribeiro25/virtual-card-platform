@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Component(SpringBatchWriter.PROVIDER)
 @StepScope
@@ -43,7 +46,13 @@ public class VcpProviderWriter extends VcpAbstractBatchWriter<Provider, String> 
     }
 
     @Override
-    protected String processedFlag() {
-        return BatchAuditImport.Fields.isProcessedProvider;
+    protected String getField() {
+        return BatchAuditImport.Fields.persistedProviderId;
     }
+
+    @Override
+    protected Optional<UUID> findExistingEntityIdByKey(String code) {
+        return providerUsecase.findIdByCode(code);
+    }
+
 }

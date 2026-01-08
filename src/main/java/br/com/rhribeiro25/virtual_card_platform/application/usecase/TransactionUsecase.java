@@ -57,7 +57,7 @@ public class TransactionUsecase {
         return transactionRepository.findByCardId(cardId, pageable);
     }
 
-    public Optional<Transaction> verifyDuplicateTransaction(UUID cardId, UUID requestId) {
+    public Optional<Transaction> verifyDuplicateTransaction(UUID cardId, String requestId) {
         return transactionRepository.findByCardIdAndRequestId(cardId, requestId);
     }
 
@@ -74,7 +74,11 @@ public class TransactionUsecase {
         }
     }
 
-    public boolean existsByRequestId(UUID requestId) {
+    public boolean existsByRequestId(String requestId) {
         return transactionRepository.existsByRequestId(requestId);
+    }
+
+    public Optional<UUID> findIdByRequestId(String requestId) {
+        return transactionRepository.findIdByRequestId(requestId);
     }
 }

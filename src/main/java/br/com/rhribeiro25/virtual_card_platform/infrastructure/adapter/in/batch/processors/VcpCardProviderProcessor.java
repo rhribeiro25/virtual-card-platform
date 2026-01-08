@@ -25,14 +25,6 @@ public class VcpCardProviderProcessor extends VcpAbstractBatchProcessor<CardProv
     private final BigDecimalUtils bigDecimalUtils;
 
     @Override
-    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
-        return cardProviderUsecase.existsByCardAndProvider(
-                cardUsecase.getCardByExternalId(item.getCardRef()).orElse(null),
-                providerUsecase.getProviderByCode(item.getProviderCode()).orElse(null)
-        );
-    }
-
-    @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
         return cardUsecase.getCardByExternalId(item.getCardRef()).isPresent()
                 && providerUsecase.getProviderByCode(item.getProviderCode()).isPresent();

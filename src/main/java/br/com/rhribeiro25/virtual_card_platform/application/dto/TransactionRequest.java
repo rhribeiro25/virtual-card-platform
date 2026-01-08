@@ -13,7 +13,7 @@ public record TransactionRequest(
         BigDecimal amount,
 
         @NotNull(message = "{transaction.requestId.notNull}")
-        UUID requestId,
+        String requestId,
 
         LocalDateTime createdAt
 

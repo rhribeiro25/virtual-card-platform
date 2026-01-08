@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatu
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -18,12 +19,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Provider {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
+@SuperBuilder
+public class Provider extends AbstractModel {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -32,7 +29,7 @@ public class Provider {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String code;
 
     @Column(nullable = false)

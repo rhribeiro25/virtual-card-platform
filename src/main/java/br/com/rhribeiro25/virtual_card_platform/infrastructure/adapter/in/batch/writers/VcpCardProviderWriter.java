@@ -5,20 +5,22 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CardProvider;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Component(SpringBatchWriter.CARD_PROVIDER)
 @StepScope
-public class VcpCardProviderWriterVcp extends VcpAbstractBatchWriter<CardProvider, String> {
+public class VcpCardProviderWriter extends VcpAbstractBatchWriter<CardProvider, String> {
 
     private final CardProviderUsecase cardProviderUsecase;
 
-    public VcpCardProviderWriterVcp(CardProviderUsecase cardProviderUsecase,
-                                    BatchAuditMongoTemplate batchAuditMongoTemplate) {
+    public VcpCardProviderWriter(CardProviderUsecase cardProviderUsecase,
+                                 BatchAuditMongoTemplate batchAuditMongoTemplate) {
         super(batchAuditMongoTemplate);
         this.cardProviderUsecase = cardProviderUsecase;
     }
@@ -44,8 +46,13 @@ public class VcpCardProviderWriterVcp extends VcpAbstractBatchWriter<CardProvide
     }
 
     @Override
-    protected String processedFlag() {
-        return BatchAuditImport.Fields.isProcessedCardProvider;
+    protected String getField() {
+        return BatchAuditImport.Fields.persistedCardProviderId;
+    }
+
+    @Override
+    protected Optional<UUID> findExistingEntityIdByKey(String key) {
+        return cardProviderUsecase.findIdByCardAndProvider(key);
     }
 
 }

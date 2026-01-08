@@ -27,9 +27,11 @@ public class VcpAuditStep {
 
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
-            TaskExecutor task,
 
             ItemReader<CsvFileRow> fileReader,
+
+
+            TaskExecutor multiTask,
 
             @Qualifier(SpringBatchProcessor.AUDIT)
             ItemProcessor<CsvFileRow, BatchAuditImport> processor,
@@ -43,7 +45,7 @@ public class VcpAuditStep {
                 .reader(fileReader)
                 .processor(processor)
                 .writer(writer)
-                .taskExecutor(task)
+                .taskExecutor(multiTask)
                 .build();
     }
 }

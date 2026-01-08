@@ -13,6 +13,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -48,5 +49,9 @@ public class ProviderUsecase {
 
     public boolean existsByCode(String code) {
         return providerRepository.existsByCode(code);
+    }
+
+    public Optional<UUID> findIdByCode(String code) {
+        return providerRepository.findIdByCode(code);
     }
 }

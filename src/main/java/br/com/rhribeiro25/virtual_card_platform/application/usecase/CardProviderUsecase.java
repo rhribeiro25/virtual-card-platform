@@ -12,6 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class CardProviderUsecase {
@@ -33,5 +36,10 @@ public class CardProviderUsecase {
 
     public boolean existsByCardAndProvider(Card card, Provider provider) {
         return cardProviderRepository.existsByCardAndProvider(card, provider);
+    }
+
+    public Optional<UUID> findIdByCardAndProvider(String key) {
+        String[] keys = key.split("_");
+        return  cardProviderRepository.findIdByCardAndProvider(keys[0], keys[1]);
     }
 }

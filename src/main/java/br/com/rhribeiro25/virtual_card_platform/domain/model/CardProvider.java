@@ -2,6 +2,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -15,12 +16,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class CardProvider {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
+@SuperBuilder
+public class CardProvider extends AbstractModel {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

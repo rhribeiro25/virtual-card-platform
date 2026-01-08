@@ -26,12 +26,6 @@ public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
     private final BigDecimalUtils bigDecimalUtils;
     private final DateUtils dateUtils;
 
-
-    @Override
-    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
-        return cardUsecase.existsByExternalId(row.getCardRef());
-    }
-
     @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
         return true;

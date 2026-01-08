@@ -33,18 +33,15 @@ public class BatchAuditImport {
 
     @Id
     private UUID id;
+    private String txRequestRef;
     private String cardRef;
     private String providerCode;
-    private UUID txRequestRef;
     private CsvFileRow csvFileRow;
-    private Boolean isProcessedCard;
-    private Boolean isProcessedProvider;
-    private Boolean isProcessedCardProvider;
-    private Boolean isProcessedTransaction;
     private LocalDateTime createdAt;
-
-    @Transient
-    private Boolean isTransientEntitySaved;
+    private UUID persistedCardId;
+    private UUID persistedProviderId;
+    private UUID persistedCardProviderId;
+    private UUID persistedTransactionId;
 
     @Transient
     private Card card;

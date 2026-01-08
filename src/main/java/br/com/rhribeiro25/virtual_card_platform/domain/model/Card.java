@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardBrand;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -19,12 +20,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Card {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
+@SuperBuilder
+public class Card extends AbstractModel {
 
     @Column(unique = true)
     private String externalId;

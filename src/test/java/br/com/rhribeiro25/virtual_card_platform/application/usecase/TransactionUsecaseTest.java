@@ -137,7 +137,7 @@ class TransactionUsecaseTest {
     @Test
     @DisplayName("Should NOT throw exception when existingTransaction is empty")
     void shouldNotThrowWhenNoExistingTransaction() {
-        UUID requestId = UUID.randomUUID();
+        String requestId = UUID.randomUUID().toString();
         Transaction transaction = Transaction.builder()
                 .card(card)
                 .requestId(requestId)

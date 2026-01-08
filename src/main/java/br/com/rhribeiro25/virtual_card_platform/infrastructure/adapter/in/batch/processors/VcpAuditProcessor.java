@@ -3,7 +3,6 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class VcpAuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditImport> {
 
     @Override
-    public BatchAuditImport process(CsvFileRow item) throws JsonProcessingException {
+    public BatchAuditImport process(CsvFileRow item) {
 
         UUID providerCode = UUID.randomUUID();
         item.setProviderCode(providerCode.toString());
@@ -28,12 +27,8 @@ public class VcpAuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditIm
                 .id(UUID.randomUUID())
                 .cardRef(item.getCardRef())
                 .providerCode(providerCode.toString())
-                .txRequestRef(item.getTxRequestRef() != null ? UUID.fromString(item.getTxRequestRef()) : null)
+                .txRequestRef(item.getTxRequestRef())
                 .csvFileRow(item)
-                .isProcessedCard(false)
-                .isProcessedProvider(false)
-                .isProcessedCardProvider(false)
-                .isProcessedTransaction(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

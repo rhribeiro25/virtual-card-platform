@@ -9,29 +9,19 @@ import org.springframework.batch.item.ItemProcessor;
 public abstract class VcpAbstractBatchProcessor<T> implements ItemProcessor<BatchAuditImport, BatchAuditImport> {
 
     @Override
-    public BatchAuditImport process(BatchAuditImport item) throws Exception {
+    public BatchAuditImport process(BatchAuditImport item) {
 
         CsvFileRow row = item.getCsvFileRow();
-
-        if (shouldSkip(row, item)) {
-            return item;
-        }
-
         if (!dependenciesResolved(item)) {
             return null;
         }
-
         T entity = buildEntity(row, item);
-
         if (entity == null) {
             return null;
         }
-
         attachEntity(item, entity);
         return item;
     }
-
-    protected abstract boolean shouldSkip(CsvFileRow row, BatchAuditImport item);
 
     protected abstract boolean dependenciesResolved(BatchAuditImport item);
 

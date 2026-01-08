@@ -8,10 +8,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @RequiredArgsConstructor
-public class VcpTaskConfig {
+public class VcpParallelTask {
 
     @Bean
-    public TaskExecutor task() {
+    public TaskExecutor parallelTask() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(2);

@@ -23,11 +23,6 @@ public class VcpProviderProcessor extends VcpAbstractBatchProcessor<Provider> {
     private final ProviderService providerService;
 
     @Override
-    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
-        return providerUsecase.existsByCode(row.getProviderCode());
-    }
-
-    @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
         return true;
     }

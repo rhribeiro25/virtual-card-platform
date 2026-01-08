@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Repository
@@ -15,10 +17,10 @@ public class BatchAuditMongoTemplate {
 
     private final MongoTemplate mongoTemplate;
 
-    public void updateProcessedFlag(BatchAuditImport auditImport, String fieldName) {
+    public void updatePersistedEntityId(UUID auditImportId, UUID entityId, String fieldName) {
         mongoTemplate.updateMulti(
-                query(Criteria.where("_id").is(auditImport.getId())),
-                Update.update(fieldName, auditImport.getIsTransientEntitySaved()),
+                query(Criteria.where("_id").is(auditImportId)),
+                Update.update(fieldName, entityId),
                 BatchAuditImport.class
         );
     }

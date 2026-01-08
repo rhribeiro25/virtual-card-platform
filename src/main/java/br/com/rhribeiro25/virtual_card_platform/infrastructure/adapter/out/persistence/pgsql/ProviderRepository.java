@@ -2,6 +2,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.pers
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,4 +13,7 @@ public interface ProviderRepository extends JpaRepository<Provider, UUID> {
     boolean existsByCode(String code);
 
     Optional<Provider> findByCode(String code);
+
+    @Query("select p.id from Provider p where p.code = :code")
+    Optional<UUID> findIdByCode(String code);
 }

@@ -1,14 +1,14 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.AbstractModel;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.dao.DataIntegrityViolationException;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 public abstract class VcpAbstractBatchWriter<T, K> implements ItemWriter<BatchAuditImport> {
@@ -22,28 +22,17 @@ public abstract class VcpAbstractBatchWriter<T, K> implements ItemWriter<BatchAu
     @Override
     public void write(Chunk<? extends BatchAuditImport> chunk) {
         log.info("Starting: {}", writerName());
-
-        Set<K> chunkCheck = new HashSet<>();
-
         for (BatchAuditImport item : chunk.getItems()) {
-            item.setIsTransientEntitySaved(true);
-
             T entity = extractEntity(item);
             if (entity != null) {
                 K key = extractKey(entity);
-
-                if (!chunkCheck.contains(key)) {
-                    try {
-                        chunkCheck.add(key);
-                        save(entity);
-                    } catch (DataIntegrityViolationException e) {
-                        item.setIsTransientEntitySaved(false);
-                        log.warn("{} already exists: {}", writerName(), item.getId());
-                    }
+                Optional<UUID> entityId = findExistingEntityIdByKey(key);
+                if (entityId.isEmpty()) {
+                    save(entity);
+                    entityId = Optional.of(((AbstractModel) entity).getId());
                 }
+                batchAuditMongoTemplate.updatePersistedEntityId(item.getId(), entityId.get(), getField());
             }
-
-            batchAuditMongoTemplate.updateProcessedFlag(item, processedFlag());
         }
     }
 
@@ -55,5 +44,7 @@ public abstract class VcpAbstractBatchWriter<T, K> implements ItemWriter<BatchAu
 
     protected abstract void save(T entity);
 
-    protected abstract String processedFlag();
+    protected abstract String getField();
+
+    protected abstract Optional<UUID> findExistingEntityIdByKey(K key);
 }

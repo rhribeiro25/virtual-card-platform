@@ -21,7 +21,7 @@ public class TransactionDuplicateUnexpectedImpl implements TransactionValidation
 
     @Override
     public void validate(Transaction transaction) {
-        UUID requestId = transaction.getRequestId();
+        String requestId = transaction.getRequestId();
         UUID cardId = transaction.getCard().getId();
         boolean existsInCache = false;
         boolean existsInDb = false;

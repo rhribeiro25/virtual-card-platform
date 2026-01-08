@@ -28,11 +28,6 @@ public class VcpTransactionProcessor extends VcpAbstractBatchProcessor<Transacti
     private final TransactionService transactionService;
 
     @Override
-    protected boolean shouldSkip(CsvFileRow row, BatchAuditImport item) {
-        return transactionUsecase.existsByRequestId(UUID.fromString(row.getTxRequestRef()));
-    }
-
-    @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
         return cardUsecase.getCardByExternalId(item.getCardRef()).isPresent();
     }
@@ -45,7 +40,7 @@ public class VcpTransactionProcessor extends VcpAbstractBatchProcessor<Transacti
                 .type(transactionService.mapType(row.getTxKind()))
                 .createdAt(LocalDateTime.now())
                 .amount(new BigDecimal(row.getTxAmountTxt().replace(",", ".")))
-                .requestId(UUID.fromString(row.getTxRequestRef()))
+                .requestId(row.getTxRequestRef())
                 .card(card)
                 .build();
     }

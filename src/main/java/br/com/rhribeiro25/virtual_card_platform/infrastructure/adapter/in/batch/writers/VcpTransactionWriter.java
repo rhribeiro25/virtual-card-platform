@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Component(SpringBatchWriter.TRANSACTION)
 @StepScope
@@ -34,7 +37,7 @@ public class VcpTransactionWriter extends VcpAbstractBatchWriter<Transaction, St
 
     @Override
     protected String extractKey(Transaction transaction) {
-        return transaction.getRequestIdString();
+        return transaction.getRequestId();
     }
 
     @Override
@@ -43,7 +46,13 @@ public class VcpTransactionWriter extends VcpAbstractBatchWriter<Transaction, St
     }
 
     @Override
-    protected String processedFlag() {
-        return BatchAuditImport.Fields.isProcessedTransaction;
+    protected String getField() {
+        return BatchAuditImport.Fields.persistedTransactionId;
     }
+
+    @Override
+    protected Optional<UUID> findExistingEntityIdByKey(String requestId) {
+        return transactionUsecase.findIdByRequestId(requestId);
+    }
+
 }

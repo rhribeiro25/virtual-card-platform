@@ -41,7 +41,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     Page<Transaction> findByCardId(UUID cardId, Pageable pageable);
 
-    Optional<Transaction> findByCardIdAndRequestId(UUID cardId, UUID requestId);
+    Optional<Transaction> findByCardIdAndRequestId(UUID cardId, String requestId);
 
-    boolean existsByRequestId(UUID requestId);
+    boolean existsByRequestId(String requestId);
+
+    @Query("select t.id from Transaction t where t.requestId = :requestId")
+    Optional<UUID> findIdByRequestId(String requestId);
 }

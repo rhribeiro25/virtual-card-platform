@@ -9,15 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Component(SpringBatchWriter.CARD)
 @StepScope
-public class VcpCardWriterVcp extends VcpAbstractBatchWriter<Card, String> {
+public class VcpCardWriter extends VcpAbstractBatchWriter<Card, String> {
 
     private final CardUsecase cardUsecase;
 
-    public VcpCardWriterVcp(CardUsecase cardUsecase,
-                            BatchAuditMongoTemplate batchAuditMongoTemplate) {
+    public VcpCardWriter(CardUsecase cardUsecase,
+                         BatchAuditMongoTemplate batchAuditMongoTemplate) {
         super(batchAuditMongoTemplate);
         this.cardUsecase = cardUsecase;
     }
@@ -43,7 +46,13 @@ public class VcpCardWriterVcp extends VcpAbstractBatchWriter<Card, String> {
     }
 
     @Override
-    protected String processedFlag() {
-        return BatchAuditImport.Fields.isProcessedCard;
+    protected String getField() {
+        return BatchAuditImport.Fields.persistedCardId;
     }
+
+    @Override
+    protected Optional<UUID> findExistingEntityIdByKey(String externalId) {
+        return cardUsecase.findIdByExternalId(externalId);
+    }
+
 }

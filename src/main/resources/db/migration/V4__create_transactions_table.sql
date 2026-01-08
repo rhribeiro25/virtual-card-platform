@@ -6,7 +6,7 @@ CREATE TABLE transactions
     updated_at TIMESTAMP,
     type       VARCHAR(50)    NOT NULL,
     amount     DECIMAL(19, 2) NOT NULL,
-    request_id UUID           NOT NULL UNIQUE,
+    request_id VARCHAR(50)    NOT NULL UNIQUE,
     CONSTRAINT fk_transaction_card FOREIGN KEY (card_id) REFERENCES cards (id)
 );
 

@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.domain.model;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -17,12 +18,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Transaction {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
+@SuperBuilder
+public class Transaction extends AbstractModel {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -43,12 +40,8 @@ public class Transaction {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false, unique = true)
-    private UUID requestId;
-
-    public String getRequestIdString() {
-        return requestId.toString();
-    }
+    @Column(nullable = false, unique = true, length = 50)
+    private String requestId;
 
     @Override
     public boolean equals(Object o) {
