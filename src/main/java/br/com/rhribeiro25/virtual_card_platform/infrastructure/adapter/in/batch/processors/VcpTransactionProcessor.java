@@ -1,7 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Slf4j
 @Component(SpringBatchProcessor.TRANSACTION)
@@ -24,7 +22,6 @@ import java.util.UUID;
 public class VcpTransactionProcessor extends VcpAbstractBatchProcessor<Transaction> {
 
     private final CardUsecase cardUsecase;
-    private final TransactionUsecase transactionUsecase;
     private final TransactionService transactionService;
 
     @Override

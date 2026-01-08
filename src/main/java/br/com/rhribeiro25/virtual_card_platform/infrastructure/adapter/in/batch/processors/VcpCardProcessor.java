@@ -1,6 +1,5 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
@@ -21,7 +20,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
 
-    private final CardUsecase cardUsecase;
     private final CardService cardService;
     private final BigDecimalUtils bigDecimalUtils;
     private final DateUtils dateUtils;

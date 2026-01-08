@@ -15,7 +15,7 @@ public class VcpParallelTask {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(2);
-        executor.setQueueCapacity(5);
+        executor.setQueueCapacity(4);
         executor.setThreadNamePrefix("batch-thread-");
         executor.initialize();
         return executor;

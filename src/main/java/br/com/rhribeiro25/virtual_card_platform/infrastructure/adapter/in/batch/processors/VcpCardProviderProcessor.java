@@ -1,6 +1,5 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
-import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
@@ -21,7 +20,6 @@ public class VcpCardProviderProcessor extends VcpAbstractBatchProcessor<CardProv
 
     private final CardUsecase cardUsecase;
     private final ProviderUsecase providerUsecase;
-    private final CardProviderUsecase cardProviderUsecase;
     private final BigDecimalUtils bigDecimalUtils;
 
     @Override
