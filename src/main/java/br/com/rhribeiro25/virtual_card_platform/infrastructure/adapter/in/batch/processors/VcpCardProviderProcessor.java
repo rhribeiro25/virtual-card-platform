@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.*;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class VcpCardProviderProcessor extends VcpAbstractBatchProcessor<CardProv
     }
 
     @Override
-    protected CardProvider buildEntity(CsvFileRow row, BatchAuditImport item) {
+    protected CardProvider buildEntity(ActionType actionType, BatchAuditImport item) {
+        CsvFileRow row = item.getCsvFileRow();
         Card card = cardUsecase.getCardByExternalId(item.getCardRef()).orElseThrow();
         Provider provider = providerUsecase.getProviderByCode(item.getProviderCode()).orElseThrow();
 

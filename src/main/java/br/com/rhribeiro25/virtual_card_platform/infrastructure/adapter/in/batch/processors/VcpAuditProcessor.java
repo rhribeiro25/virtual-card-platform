@@ -21,12 +21,10 @@ public class VcpAuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditIm
     @Override
     public BatchAuditImport process(CsvFileRow item) {
 
-        UUID providerCode = UUID.randomUUID();
-        item.setProviderCode(providerCode.toString());
         return BatchAuditImport.builder()
                 .id(UUID.randomUUID())
                 .cardRef(item.getCardRef())
-                .providerCode(providerCode.toString())
+                .providerCode(item.getProviderCode())
                 .txRequestRef(item.getTxRequestRef())
                 .csvFileRow(item)
                 .createdAt(LocalDateTime.now())

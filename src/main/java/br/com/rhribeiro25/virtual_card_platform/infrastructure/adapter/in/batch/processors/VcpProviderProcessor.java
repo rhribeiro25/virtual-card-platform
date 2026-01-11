@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.ProviderService;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,8 @@ public class VcpProviderProcessor extends VcpAbstractBatchProcessor<Provider> {
     }
 
     @Override
-    protected Provider buildEntity(CsvFileRow row, BatchAuditImport item) {
+    protected Provider buildEntity(ActionType actionType, BatchAuditImport item) {
+        CsvFileRow row = item.getCsvFileRow();
         return Provider.builder()
                 .code(row.getProviderCode())
                 .createdAt(LocalDateTime.now())

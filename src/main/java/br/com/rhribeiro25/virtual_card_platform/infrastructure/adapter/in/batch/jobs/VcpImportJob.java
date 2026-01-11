@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class VcpImportJob {
     private final JobRepository jobRepository;
     private final Flow auditFlow;
-    private final Flow cardAndProviderParallelFlow;
+    private final Flow cardFlow;
     private final Flow transactionAndCardProviderParallelFlow;
 
     @Bean
@@ -24,8 +24,8 @@ public class VcpImportJob {
         log.warn("Starting: {}", SpringBatchJob.CSV_IMPORT);
         return new JobBuilder(SpringBatchJob.CSV_IMPORT, jobRepository)
                 .start(auditFlow)
-                .next(cardAndProviderParallelFlow)
-                .next(transactionAndCardProviderParallelFlow)
+                .next(cardFlow)
+//                .next(transactionAndCardProviderParallelFlow)
                 .end()
                 .build();
     }
