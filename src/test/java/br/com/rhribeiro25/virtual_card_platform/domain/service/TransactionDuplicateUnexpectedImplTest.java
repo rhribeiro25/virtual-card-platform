@@ -28,7 +28,7 @@ class TransactionDuplicateUnexpectedImplTest {
     private TransactionDuplicateUnexpectedImpl validation;
 
     private final UUID cardId = UUID.randomUUID();
-    private final UUID requestId = UUID.randomUUID();
+    private final String requestId = UUID.randomUUID().toString();
     private Card card;
 
     @BeforeEach
@@ -116,7 +116,7 @@ class TransactionDuplicateUnexpectedImplTest {
         MessageUtils.setMessageSource(messageSourceMock);
 
         Transaction transaction = Transaction.builder().card(card).requestId(requestId).build();
-        Transaction Transaction2 = Transaction.builder().card(card).requestId(UUID.randomUUID()).build();
+        Transaction Transaction2 = Transaction.builder().card(card).requestId(UUID.randomUUID().toString()).build();
         List<Transaction> transactions = Collections.singletonList(transaction);
         Page<Transaction> transactionPage = new PageImpl<>(transactions);
 
