@@ -1,6 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.ProviderRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
@@ -53,5 +54,15 @@ public class ProviderUsecase {
 
     public Optional<UUID> findIdByCode(String code) {
         return providerRepository.findIdByCode(code);
+    }
+
+    public UUID upsert(Provider entity, ActionType actionType) {
+        if (actionType.equals(ActionType.CRC)) {
+            return providerRepository.save(entity).getId();
+        } else {
+            Provider existing = providerRepository.findById(entity.getId()).orElseThrow();
+//                existing.mergeFrom(entity);
+            return providerRepository.save(existing).getId();
+        }
     }
 }

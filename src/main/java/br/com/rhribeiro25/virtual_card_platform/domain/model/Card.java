@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,11 +18,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "cards")
 @Getter
-@Setter
+@Setter()
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Card extends AbstractModel {
+public class Card extends AbstractModel implements Mergeable<Card> {
 
     @Column(unique = true)
     private String externalId;
@@ -100,4 +101,55 @@ public class Card extends AbstractModel {
     public int hashCode() {
         return Objects.hashCode(externalId);
     }
+
+    @Override
+    public void mergeFrom(Card source) {
+
+        if (StringUtils.hasText(source.getExternalId()))
+            this.setExternalId(source.getExternalId());
+
+        if (source.getUpdatedAt() != null)
+            this.setUpdatedAt(source.getUpdatedAt());
+
+        if (source.getStatus() != null)
+            this.setStatus(source.getStatus());
+
+        if (source.getBrand() != null)
+            this.setBrand(source.getBrand());
+
+        if (StringUtils.hasText(source.getHolderName()))
+            this.setHolderName(source.getHolderName());
+
+        if (source.getBalance() != null)
+            this.setBalance(source.getBalance());
+
+        if (StringUtils.hasText(source.getPinCode()))
+            this.setPinCode(source.getPinCode());
+
+        if (source.getExpiryDate() != null)
+            this.setExpiryDate(source.getExpiryDate());
+
+        if (source.getCvv() != null)
+            this.setCvv(source.getCvv());
+
+        if (StringUtils.hasText(source.getCountry()))
+            this.setCountry(source.getCountry());
+
+        if (StringUtils.hasText(source.getCurrency()))
+            this.setCurrency(source.getCurrency());
+
+        if (source.getInternationalAllowed() != null)
+            this.setInternationalAllowed(source.getInternationalAllowed());
+
+        if (source.getMaxDailyTransactions() != null)
+            this.setMaxDailyTransactions(source.getMaxDailyTransactions());
+
+        if (source.getMaxTransactionAmount() != null)
+            this.setMaxTransactionAmount(source.getMaxTransactionAmount());
+
+        if (StringUtils.hasText(source.getNotes()))
+            this.setNotes(source.getNotes());
+
+    }
+
 }

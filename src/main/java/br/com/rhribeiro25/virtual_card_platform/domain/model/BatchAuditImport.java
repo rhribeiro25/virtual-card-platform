@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ import java.util.UUID;
 public class BatchAuditImport {
 
     @Id
-    private UUID id;
+    private ObjectId id;
     private String txRequestRef;
     private String cardRef;
     private String providerCode;

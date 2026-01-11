@@ -120,7 +120,16 @@ public class CardUsecase {
         return cardRepository.existsByExternalId(externalId);
     }
 
+    public Optional<Card> findByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId);
+    }
+
+    public Optional<Card> findById(UUID id) {
+        return cardRepository.findById(id);
+    }
+
     public Optional<UUID> findIdByExternalId(String externalId) {
         return cardRepository.findIdByExternalId(externalId);
     }
+
 }

@@ -1,13 +1,18 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -44,7 +49,11 @@ public class CardProvider extends AbstractModel {
     @Column(nullable = false)
     private Integer priority;
 
-    public String getKey(){
+    public String getKey() {
         return card.getExternalId() + "_" + provider.getCode();
+    }
+
+    public Map<String, String> getCardIdAndProviderIdAsMap() {
+        return Map.of("externalId", card.getExternalId(), "code", provider.getCode());
     }
 }

@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.service.batch.strategy;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
@@ -11,18 +12,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCardStrategy implements ActionTypeStrategy<Card, BatchAuditImport> {
+public class CardUpdateStrategy implements ActionTypeStrategy<Card, BatchAuditImport> {
 
     private final CardService cardService;
+    private final CardUsecase cardUsecase;
+
     private final BigDecimalUtils bigDecimalUtils;
     private final DateUtils dateUtils;
 
     @Override
     public boolean isSupportedActionType(ActionType type) {
-        return type.equals(ActionType.NEW);
+        return type.equals(ActionType.UPC);
     }
 
     @Override
@@ -35,7 +39,7 @@ public class CreateCardStrategy implements ActionTypeStrategy<Card, BatchAuditIm
         CsvFileRow row = item.getCsvFileRow();
         return Card.builder()
                 .externalId(item.getCardRef())
-                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .status(cardService.mapStatus(row.getState()))
                 .brand(cardService.mapBrand(row.getBrandCode()))
                 .holderName(row.getHolderNameRaw())

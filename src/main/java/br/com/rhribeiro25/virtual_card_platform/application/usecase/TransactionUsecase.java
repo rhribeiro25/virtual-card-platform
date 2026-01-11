@@ -1,8 +1,9 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
@@ -80,5 +81,15 @@ public class TransactionUsecase {
 
     public Optional<UUID> findIdByRequestId(String requestId) {
         return transactionRepository.findIdByRequestId(requestId);
+    }
+
+    public UUID upsert(Transaction entity, ActionType actionType) {
+        if (actionType.equals(ActionType.CRC)) {
+            return transactionRepository.save(entity).getId();
+        } else {
+            Transaction existing = transactionRepository.findById(entity.getId()).orElseThrow();
+//            existing.mergeFrom(entity);
+            return transactionRepository.save(existing).getId();
+        }
     }
 }

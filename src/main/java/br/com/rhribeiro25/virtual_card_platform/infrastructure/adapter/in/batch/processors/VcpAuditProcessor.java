@@ -5,6 +5,7 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,6 @@ public class VcpAuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditIm
     public BatchAuditImport process(CsvFileRow item) {
 
         return BatchAuditImport.builder()
-                .id(UUID.randomUUID())
                 .cardRef(item.getCardRef())
                 .providerCode(item.getProviderCode())
                 .txRequestRef(item.getTxRequestRef())

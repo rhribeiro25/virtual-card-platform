@@ -57,7 +57,7 @@ class TransactionRepositoryIntegrationTest {
                 .amount(BigDecimal.TEN)
                 .type(TransactionType.SPEND)
                 .createdAt(LocalDateTime.now())
-                .requestId(UUID.randomUUID())
+                .requestId(UUID.randomUUID().toString())
                 .build();
 
         transactionRepository.save(tx);
@@ -84,7 +84,7 @@ class TransactionRepositoryIntegrationTest {
                 .amount(BigDecimal.valueOf(25))
                 .type(TransactionType.TOPUP)
                 .createdAt(LocalDateTime.now())
-                .requestId(UUID.randomUUID())
+                .requestId(UUID.randomUUID().toString())
                 .build();
 
         transactionRepository.save(tx);
@@ -107,7 +107,7 @@ class TransactionRepositoryIntegrationTest {
                 .amount(BigDecimal.valueOf(30))
                 .type(TransactionType.TOPUP)
                 .createdAt(LocalDateTime.now())
-                .requestId(UUID.randomUUID())
+                .requestId(UUID.randomUUID().toString())
                 .build();
 
         transactionRepository.save(tx1);

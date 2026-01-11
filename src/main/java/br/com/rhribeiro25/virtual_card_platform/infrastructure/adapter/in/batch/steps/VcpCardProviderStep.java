@@ -28,7 +28,7 @@ public class VcpCardProviderStep {
 
             @Qualifier(SpringBatchProcessor.CARD_PROVIDER)
             ItemProcessor<BatchAuditImport, BatchAuditImport> processor,
-            @Qualifier(SpringBatchWriter.CARD_PROVIDER)
+            @Qualifier(SpringBatchWriter.CARD)
             ItemWriter<BatchAuditImport> writer
     ) {
         return new StepBuilder(SpringBatchStep.CARD_PROVIDER, jobRepository).

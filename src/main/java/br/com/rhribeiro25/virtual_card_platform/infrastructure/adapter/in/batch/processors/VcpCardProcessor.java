@@ -2,13 +2,9 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
-import br.com.rhribeiro25.virtual_card_platform.domain.service.CardService;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.batch.strategy.ActionTypeStrategyFactory;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -20,9 +16,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
 
-    private final CardService cardService;
-    private final BigDecimalUtils bigDecimalUtils;
-    private final DateUtils dateUtils;
     private final ActionTypeStrategyFactory<Card, BatchAuditImport> strategyFactory;
 
     @Override
@@ -32,7 +25,7 @@ public class VcpCardProcessor extends VcpAbstractBatchProcessor<Card> {
 
     @Override
     protected Card buildEntity(ActionType actionType, BatchAuditImport item) {
-        if (!actionType.equals(ActionType.NEW)) return null;
+        if (actionType.equals(ActionType.UPT)) return null;
         return strategyFactory
                 .getStrategy(actionType, Card.class)
                 .execute(item);

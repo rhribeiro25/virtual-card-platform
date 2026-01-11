@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,23 +27,8 @@ public class VcpCardWriter extends VcpAbstractBatchWriter<Card, String> {
     }
 
     @Override
-    protected String writerName() {
+    protected String getWriterName() {
         return SpringBatchWriter.CARD;
-    }
-
-    @Override
-    protected Card extractEntity(BatchAuditImport item) {
-        return item.getCard();
-    }
-
-    @Override
-    protected String extractKey(Card card) {
-        return card.getExternalId();
-    }
-
-    @Override
-    protected void save(Card card) {
-        cardUsecase.saveByBatch(card);
     }
 
     @Override
@@ -51,8 +37,28 @@ public class VcpCardWriter extends VcpAbstractBatchWriter<Card, String> {
     }
 
     @Override
-    protected Optional<UUID> findExistingEntityIdByKey(String externalId) {
-        return cardUsecase.findIdByExternalId(externalId);
+    protected Optional<Card> findExistingEntityByKey(String key) {
+        return cardUsecase.findByExternalId(key);
+    }
+
+    @Override
+    protected void mergeEntities(Card existing, Card incoming) {
+        existing.mergeFrom(incoming);
+    }
+
+    @Override
+    protected Card extractEntity(BatchAuditImport item) {
+        return item.getCard();
+    }
+
+    @Override
+    protected String extractKey(Card entity) {
+        return entity.getExternalId();
+    }
+
+    @Override
+    protected void save(Card entity) {
+        cardUsecase.saveByBatch(entity);
     }
 
 }
