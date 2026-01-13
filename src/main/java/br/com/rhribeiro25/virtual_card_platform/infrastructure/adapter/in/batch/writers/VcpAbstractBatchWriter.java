@@ -92,6 +92,7 @@ public abstract class VcpAbstractBatchWriter<E extends AbstractModel, K>
                      */
                     managedEntity = existing.get();
                     mergeEntities(managedEntity, incoming);
+
                 } else {
                     /**
                      * No entity exists yet.
@@ -99,9 +100,9 @@ public abstract class VcpAbstractBatchWriter<E extends AbstractModel, K>
                      */
                     managedEntity = incoming;
                 }
-                // Cache the managed entity to be reused for the rest of the chunk
-                entityCache.put(key, managedEntity);
             }
+            // Cache the managed entity to be reused for the rest of the chunk
+            entityCache.put(key, managedEntity);
             /**
              * Persist the managed entity.
              * JPA will decide whether this is an INSERT or UPDATE.

@@ -24,14 +24,6 @@ import java.util.UUID;
 @SuperBuilder
 public class CardProvider extends AbstractModel {
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(nullable = true)
-    private LocalDateTime updatedAt;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = false)
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;

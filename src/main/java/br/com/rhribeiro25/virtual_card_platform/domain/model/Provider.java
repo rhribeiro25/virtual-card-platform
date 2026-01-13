@@ -22,13 +22,6 @@ import java.util.UUID;
 @SuperBuilder
 public class Provider extends AbstractModel {
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     @Column(nullable = false, unique = true, length = 50)
     private String code;
 

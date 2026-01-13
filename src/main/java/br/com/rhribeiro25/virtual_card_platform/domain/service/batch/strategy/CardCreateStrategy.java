@@ -35,7 +35,6 @@ public class CardCreateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
         CsvFileRow row = item.getCsvFileRow();
         return Card.builder()
                 .externalId(item.getCardRef())
-                .createdAt(LocalDateTime.now())
                 .status(cardService.mapStatus(row.getState()))
                 .brand(cardService.mapBrand(row.getBrandCode()))
                 .holderName(row.getHolderNameRaw())

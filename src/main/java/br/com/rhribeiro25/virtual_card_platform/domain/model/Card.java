@@ -27,14 +27,6 @@ public class Card extends AbstractModel implements Mergeable<Card> {
     @Column(unique = true)
     private String externalId;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(nullable = true)
-    private LocalDateTime updatedAt;
-
     @Enumerated(EnumType.STRING)
     private CardStatus status;
 
@@ -105,38 +97,19 @@ public class Card extends AbstractModel implements Mergeable<Card> {
     @Override
     public void mergeFrom(Card source) {
 
-        if (StringUtils.hasText(source.getExternalId()))
-            this.setExternalId(source.getExternalId());
-
-        if (source.getUpdatedAt() != null)
-            this.setUpdatedAt(source.getUpdatedAt());
+        this.setExternalId(source.getExternalId());
 
         if (source.getStatus() != null)
             this.setStatus(source.getStatus());
 
-        if (source.getBrand() != null)
-            this.setBrand(source.getBrand());
-
-        if (StringUtils.hasText(source.getHolderName()))
-            this.setHolderName(source.getHolderName());
-
         if (source.getBalance() != null)
             this.setBalance(source.getBalance());
-
-        if (StringUtils.hasText(source.getPinCode()))
-            this.setPinCode(source.getPinCode());
-
-        if (source.getExpiryDate() != null)
-            this.setExpiryDate(source.getExpiryDate());
 
         if (source.getCvv() != null)
             this.setCvv(source.getCvv());
 
         if (StringUtils.hasText(source.getCountry()))
             this.setCountry(source.getCountry());
-
-        if (StringUtils.hasText(source.getCurrency()))
-            this.setCurrency(source.getCurrency());
 
         if (source.getInternationalAllowed() != null)
             this.setInternationalAllowed(source.getInternationalAllowed());
