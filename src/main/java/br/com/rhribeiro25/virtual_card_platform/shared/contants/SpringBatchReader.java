@@ -11,8 +11,8 @@ import java.util.List;
 @Component
 public class SpringBatchReader {
     public final String MONGO_DB_READER = "mongoDbReader";
-    public final String PAGE_SIZE = "1000";
-    public final String SORT_ATTRIBUTE = "_id";
+    public final Integer PAGE_SIZE = 1000;
+    public final String SORT_ATTRIBUTE = "actionFileDate";
     public final String QUERY = "{}";
 
     public final String CSV_FILE_READER = "csvFileReader";
@@ -21,15 +21,14 @@ public class SpringBatchReader {
     public final String DELIMITER = ",";
     public final String QUOTE_CHARACTER = "\"";
     public final List<String> COLUMNS = Arrays.asList(
-            "actionType", "cardRef", "state", "brandCode",
-            "holderNameRaw", "balanceTxt", "currencyCode",
-            "internationalFlag", "expiryTxt", "cvvTxt",
-            "pinTxt", "maxDailyTxTxt", "maxTxAmountTxt",
-            "issuingCountryCode", "notesRaw",
-            "providerCode", "providerFeePctTxt",
-            "providerDailyLimitTxt", "providerPriorityTxt",
-            "providerState", "providerCountry",
-            "txKind", "txAmountTxt", "txRequestRef"
+            "actionType", "createdDate", "cardRef",
+            "state", "brandCode", "holderNameRaw",
+            "balanceTxt", "currencyCode", "internationalFlag",
+            "expiryTxt", "cvvTxt", "pinTxt",
+            "maxDailyTxTxt", "maxTxAmountTxt", "issuingCountryCode",
+            "notesRaw", "providerCode", "providerFeePctTxt",
+            "providerDailyLimitTxt", "providerPriorityTxt", "providerState",
+            "providerCountry", "txKind", "txAmountTxt", "txRequestRef"
     );
     public final BeanWrapperFieldSetMapper<CsvFileRow> FIELD_SET_MAPPER = new BeanWrapperFieldSetMapper<>() {{
         setTargetType(CsvFileRow.class);

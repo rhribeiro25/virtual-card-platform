@@ -2,11 +2,12 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
-import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchStep;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchProcessor;
+import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchStep;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
@@ -32,9 +33,10 @@ public class VcpAuditStep {
 
             @Qualifier(SpringBatchProcessor.AUDIT)
             ItemProcessor<CsvFileRow, BatchAuditImport> processor,
-
             @Qualifier(SpringBatchWriter.AUDIT)
-            ItemWriter<BatchAuditImport> writer
+            ItemWriter<BatchAuditImport> writer,
+            @Qualifier(SpringBatchStep.AUDIT_LISTENER)
+            StepExecutionListener listener
 
     ) {
         return new StepBuilder(SpringBatchStep.AUDIT, jobRepository)
@@ -42,6 +44,7 @@ public class VcpAuditStep {
                 .reader(fileReader)
                 .processor(processor)
                 .writer(writer)
+                .listener(listener)
                 .taskExecutor(multiTask)
                 .build();
     }

@@ -6,11 +6,9 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.CardService;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils;
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.MM_YY_ToLocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +16,6 @@ public class CardCreateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
 
     private final CardService cardService;
     private final BigDecimalUtils bigDecimalUtils;
-    private final DateUtils dateUtils;
 
     @Override
     public boolean isSupportedActionType(ActionType type) {
@@ -34,13 +31,13 @@ public class CardCreateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
     public Card execute(BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
         return Card.builder()
-                .externalId(item.getCardRef())
+                .externalId(item.getCsvFileRow().getCardRef())
                 .status(cardService.mapStatus(row.getState()))
                 .brand(cardService.mapBrand(row.getBrandCode()))
                 .holderName(row.getHolderNameRaw())
                 .balance(bigDecimalUtils.stringToBigDecimal(row.getBalanceTxt()))
                 .internationalAllowed(cardService.mapBooleanAttribute(row.getInternationalFlag()))
-                .expiryDate(dateUtils.MM_YY_TO_LocalDateTime(row.getExpiryTxt()))
+                .expiryDate(MM_YY_ToLocalDateTime(row.getExpiryTxt()))
                 .cvv(Integer.parseInt(row.getCvvTxt()))
                 .pinCode(row.getPinTxt())
                 .maxDailyTransactions(Integer.parseInt(row.getMaxDailyTxTxt()))

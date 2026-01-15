@@ -30,9 +30,9 @@ public class VcpMongoReader {
         reader.setName(springBatchReader.MONGO_DB_READER);
         reader.setTemplate(mongoTemplate);
         reader.setTargetType(BatchAuditImport.class);
-        reader.setPageSize(Integer.parseInt(springBatchReader.PAGE_SIZE));
-        reader.setSort(Map.of(springBatchReader.SORT_ATTRIBUTE, Sort.Direction.ASC));
         reader.setQuery(springBatchReader.QUERY);
+        reader.setSort(Map.of(springBatchReader.SORT_ATTRIBUTE, Sort.Direction.ASC));
+        reader.setPageSize(springBatchReader.PAGE_SIZE);
         return reader;
     }
 

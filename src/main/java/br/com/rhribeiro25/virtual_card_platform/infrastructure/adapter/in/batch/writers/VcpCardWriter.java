@@ -3,7 +3,6 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditMongoTemplate;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Component(SpringBatchWriter.CARD)
@@ -33,7 +31,7 @@ public class VcpCardWriter extends VcpAbstractBatchWriter<Card, String> {
 
     @Override
     protected String getField() {
-        return BatchAuditImport.Fields.persistedCardId;
+        return BatchAuditImport.Fields.cardId;
     }
 
     @Override

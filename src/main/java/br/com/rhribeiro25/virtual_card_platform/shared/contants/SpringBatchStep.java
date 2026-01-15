@@ -6,4 +6,5 @@ public class SpringBatchStep {
     public static final String PROVIDER = "vcpProviderStep";
     public static final String CARD_PROVIDER = "vcpCardProviderStep";
     public static final String TRANSACTION = "vcpTransactionStep";
+    public static final String AUDIT_LISTENER = "vcpAuditStepListener";
 }

@@ -27,13 +27,13 @@ public class VcpTransactionProcessor extends VcpAbstractBatchProcessor<Transacti
 
     @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
-        return cardUsecase.getCardByExternalId(item.getCardRef()).isPresent();
+        return cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).isPresent();
     }
 
     @Override
     protected Transaction buildEntity(ActionType actionType, BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        Card card = cardUsecase.getCardByExternalId(item.getCardRef()).orElseThrow();
+        Card card = cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).orElseThrow();
 
         return Transaction.builder()
                 .type(transactionService.mapType(row.getTxKind()))

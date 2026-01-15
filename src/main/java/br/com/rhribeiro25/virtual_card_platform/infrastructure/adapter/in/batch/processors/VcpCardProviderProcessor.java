@@ -25,15 +25,15 @@ public class VcpCardProviderProcessor extends VcpAbstractBatchProcessor<CardProv
 
     @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
-        return cardUsecase.getCardByExternalId(item.getCardRef()).isPresent()
-                && providerUsecase.getProviderByCode(item.getProviderCode()).isPresent();
+        return cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).isPresent()
+                && providerUsecase.getProviderByCode(item.getCsvFileRow().getProviderCode()).isPresent();
     }
 
     @Override
     protected CardProvider buildEntity(ActionType actionType, BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        Card card = cardUsecase.getCardByExternalId(item.getCardRef()).orElseThrow();
-        Provider provider = providerUsecase.getProviderByCode(item.getProviderCode()).orElseThrow();
+        Card card = cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).orElseThrow();
+        Provider provider = providerUsecase.getProviderByCode(item.getCsvFileRow().getProviderCode()).orElseThrow();
 
         return CardProvider.builder()
                 .createdAt(LocalDateTime.now())

@@ -3,17 +3,18 @@ package br.com.rhribeiro25.virtual_card_platform.domain.model;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardBrand;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.*;
 
 @Entity
 @Table(name = "cards")
@@ -95,34 +96,15 @@ public class Card extends AbstractModel implements Mergeable<Card> {
     }
 
     @Override
-    public void mergeFrom(Card source) {
-
-        this.setExternalId(source.getExternalId());
-
-        if (source.getStatus() != null)
-            this.setStatus(source.getStatus());
-
-        if (source.getBalance() != null)
-            this.setBalance(source.getBalance());
-
-        if (source.getCvv() != null)
-            this.setCvv(source.getCvv());
-
-        if (StringUtils.hasText(source.getCountry()))
-            this.setCountry(source.getCountry());
-
-        if (source.getInternationalAllowed() != null)
-            this.setInternationalAllowed(source.getInternationalAllowed());
-
-        if (source.getMaxDailyTransactions() != null)
-            this.setMaxDailyTransactions(source.getMaxDailyTransactions());
-
-        if (source.getMaxTransactionAmount() != null)
-            this.setMaxTransactionAmount(source.getMaxTransactionAmount());
-
-        if (StringUtils.hasText(source.getNotes()))
-            this.setNotes(source.getNotes());
-
+    public void mergeFrom(Card incoming) {
+        updateIfChanged(this.getExternalId(), incoming.getExternalId(), this::setExternalId);
+        updateIfChanged(this.getStatus(), incoming.getStatus(), this::setStatus);
+        updateIfChanged(this.getBalance(), incoming.getBalance(), this::setBalance);
+        updateIfChanged(this.getCvv(), incoming.getCvv(), this::setCvv);
+        updateIfChanged(this.getInternationalAllowed(), incoming.getInternationalAllowed(), this::setInternationalAllowed);
+        updateIfChanged(this.getMaxDailyTransactions(), incoming.getMaxDailyTransactions(), this::setMaxDailyTransactions);
+        updateIfChanged(this.getMaxTransactionAmount(), incoming.getMaxTransactionAmount(), this::setMaxTransactionAmount);
+        updateIfHasText(this.getCountry(), incoming.getCountry(), this::setCountry);
+        updateIfHasText(this.getNotes(), incoming.getNotes(), this::setNotes);
     }
-
 }

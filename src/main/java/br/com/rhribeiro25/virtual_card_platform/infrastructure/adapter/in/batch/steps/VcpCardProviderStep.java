@@ -6,6 +6,7 @@ import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchStep;
 import br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;

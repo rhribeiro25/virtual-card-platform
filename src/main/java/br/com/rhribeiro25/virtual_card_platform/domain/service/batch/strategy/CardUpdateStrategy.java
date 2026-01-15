@@ -6,9 +6,11 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.CardService;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,39 +32,52 @@ public class CardUpdateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
     @Override
     public Card execute(BatchAuditImport item) {
 
-        CsvFileRow row = item.getCsvFileRow();
-
         Card card = new Card();
 
-        card.setExternalId(item.getCardRef());
+        CsvFileRow row = item.getCsvFileRow();
+        String state = row.getState();
+        String balanceTxt = row.getBalanceTxt();
+        String internationalFlag = row.getInternationalFlag();
+        String maxTxAmountTxt = row.getMaxTxAmountTxt();
+        String maxDailyTxTxt = row.getMaxDailyTxTxt();
+        String notesRaw = row.getNotesRaw();
+        String cvvTxt = row.getCvvTxt();
+        String pinTxt = row.getPinTxt();
 
-        if (StringUtils.hasText(row.getState()))
-            card.setStatus(cardService.mapStatus(row.getState()));
+        card.setExternalId(item.getCsvFileRow().getCardRef());
 
-        if (StringUtils.hasText(row.getBalanceTxt()))
-            card.setBalance(bigDecimalUtils.stringToBigDecimal(row.getBalanceTxt()));
-
-        if (StringUtils.hasText(row.getInternationalFlag()))
-            card.setInternationalAllowed(cardService.mapBooleanAttribute(row.getInternationalFlag()));
-
-        if (StringUtils.hasText(row.getMaxTxAmountTxt()))
-            card.setMaxTransactionAmount(bigDecimalUtils.stringToBigDecimal(row.getMaxTxAmountTxt()));
-
-        if (StringUtils.hasText(row.getMaxDailyTxTxt()))
-            card.setMaxDailyTransactions(Integer.parseInt(row.getMaxDailyTxTxt()));
-
-        if (StringUtils.hasText(row.getNotesRaw()))
-            card.setNotes(row.getNotesRaw().trim());
-
-        if (StringUtils.hasText(row.getCvvTxt()))
-            card.setCvv(Integer.parseInt(row.getCvvTxt()));
-
-        if (StringUtils.hasText(row.getPinTxt()))
-            card.setPinCode(row.getPinTxt());
-
-        if (StringUtils.hasText(row.getMaxDailyTxTxt()))
-            card.setMaxDailyTransactions(Integer.parseInt(row.getMaxDailyTxTxt()));
-
+        updateIfChanged(
+                card.getStatus(),
+                whenHasText(state, () -> cardService.mapStatus(state)),
+                card::setStatus
+        );
+        updateIfChanged(
+                card.getBalance(),
+                whenHasText(balanceTxt, () -> bigDecimalUtils.stringToBigDecimal(balanceTxt.trim())),
+                card::setBalance
+        );
+        updateIfChanged(
+                card.getInternationalAllowed(),
+                whenHasText(internationalFlag, () -> cardService.mapBooleanAttribute(internationalFlag)),
+                card::setInternationalAllowed
+        );
+        updateIfChanged(
+                card.getMaxTransactionAmount(),
+                whenHasText(maxTxAmountTxt, () -> bigDecimalUtils.stringToBigDecimal(maxTxAmountTxt)),
+                card::setMaxTransactionAmount
+        );
+        updateIfChanged(
+                card.getMaxDailyTransactions(),
+                whenHasText(maxDailyTxTxt, () -> Integer.parseInt(maxDailyTxTxt.trim())),
+                card::setMaxDailyTransactions
+        );
+        updateIfChanged(
+                card.getCvv(),
+                whenHasText(cvvTxt, () -> Integer.parseInt(cvvTxt.trim())),
+                card::setCvv
+        );
+        updateIfHasText(card.getPinCode(), pinTxt, card::setPinCode);
+        updateIfHasText(card.getNotes(), notesRaw, card::setNotes);
         return card;
     }
 }

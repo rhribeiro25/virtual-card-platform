@@ -4,6 +4,8 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatu
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.normalize;
+
 @Service
 @AllArgsConstructor
 public class ProviderService {
@@ -13,7 +15,7 @@ public class ProviderService {
     ********************************************************************************************************************/
     public ProviderStatus mapStatus(String state) {
 
-        return switch (state) {
+        return switch (normalize(state)) {
             case "A" -> ProviderStatus.ACTIVE;
             case "B" -> ProviderStatus.BLOCKED;
             default -> throw new IllegalArgumentException(

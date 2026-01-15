@@ -19,6 +19,9 @@ public class CsvFileRow {
     // === Action type identification (legacy system) ===
     private String actionType;              // "actionType" (Action per line)
 
+    // === Created or Updated date (legacy system) ===
+    private String createdDate;
+
     // === Card identification (legacy system) ===
     private String cardRef;              // "VC-9981" (external card reference)
     private String state;                // "A" | "B" (A=Active, B=Blocked)
