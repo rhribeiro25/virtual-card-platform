@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus;
 import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,8 @@ public class BatchAuditImport {
     private LocalDateTime updatedAt;
     @Indexed
     private LocalDate actionFileDate;
+    @Indexed
+    private BatchAuditImportStatus status;
 
     private CsvFileRow csvFileRow;
     private UUID cardId;

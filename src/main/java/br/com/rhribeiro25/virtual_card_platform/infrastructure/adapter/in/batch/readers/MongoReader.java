@@ -1,0 +1,41 @@
+package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.readers;
+
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getConfigurationName;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.data.MongoPagingItemReader;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import java.util.Map;
+
+@Slf4j
+@Configuration
+@AllArgsConstructor
+public class MongoReader {
+
+    @Bean
+    @StepScope
+    public MongoPagingItemReader<BatchAuditImport> mongoReaderConfig(
+            MongoTemplate mongoTemplate
+    ) {
+        log.info("Starting: {}", getClassName(this.getClass()));
+        MongoPagingItemReader<BatchAuditImport> reader = new MongoPagingItemReader<>();
+        reader.setName(getClassName(this.getClass()));
+        reader.setTemplate(mongoTemplate);
+        reader.setTargetType(BatchAuditImport.class);
+        reader.setQuery(QUERY);
+        reader.setSort(Map.of(SORT_ATTRIBUTE, Sort.Direction.ASC));
+        reader.setPageSize(PAGE_SIZE);
+        return reader;
+    }
+
+
+}

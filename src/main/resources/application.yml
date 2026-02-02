@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: virtual-card-platform
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+
+  web:
+    resources:
+      add-mappings: false
+
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: ALWAYS
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: ${BATCH_SIZE:50}
+        order_inserts: true
+        order_updates: true
+
+server:
+  port: ${PORT:8080}
