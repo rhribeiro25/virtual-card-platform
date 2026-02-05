@@ -47,4 +47,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query("select t.id from Transaction t where t.requestId = :requestId")
     Optional<UUID> findIdByRequestId(String requestId);
+
+    Optional<Transaction> findByRequestId(String requestId);
 }

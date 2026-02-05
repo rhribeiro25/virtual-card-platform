@@ -7,13 +7,13 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionService;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -35,11 +35,11 @@ public class TransactionProcessor extends AbstractBatchProcessor<Transaction> {
         Card card = cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).orElseThrow();
 
         return Transaction.builder()
+                .card(card)
+                .createdAt(DateUtils.YYYYMMDD_ToLocalDateTime(row.getTransactionDate()))
                 .type(transactionService.mapType(row.getTxKind()))
-                .createdAt(LocalDateTime.now())
                 .amount(new BigDecimal(row.getTxAmountTxt().replace(",", ".")))
                 .requestId(row.getTxRequestRef())
-                .card(card)
                 .build();
     }
 

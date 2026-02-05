@@ -23,7 +23,7 @@ import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Card extends AbstractModel implements Mergeable<Card> {
+public class Card extends AbstractModel {
 
     @Column(unique = true)
     private String externalId;
@@ -93,18 +93,5 @@ public class Card extends AbstractModel implements Mergeable<Card> {
     @Override
     public int hashCode() {
         return Objects.hashCode(externalId);
-    }
-
-    @Override
-    public void mergeFrom(Card incoming) {
-        updateIfChanged(this.getExternalId(), incoming.getExternalId(), this::setExternalId);
-        updateIfChanged(this.getStatus(), incoming.getStatus(), this::setStatus);
-        updateIfChanged(this.getBalance(), incoming.getBalance(), this::setBalance);
-        updateIfChanged(this.getCvv(), incoming.getCvv(), this::setCvv);
-        updateIfChanged(this.getInternationalAllowed(), incoming.getInternationalAllowed(), this::setInternationalAllowed);
-        updateIfChanged(this.getMaxDailyTransactions(), incoming.getMaxDailyTransactions(), this::setMaxDailyTransactions);
-        updateIfChanged(this.getMaxTransactionAmount(), incoming.getMaxTransactionAmount(), this::setMaxTransactionAmount);
-        updateIfHasText(this.getCountry(), incoming.getCountry(), this::setCountry);
-        updateIfHasText(this.getNotes(), incoming.getNotes(), this::setNotes);
     }
 }

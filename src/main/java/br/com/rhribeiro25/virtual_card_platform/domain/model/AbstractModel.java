@@ -30,11 +30,11 @@ public abstract class AbstractModel {
     protected UUID id;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(nullable = true)
+    @Column
     private LocalDateTime updatedAt;
 
 }

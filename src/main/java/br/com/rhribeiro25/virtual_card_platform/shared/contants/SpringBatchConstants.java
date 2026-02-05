@@ -20,7 +20,7 @@ public class SpringBatchConstants {
     public static final String DELIMITER = ",";
     public static final String QUOTE_CHARACTER = "\"";
     public static final List<String> COLUMNS = Arrays.asList(
-            "actionType", "createdDate", "cardRef",
+            "actionType", "transactionDate", "cardRef",
             "state", "brandCode", "holderNameRaw",
             "balanceTxt", "currencyCode", "internationalFlag",
             "expiryTxt", "cvvTxt", "pinTxt",

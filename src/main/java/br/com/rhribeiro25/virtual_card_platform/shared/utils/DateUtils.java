@@ -16,6 +16,14 @@ public class DateUtils {
         YearMonth yearMonth = YearMonth.parse(expiryTxt.trim(), formatter);
         return yearMonth.atEndOfMonth().atTime(12, 0, 0);
     }
+
+    public static LocalDateTime YYYYMMDD_ToLocalDateTime(String expiryTxt) {
+        if (!StringUtils.hasText(expiryTxt)) return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        YearMonth yearMonth = YearMonth.parse(expiryTxt.trim(), formatter);
+        return yearMonth.atEndOfMonth().atTime(12, 0, 0);
+    }
+
     public static LocalDate YYYY_MM_DD_ToLocalDate(String expiryTxt) {
         if (!StringUtils.hasText(expiryTxt)) return null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");

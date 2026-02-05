@@ -19,6 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class Transaction extends AbstractModel {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = false)
@@ -27,23 +28,15 @@ public class Transaction extends AbstractModel {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private TransactionType type;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private BigDecimal amount;
 
     @Column(nullable = false, unique = true, length = 50)
+    @EqualsAndHashCode.Include
     private String requestId;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Transaction that = (Transaction) o;
-        return Objects.equals(requestId, that.requestId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(requestId);
-    }
 }

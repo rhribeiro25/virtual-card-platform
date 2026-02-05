@@ -1,4 +1,4 @@
-actionType,createdDate,cardRef,state,brandCode,holderNameRaw,balanceTxt,currencyCode,internationalFlag,expiryTxt,cvvTxt,pinTxt,maxDailyTxTxt,maxTxAmountTxt,issuingCountryCode,notesRaw,providerCode,providerFeePctTxt,providerDailyLimitTxt,providerPriorityTxt,providerState,providerCountry,txKind,txAmountTxt,txRequestRef
+actionType,transactionDate,cardRef,state,brandCode,holderNameRaw,balanceTxt,currencyCode,internationalFlag,expiryTxt,cvvTxt,pinTxt,maxDailyTxTxt,maxTxAmountTxt,issuingCountryCode,notesRaw,providerCode,providerFeePctTxt,providerDailyLimitTxt,providerPriorityTxt,providerState,providerCountry,txKind,txAmountTxt,txRequestRef
 UPC,20221030,VC-00001,A,02,USER 1,"4128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,SQUARE,0.72,8266,1,B,France,T,"53,53",80a8399f-ee58-4cf7-9033-81c9b09bb570
 UPC,20220301,VC-00001,A,02,USER 1,"3128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,ADYEN,0.72,8266,1,B,France,P,"2969,28",ba810a19-4f8d-4086-8d9e-ce934a1e8ac3
 UPC,20250101,VC-00001,A,02,USER 1,"2128,51",BRL,N,12/34,862,2398,31,"2906,71",US,Legacy note 1,PAYPAL,0.72,8266,1,B,France,T,"6324,03",e10941db-3ec6-4fc8-819b-76ad3ce62dc9

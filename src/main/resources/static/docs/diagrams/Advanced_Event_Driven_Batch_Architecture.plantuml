@@ -1,0 +1,146 @@
+@startuml
+title Advanced Event-Driven Batch Architecture
+
+' ===== GLOBAL STYLE =====
+skinparam shadowing true
+skinparam roundcorner 12
+skinparam sequence {
+  ArrowThickness 2
+  LifeLineBorderColor #263238
+  LifeLineBackgroundColor #ECEFF1
+}
+skinparam box {
+  BorderThickness 3
+  FontStyle bold
+}
+
+' ===== ACTOR =====
+actor Upstream as "Upstream System"
+
+' ===== MESSAGING =====
+box "MESSAGING BROKER" #BBDEFB
+  collections Broker as "Kafka / RabbitMQ"
+end box
+
+' ===== STREAM SERVICE =====
+box "SPRING CLOUD STREAM" #C8E6C9
+  collections Stream as "Stream Consumer"
+end box
+
+' ===== CACHE / IDEMPOTENCY =====
+box "CACHE / IDEMPOTENCY" #FFE0B2
+  database Redis as "Redis"
+end box
+
+' ===== ORCHESTRATION =====
+box "BATCH ORCHESTRATION " #E1BEE7
+  control OCP as "OpenShift / Kubernetes"
+end box
+
+' ===== BATCH POD =====
+box "BATCH POD" #B3E5FC
+  control Batch as "Spring Batch"
+end box
+
+' ===== PERSISTENCE =====
+box "DATABASE" #F8BBD0
+  database DB as "MongoDB / PostgreSQL"
+end box
+
+' ===== ERROR HANDLING =====
+box "ERROR HANDLING" #FFCDD2
+  collections DLQ as "Dead Letter Queue"
+end box
+
+' ===== OBSERVABILITY / METRICS =====
+box "METRICS" #E0F7FA
+  participant Metrics as "Prometheus + Grafana"
+end box
+
+' ===== OBSERVABILITY / LOGS =====
+box "LOGS" #E1F5FE
+  participant Logs as "Elasticsearch / Logstash / Kibana"
+end box
+
+' ===== OBSERVABILITY / ALERTS =====
+box "ALERTS" #FFECB3
+  participant Alerts as "Opsgenie"
+end box
+
+== EVENT PUBLICATION ==
+Upstream -> Broker : Publish Event(batchId, metadata)
+
+== EVENT CONSUMPTION ==
+Broker -> Stream : Consume Event
+activate Stream
+
+Stream -> Redis : Check idempotency(batchId) / Acquire distributed lock
+alt Already processed
+  Redis --> Stream : EXISTS
+  Stream -> Broker : ACK
+  deactivate Stream
+else New event
+  Redis --> Stream : NOT FOUND
+
+  == JOB TRIGGER ON ORCHESTRATOR ==
+  Stream -> OCP : Create Job / Pod
+  OCP -> Batch : Start Batch Pod
+end
+
+== BATCH EXECUTION ==
+activate Batch
+Batch -> DB : Create JobExecution record
+DB --> Batch : JobExecutionId
+
+loop Chunk Processing
+  Batch -> DB : Read chunk
+  DB --> Batch : Data
+  Batch -> Batch : Apply Business Logic / Transformations
+  Batch -> DB : Write chunk
+  note right
+    Retry with exponential backoff on failure
+    Fallback handler for unrecoverable errors
+  end note
+end
+
+== JOB COMPLETION ==
+alt SUCCESS
+  Batch -> DB : Update JobExecution(SUCCESS)
+  Batch -> Redis : Mark batchId processed / Release distributed lock
+  Batch -> Stream : Notify SUCCESS
+  Stream -> Broker : ACK
+else FAILURE
+  Batch -> DB : Update JobExecution(FAILED)
+  Batch -> Stream : Notify FAILURE
+  Stream -> Broker : RETRY / NACK with backoff
+end
+
+deactivate Batch
+deactivate Stream
+
+== DEAD LETTER QUEUE HANDLING ==
+alt Max retries exceeded
+  Broker -> DLQ : Send Event
+end
+
+== OBSERVABILITY FLOW ==
+Batch -> Metrics : Emit batch execution metrics
+Batch -> Logs : Emit batch logs
+Batch -> Alerts : Emit alerts on failures / retries
+
+Stream -> Metrics : Emit event processing metrics
+Stream -> Logs : Emit stream logs
+Stream -> Alerts : Emit alerts on failures / retries
+
+Redis -> Metrics : Emit idempotency / lock metrics
+Redis -> Logs : Emit Redis logs
+Redis -> Alerts : Emit alerts on lock conflicts / errors
+
+Broker -> Metrics : Emit retry / DLQ metrics
+Broker -> Logs : Emit broker logs
+Broker -> Alerts : Emit alerts on DLQ
+DB -> Metrics : Emit DB metrics
+DB -> Logs : Emit DB logs
+DB -> Alerts : Emit alerts on job write failures
+
+@enduml

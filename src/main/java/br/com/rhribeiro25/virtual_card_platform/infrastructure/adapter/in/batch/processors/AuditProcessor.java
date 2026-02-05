@@ -11,7 +11,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.YYYY_MM_DD_ToLocalDate;
 
@@ -27,13 +26,12 @@ public class AuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditImpor
     public BatchAuditImport process(CsvFileRow item) {
 
         LocalDate lastDbDate = (LocalDate) stepExecution.getExecutionContext().get("lastDbDate");
-        LocalDate actionDate = YYYY_MM_DD_ToLocalDate(item.getCreatedDate());
+        LocalDate actionDate = YYYY_MM_DD_ToLocalDate(item.getTransactionDate());
         if (actionDate != null && lastDbDate != null && !actionDate.isAfter(lastDbDate)) return null;
 
         return BatchAuditImport.builder()
-                .actionFileDate(YYYY_MM_DD_ToLocalDate(item.getCreatedDate()))
+                .actionFileDate(YYYY_MM_DD_ToLocalDate(item.getTransactionDate()))
                 .csvFileRow(item)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 

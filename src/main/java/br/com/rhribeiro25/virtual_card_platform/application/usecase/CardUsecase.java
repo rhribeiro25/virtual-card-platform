@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.MergeUtils.mergeField;
+
 @Service
 public class CardUsecase {
 
@@ -130,6 +132,19 @@ public class CardUsecase {
 
     public Optional<UUID> findIdByExternalId(String externalId) {
         return cardRepository.findIdByExternalId(externalId);
+    }
+
+    public void merge(Card existing, Card incoming) {
+        if (existing == null || incoming == null) return;
+        mergeField(existing.getExternalId(), incoming.getExternalId(), existing::setExternalId);
+        mergeField(existing.getStatus(), incoming.getStatus(), existing::setStatus);
+        mergeField(existing.getBalance(), incoming.getBalance(), existing::setBalance);
+        mergeField(existing.getCvv(), incoming.getCvv(), existing::setCvv);
+        mergeField(existing.getInternationalAllowed(), incoming.getInternationalAllowed(), existing::setInternationalAllowed);
+        mergeField(existing.getMaxDailyTransactions(), incoming.getMaxDailyTransactions(), existing::setMaxDailyTransactions);
+        mergeField(existing.getMaxTransactionAmount(), incoming.getMaxTransactionAmount(), existing::setMaxTransactionAmount);
+        mergeField(existing.getCountry(), incoming.getCountry(), existing::setCountry);
+        mergeField(existing.getNotes(), incoming.getNotes(), existing::setNotes);
     }
 
 }

@@ -2,7 +2,6 @@ package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
@@ -19,6 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.MergeUtils.mergeField;
 
 @Service
 public class TransactionUsecase {
@@ -83,13 +84,16 @@ public class TransactionUsecase {
         return transactionRepository.findIdByRequestId(requestId);
     }
 
-    public UUID upsert(Transaction entity, ActionType actionType) {
-        if (actionType.equals(ActionType.CRC)) {
-            return transactionRepository.save(entity).getId();
-        } else {
-            Transaction existing = transactionRepository.findById(entity.getId()).orElseThrow();
-//            existing.mergeFrom(entity);
-            return transactionRepository.save(existing).getId();
-        }
+    public Optional<Transaction> findByRequestId(String requestId) {
+        return transactionRepository.findByRequestId(requestId);
     }
+
+    public void merge(Transaction existing, Transaction incoming) {
+        if (existing == null || incoming == null) return;
+        mergeField(existing.getType(), incoming.getType(), existing::setType);
+        mergeField(existing.getAmount(), incoming.getAmount(), existing::setAmount);
+        mergeField(existing.getRequestId(), incoming.getRequestId(), existing::setRequestId);
+    }
+
+
 }

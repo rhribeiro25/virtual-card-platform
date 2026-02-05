@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getConfigurationName;
 
 @Slf4j
 @Configuration
@@ -19,7 +18,7 @@ public class FileIngestionJob {
     private final JobRepository jobRepository;
     private final Flow auditFlowConfig;
     private final Flow cardFlowConfig;
-//    private final Flow transactionAndCardProviderParallelFlowConfig;
+    private final Flow transactionFlowConfig;
 
     @Bean
     public Job fileIngestionJobConfig() {
@@ -27,7 +26,7 @@ public class FileIngestionJob {
         return new JobBuilder(getClassName(this.getClass()), jobRepository)
                 .start(auditFlowConfig)
                 .next(cardFlowConfig)
-//                .next(transactionAndCardProviderParallelFlow)
+                .next(transactionFlowConfig)
                 .end()
                 .build();
     }
