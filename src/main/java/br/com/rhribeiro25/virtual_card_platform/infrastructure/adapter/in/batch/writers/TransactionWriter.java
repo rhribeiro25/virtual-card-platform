@@ -32,7 +32,7 @@ public class TransactionWriter extends AbstractBatchWriter<Transaction, String> 
 
     @Override
     protected String getField() {
-        return BatchAuditImport.Fields.updatedAt;
+        return BatchAuditImport.Fields.transactionId;
     }
 
     @Override

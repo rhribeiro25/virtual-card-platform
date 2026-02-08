@@ -5,7 +5,12 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/virtual-card-platform
+      host: localhost
+      port: 27017
+      database: virtual-card-platform
+      username: mongodb
+      password: mongodb
+      authentication-database: admin
 
   datasource:
     url: jdbc:postgresql://localhost:5432/virtual-card-platform
