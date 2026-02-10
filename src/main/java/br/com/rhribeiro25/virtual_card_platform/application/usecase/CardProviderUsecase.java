@@ -44,13 +44,4 @@ public class CardProviderUsecase {
         return cardProviderRepository.findIdByCardAndProvider(keys[0], keys[1]);
     }
 
-    public UUID upsert(CardProvider entity, ActionType actionType) {
-        if (actionType.equals(ActionType.CRC)) {
-            return cardProviderRepository.save(entity).getId();
-        } else {
-            CardProvider existing = cardProviderRepository.findById(entity.getId()).orElseThrow();
-//            existing.mergeFrom(entity);
-            return cardProviderRepository.save(existing).getId();
-        }
-    }
 }

@@ -56,13 +56,4 @@ public class ProviderUsecase {
         return providerRepository.findIdByCode(code);
     }
 
-    public UUID upsert(Provider entity, ActionType actionType) {
-        if (actionType.equals(ActionType.CRC)) {
-            return providerRepository.save(entity).getId();
-        } else {
-            Provider existing = providerRepository.findById(entity.getId()).orElseThrow();
-//                existing.mergeFrom(entity);
-            return providerRepository.save(existing).getId();
-        }
-    }
 }

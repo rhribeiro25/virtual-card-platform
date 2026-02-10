@@ -6,14 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
 
 @Entity
 @Table(name = "card_provider", uniqueConstraints = {@UniqueConstraint(columnNames = {"card_id", "provider_id"})})
@@ -41,11 +35,10 @@ public class CardProvider extends AbstractModel {
     @Column(nullable = false)
     private Integer priority;
 
+    @Transient
+    private String key;
+
     public String getKey() {
         return card.getExternalId() + "_" + provider.getCode();
-    }
-
-    public Map<String, String> getCardIdAndProviderIdAsMap() {
-        return Map.of("externalId", card.getExternalId(), "code", provider.getCode());
     }
 }

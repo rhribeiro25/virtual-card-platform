@@ -19,6 +19,8 @@ public class FileIngestionJob {
     private final Flow auditFlowConfig;
     private final Flow cardFlowConfig;
     private final Flow transactionFlowConfig;
+    private final Flow providerFlowConfig;
+    private final Flow cardProviderFlowConfig;
 
     @Bean
     public Job fileIngestionJobConfig() {
@@ -26,6 +28,8 @@ public class FileIngestionJob {
         return new JobBuilder(getClassName(this.getClass()), jobRepository)
                 .start(auditFlowConfig)
                 .next(cardFlowConfig)
+                .next(providerFlowConfig)
+                .next(cardProviderFlowConfig)
                 .next(transactionFlowConfig)
                 .end()
                 .build();
