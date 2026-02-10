@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.*;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
 @Slf4j
@@ -43,6 +44,13 @@ public class CardProviderWriter extends AbstractBatchWriter<CardProvider, String
     @Override
     protected void mergeEntities(CardProvider existing, CardProvider incoming) {
 
+    }
+
+    @Override
+    protected void setAuditStatus(BatchAuditImport item, Boolean exists) {
+        if (exists == null) item.setStatus(CARD_PROVIDER_NO_ACTION);
+        else if (exists) item.setStatus(CARD_PROVIDER_UPDATED);
+        else item.setStatus(CARD_PROVIDER_PERSISTED);
     }
 
     @Override

@@ -76,7 +76,10 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
                  * Reuse the managed instance and merge new values into it.
                  */
                 managedEntity = entityCache.get(key);
-                mergeEntities(managedEntity, incoming);
+                if (!managedEntity.equals(incoming)) {
+                    mergeEntities(managedEntity, incoming);
+                    setAuditStatus(item, true);
+                } else setAuditStatus(item, null);
             } else {
                 /**
                  * Case 2:
@@ -91,14 +94,17 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
                      * Merge incoming values into the managed JPA entity.
                      */
                     managedEntity = existing.get();
-                    mergeEntities(managedEntity, incoming);
-
+                    if (!managedEntity.equals(incoming)) {
+                        mergeEntities(managedEntity, incoming);
+                        setAuditStatus(item, true);
+                    } else setAuditStatus(item, null);
                 } else {
                     /**
                      * No entity exists yet.
                      * The incoming entity will be treated as a new aggregate.
                      */
                     managedEntity = incoming;
+                    setAuditStatus(item, false);
                 }
             }
             // Cache the managed entity to be reused for the rest of the chunk
@@ -157,4 +163,9 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
      * Merges incoming values into an existing managed entity
      */
     protected abstract void mergeEntities(E existing, E incoming);
+
+    /**
+     * Setting BatchAuditImportStatus in BatchAuditImport
+     */
+    protected abstract void setAuditStatus(BatchAuditImport item, Boolean exists);
 }
