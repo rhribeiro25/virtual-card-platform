@@ -1,6 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.listeners.GenericStepListener;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors.CardProviderProcessor;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers.CardProviderWriter;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,15 @@ public class CardProviderStep {
             PlatformTransactionManager transactionManager,
             ItemReader<BatchAuditImport> mongoReaderConfig,
             CardProviderProcessor processor,
-            CardProviderWriter writer
+            CardProviderWriter writer,
+            GenericStepListener listener
     ) {
         return new StepBuilder(getClassName(this.getClass()), jobRepository).
                 <BatchAuditImport, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
                 .reader(mongoReaderConfig)
                 .processor(processor)
                 .writer(writer)
+                .listener(listener)
                 .build();
     }
 
