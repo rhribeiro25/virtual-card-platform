@@ -25,11 +25,11 @@ public class GenericStepListener implements StepExecutionListener {
         if (stepName.equalsIgnoreCase("cardStep"))
             statuses = List.of(AUDIT_PERSISTED.name(), CARD_ERROR.name());
         else if (stepName.equalsIgnoreCase("providerStep"))
-            statuses = List.of(CARD_PERSISTED.name(), CARD_UPDATED.name(), PROVIDER_ERROR.name());
+            statuses = List.of(CARD_PERSISTED.name(), CARD_UPDATED.name(), CARD_NO_ACTION.name(), PROVIDER_ERROR.name());
         else if (stepName.equalsIgnoreCase("cardProviderStep"))
-            statuses = List.of(PROVIDER_PERSISTED.name(), PROVIDER_UPDATED.name(), CARD_PROVIDER_ERROR.name());
+            statuses = List.of(PROVIDER_PERSISTED.name(), PROVIDER_UPDATED.name(), PROVIDER_NO_ACTION.name(), CARD_PROVIDER_ERROR.name());
         else if (stepName.equalsIgnoreCase("transactionStep"))
-            statuses = List.of(CARD_PROVIDER_PERSISTED.name(), CARD_PROVIDER_UPDATED.name(), TRANSACTION_ERROR.name());
+            statuses = List.of(CARD_PROVIDER_PERSISTED.name(), CARD_PROVIDER_UPDATED.name(), CARD_PROVIDER_NO_ACTION.name(), TRANSACTION_ERROR.name());
         else statuses = List.of();
 
         String whereMongo = buildStatusInQuery(statuses);
