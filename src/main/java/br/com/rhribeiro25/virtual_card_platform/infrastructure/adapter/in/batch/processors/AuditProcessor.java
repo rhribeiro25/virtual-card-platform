@@ -11,6 +11,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.AUDIT_PERSISTED;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.YYYY_MM_DD_ToLocalDate;
@@ -33,6 +34,7 @@ public class AuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditImpor
         return BatchAuditImport.builder()
                 .actionFileDate(YYYY_MM_DD_ToLocalDate(item.getTransactionDate()))
                 .csvFileRow(item)
+                .changesHistory(new ArrayList<>())
                 .status(AUDIT_PERSISTED)
                 .build();
     }

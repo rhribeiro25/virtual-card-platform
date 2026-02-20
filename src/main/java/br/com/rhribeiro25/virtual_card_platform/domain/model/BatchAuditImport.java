@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -48,6 +49,7 @@ public class BatchAuditImport {
     @Indexed
     private BatchAuditImportStatus status;
 
+    private List<BatchAuditImportHistory> changesHistory;
     private CsvFileRow csvFileRow;
     private UUID cardId;
     private UUID providerId;
