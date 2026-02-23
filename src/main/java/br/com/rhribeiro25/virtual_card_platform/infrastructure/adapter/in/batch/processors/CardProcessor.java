@@ -24,7 +24,7 @@ public class CardProcessor extends AbstractBatchProcessor<Card> {
 
     @Override
     protected Card buildEntity(ActionType actionType, BatchAuditImport item) {
-        if (actionType.equals(ActionType.UPT)) return null;
+
         return strategyFactory
                 .getStrategy(actionType, Card.class)
                 .execute(item);

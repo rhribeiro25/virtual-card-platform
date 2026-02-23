@@ -3,6 +3,7 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.listeners.AuditStepListener;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.listeners.GenericChunkListener;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors.AuditProcessor;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers.AuditWriter;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,10 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SPRING_BATCH_SIZE;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getConfigurationName;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,12 +26,14 @@ public class AuditStep {
     public Step auditStepConfig(
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
-            TaskExecutor multiTaskConfig,
-            ItemReader<CsvFileRow> fileReaderConfig,
 
+            ItemReader<CsvFileRow> fileReaderConfig,
             AuditProcessor processor,
             AuditWriter writer,
-            AuditStepListener listener
+
+            AuditStepListener stepListener,
+            GenericChunkListener chunkListener,
+            CustomSkipPolicy skipPolicy
 
     ) {
         return new StepBuilder(getClassName(this.getClass()), jobRepository)
@@ -39,8 +41,14 @@ public class AuditStep {
                 .reader(fileReaderConfig)
                 .processor(processor)
                 .writer(writer)
-                .listener(listener)
-                .taskExecutor(multiTaskConfig)
+
+                // skip
+                .faultTolerant()
+                .skipPolicy(skipPolicy)
+                .skipLimit(2000)
+
+                .listener(stepListener)
+                .listener(chunkListener)
                 .build();
     }
 }

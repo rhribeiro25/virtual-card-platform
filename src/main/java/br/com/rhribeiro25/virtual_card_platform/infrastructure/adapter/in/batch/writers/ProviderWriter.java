@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsec
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditImportMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.PersistenceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,8 @@ public class ProviderWriter extends AbstractBatchWriter<Provider, String> {
 
     private final ProviderUsecase providerUsecase;
 
-    public ProviderWriter(ProviderUsecase providerUsecase,
-                          BatchAuditImportMongoTemplate batchAuditImportMongoTemplate) {
-        super(batchAuditImportMongoTemplate);
+    public ProviderWriter(BatchAuditImportMongoTemplate batchAuditImportMongoTemplate, PersistenceUtils persistenceUtils, ProviderUsecase providerUsecase) {
+        super(batchAuditImportMongoTemplate, persistenceUtils);
         this.providerUsecase = providerUsecase;
     }
 

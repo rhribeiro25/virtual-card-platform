@@ -1,6 +1,5 @@
 package br.com.rhribeiro25.virtual_card_platform.shared.utils;
 
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;

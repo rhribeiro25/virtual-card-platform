@@ -8,12 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SpringBatchConstants {
-    public static final Integer SPRING_BATCH_SIZE = 1000;
-    public static final Integer PAGE_SIZE = 1000;
+    public static final Integer SPRING_BATCH_SIZE = 200;
+    public static final Integer PAGE_SIZE = 200;
     public static final String SORT_ATTRIBUTE = "actionFileDate";
     public static final String QUERY_MONGO_AUDIT = "queryMongoAudit";
 
-    public static final ClassPathResource RESOURCE = new ClassPathResource("input/virtual_cards_10.csv");
+    public static final ClassPathResource RESOURCE = new ClassPathResource("input/virtual_cards_import.csv");
     public static final String LINES_TO_SKIP = "1";
     public static final String DELIMITER = ",";
     public static final String QUOTE_CHARACTER = "\"";

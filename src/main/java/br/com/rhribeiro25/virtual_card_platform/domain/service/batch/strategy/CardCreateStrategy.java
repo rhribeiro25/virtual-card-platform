@@ -6,9 +6,11 @@ import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ActionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.service.CardService;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.BigDecimalUtils;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.MM_YY_ToLocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.MM_YY_ToLocalDateTime;
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.cardMap;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class CardCreateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
     @Override
     public Card execute(BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        return Card.builder()
+        Card card = Card.builder()
                 .externalId(item.getCsvFileRow().getCardRef())
                 .status(cardService.mapStatus(row.getState()))
                 .brand(cardService.mapBrand(row.getBrandCode()))
@@ -45,5 +47,9 @@ public class CardCreateStrategy implements ActionTypeStrategy<Card, BatchAuditIm
                 .country(row.getIssuingCountryCode())
                 .notes(row.getNotesRaw())
                 .build();
+
+        cardMap.put(row.getCardRef(), card);
+
+        return card;
     }
 }

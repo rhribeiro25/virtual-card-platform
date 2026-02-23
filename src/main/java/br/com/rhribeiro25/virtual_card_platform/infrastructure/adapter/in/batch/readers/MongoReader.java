@@ -39,5 +39,4 @@ public class MongoReader {
         return reader;
     }
 
-
 }

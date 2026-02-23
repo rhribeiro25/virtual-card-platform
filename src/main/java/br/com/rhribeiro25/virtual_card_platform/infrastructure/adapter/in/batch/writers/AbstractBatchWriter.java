@@ -2,11 +2,14 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.AbstractModel;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImportHistory;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditImportMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.PersistenceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +45,7 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
         implements ItemWriter<BatchAuditImport> {
 
     private final BatchAuditImportMongoTemplate batchAuditImportMongoTemplate;
+    private final PersistenceUtils persistenceUtils;
 
     @Override
     public void write(Chunk<? extends BatchAuditImport> chunk) {
@@ -68,6 +72,8 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
             K key = extractKey(incoming);
 
             E managedEntity;
+
+            createLastBatchAuditImportHistory(item);
 
             if (entityCache.containsKey(key)) {
                 /**
@@ -124,9 +130,11 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
                     item.getId(),
                     managedEntity.getId(),
                     getField(),
-                    item.getStatus()
+                    item.getStatus(),
+                    item.getChangesHistory()
             );
         }
+        persistenceUtils.flushAndClear();
     }
 
     /**
@@ -168,4 +176,14 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
      * Setting BatchAuditImportStatus in BatchAuditImport
      */
     protected abstract void setAuditStatus(BatchAuditImport item, Boolean exists);
+
+    /**
+     * Creating last step BatchAuditImportHistory
+     */
+    protected void createLastBatchAuditImportHistory(BatchAuditImport item) {
+        var lastHistory = BatchAuditImportHistory.builder()
+                .status(item.getStatus())
+                .build();
+        item.getChangesHistory().add(lastHistory);
+    }
 }

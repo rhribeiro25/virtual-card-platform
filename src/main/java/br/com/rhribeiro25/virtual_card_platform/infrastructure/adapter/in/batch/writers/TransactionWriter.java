@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionU
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditImportMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.PersistenceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.*;
-import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.TRANSACTION_PERSISTED;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
 @Slf4j
@@ -21,9 +21,8 @@ public class TransactionWriter extends AbstractBatchWriter<Transaction, String> 
 
     private final TransactionUsecase transactionUsecase;
 
-    public TransactionWriter(TransactionUsecase transactionUsecase,
-                             BatchAuditImportMongoTemplate batchAuditMongoTemplate) {
-        super(batchAuditMongoTemplate);
+    public TransactionWriter(BatchAuditImportMongoTemplate batchAuditImportMongoTemplate, PersistenceUtils persistenceUtils, TransactionUsecase transactionUsecase) {
+        super(batchAuditImportMongoTemplate, persistenceUtils);
         this.transactionUsecase = transactionUsecase;
     }
 

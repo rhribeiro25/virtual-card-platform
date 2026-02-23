@@ -20,12 +20,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class BatchAuditImportHistory {
-    @Id
-    private ObjectId id;
     @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
     @Indexed
     private BatchAuditImportStatus status;
+    private String error;
 }

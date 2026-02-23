@@ -1,6 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.steps;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.listeners.GenericChunkListener;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.listeners.GenericStepListener;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors.TransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.writers.TransactionWriter;
@@ -24,17 +25,31 @@ public class TransactionStep {
     public Step transactionStepConfig(
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
+
             ItemReader<BatchAuditImport> mongoReader,
             TransactionProcessor processor,
             TransactionWriter writer,
-            GenericStepListener listener
+
+            GenericStepListener stepListener,
+            GenericChunkListener chunkListener,
+
+            CustomSkipPolicy skipPolicy,
+            CustomRetryPolice retryPolice
     ) {
         return new StepBuilder(getClassName(this.getClass()), jobRepository).
                 <BatchAuditImport, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
                 .reader(mongoReader)
                 .processor(processor)
                 .writer(writer)
-                .listener(listener)
+
+                .faultTolerant()
+                .retryPolicy(retryPolice)
+                .skipPolicy(skipPolicy)
+                .skipLimit(2000)
+
+                .listener(stepListener)
+                .listener(chunkListener)
+
                 .build();
     }
 

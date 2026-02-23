@@ -4,6 +4,7 @@ import br.com.rhribeiro25.virtual_card_platform.application.usecase.CardUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.mongo.BatchAuditImportMongoTemplate;
+import br.com.rhribeiro25.virtual_card_platform.shared.utils.PersistenceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,11 @@ public class CardWriter extends AbstractBatchWriter<Card, String> {
 
     private final CardUsecase cardUsecase;
 
-    public CardWriter(CardUsecase cardUsecase,
-                      BatchAuditImportMongoTemplate batchAuditImportMongoTemplate) {
-        super(batchAuditImportMongoTemplate);
+    public CardWriter(BatchAuditImportMongoTemplate batchAuditImportMongoTemplate, PersistenceUtils persistenceUtils, CardUsecase cardUsecase) {
+        super(batchAuditImportMongoTemplate, persistenceUtils);
         this.cardUsecase = cardUsecase;
     }
+
 
     @Override
     protected String getWriterName() {
