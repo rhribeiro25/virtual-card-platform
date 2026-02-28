@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SPRING_BATCH_SIZE;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SKIP_CLASS;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SKIP_LIMIT;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
-@Configuration
+@Configuration("auditStep")
 @RequiredArgsConstructor
 public class AuditStep {
 
@@ -27,28 +29,29 @@ public class AuditStep {
             JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
 
-            ItemReader<CsvFileRow> fileReaderConfig,
+            ItemReader<CsvFileRow> fileReader,
             AuditProcessor processor,
             AuditWriter writer,
 
             AuditStepListener stepListener,
-            GenericChunkListener chunkListener,
-            CustomSkipPolicy skipPolicy
+            GenericChunkListener chunkListener
 
     ) {
         return new StepBuilder(getClassName(this.getClass()), jobRepository)
                 .<CsvFileRow, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
-                .reader(fileReaderConfig)
+                .reader(fileReader)
                 .processor(processor)
                 .writer(writer)
 
-                // skip
-                .faultTolerant()
-                .skipPolicy(skipPolicy)
-                .skipLimit(2000)
-
                 .listener(stepListener)
                 .listener(chunkListener)
+
+                .faultTolerant()
+                .retry(RETRAY_CLASS)
+                .retryLimit(RETRY_LIMIT)
+                .skip(SKIP_CLASS)
+                .skipLimit(SKIP_LIMIT)
+
                 .build();
     }
 }

@@ -8,6 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SpringBatchConstants {
+
+    public static final Class <java.lang.Exception> RETRAY_CLASS = Exception.class;
+    public static final Integer RETRY_LIMIT = 1;
+    public static final Class <java.lang.Exception> SKIP_CLASS = Exception.class;
+    public static final Integer SKIP_LIMIT = 1000000;
+
     public static final Integer SPRING_BATCH_SIZE = 200;
     public static final Integer PAGE_SIZE = 200;
     public static final String SORT_ATTRIBUTE = "actionFileDate";

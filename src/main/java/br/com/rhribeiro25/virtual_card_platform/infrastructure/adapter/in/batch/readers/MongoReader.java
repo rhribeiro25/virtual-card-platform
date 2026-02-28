@@ -17,17 +17,17 @@ import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBat
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
 @Slf4j
-@Configuration
+@Configuration("mongoReaderConfig")
 @AllArgsConstructor
 public class MongoReader {
 
     @Bean
     @StepScope
-    public MongoPagingItemReader<BatchAuditImport> mongoReaderConfig(
+    public MongoPagingItemReader<BatchAuditImport> mongoReader(
             MongoTemplate mongoTemplate,
             @Value("#{stepExecutionContext['" + QUERY_MONGO_AUDIT + "']}") String query
     ) {
-        log.info("Starting: {}", getClassName(this.getClass()));
+        log.info("Starting reader: {}", getClassName(this.getClass()));
         MongoPagingItemReader<BatchAuditImport> reader = new MongoPagingItemReader<>();
         reader.setName(getClassName(this.getClass()));
         reader.setTemplate(mongoTemplate);

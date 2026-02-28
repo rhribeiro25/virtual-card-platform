@@ -61,11 +61,20 @@ public class GenericStepListener implements StepExecutionListener {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        log.info("Finished step: {} | readSkip={} processSkip={} writeSkip={}",
+        Long readCount = stepExecution.getReadCount();
+        Long writeCount = stepExecution.getWriteCount();
+
+        Long readSkip = stepExecution.getReadSkipCount();
+        Long processSkip = stepExecution.getProcessSkipCount();
+        Long writeSkip = stepExecution.getWriteSkipCount();
+        log.info("Step  finished | Step: {} | Total Read: {} | Total Write: {} | Read Skip: {} | Process Skip: {} | Write Skip: {}",
                 stepExecution.getStepName(),
-                stepExecution.getReadSkipCount(),
-                stepExecution.getProcessSkipCount(),
-                stepExecution.getWriteSkipCount());
+                readCount,
+                writeCount,
+                readSkip,
+                processSkip,
+                writeSkip
+        );
 
         cardMap.clear();
 

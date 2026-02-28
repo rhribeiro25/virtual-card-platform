@@ -16,4 +16,8 @@ public class BatchAuditImportUsecase {
     public Optional<BatchAuditImport> findFirstByOrderByActionFileDateDesc() {
         return batchAuditImportRepository.findTopByOrderByActionFileDateDesc();
     }
+
+    public void update(BatchAuditImport item) {
+        batchAuditImportRepository.save(item);
+    }
 }

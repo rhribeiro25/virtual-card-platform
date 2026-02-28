@@ -14,14 +14,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Slf4j
-@Configuration
+@Configuration("fileReaderConfig")
 @AllArgsConstructor
 public class FileReader {
 
     @Bean
     @StepScope
-    public FlatFileItemReader<CsvFileRow> fileReaderConfig() {
-        log.info("Starting: {}", getClassName(this.getClass()));
+    public FlatFileItemReader<CsvFileRow> fileReader() {
+        log.info("Starting reader: {}", getClassName(this.getClass()));
         return new FlatFileItemReaderBuilder<CsvFileRow>()
                 .name(getClassName(this.getClass()))
                 .resource(RESOURCE)

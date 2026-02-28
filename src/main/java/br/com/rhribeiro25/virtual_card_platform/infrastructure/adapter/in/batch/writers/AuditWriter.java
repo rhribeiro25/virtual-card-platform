@@ -21,7 +21,7 @@ public class AuditWriter implements ItemWriter<BatchAuditImport> {
 
     @Override
     public void write(Chunk<? extends BatchAuditImport> chunk) {
-        log.info("Starting: {}", getClassName(this.getClass()));
+        log.info("Starting writer: {}", getClassName(this.getClass()));
         batchAuditImportRepository.saveAll(chunk.getItems());
     }
 }
