@@ -45,4 +45,5 @@ public class ProviderProcessor extends AbstractBatchProcessor<Provider> {
         item.setProvider(provider);
     }
 
+
 }
