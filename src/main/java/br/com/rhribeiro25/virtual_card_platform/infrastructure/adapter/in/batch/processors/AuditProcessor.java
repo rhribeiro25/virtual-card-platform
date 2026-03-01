@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.AUDIT_PERSISTED;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.LAST_TRANSACTION_DATE;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.DateUtils.YYYY_MM_DD_ToLocalDate;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class AuditProcessor implements ItemProcessor<CsvFileRow, BatchAuditImpor
     @Override
     public BatchAuditImport process(CsvFileRow item) {
 
-        LocalDate lastDbDate = (LocalDate) stepExecution.getExecutionContext().get("lastDbDate");
+        LocalDate lastDbDate = (LocalDate) stepExecution.getExecutionContext().get(LAST_TRANSACTION_DATE);
         LocalDate actionDate = YYYY_MM_DD_ToLocalDate(item.getTransactionDate());
         if (actionDate != null && lastDbDate != null && !actionDate.isAfter(lastDbDate)) return null;
 

@@ -27,7 +27,7 @@ public class MongoReader {
             MongoTemplate mongoTemplate,
             @Value("#{stepExecutionContext['" + QUERY_MONGO_AUDIT + "']}") String query
     ) {
-        log.info("Starting reader: {}", getClassName(this.getClass()));
+        log.info("Starting reader: {}", MONGO_READER);
         MongoPagingItemReader<BatchAuditImport> reader = new MongoPagingItemReader<>();
         reader.setName(getClassName(this.getClass()));
         reader.setTemplate(mongoTemplate);

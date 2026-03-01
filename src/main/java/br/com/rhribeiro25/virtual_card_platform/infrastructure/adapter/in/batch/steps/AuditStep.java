@@ -16,11 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
-import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SKIP_CLASS;
-import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.SKIP_LIMIT;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
-@Configuration("auditStep")
+@Configuration
 @RequiredArgsConstructor
 public class AuditStep {
 
@@ -37,7 +34,7 @@ public class AuditStep {
             GenericChunkListener chunkListener
 
     ) {
-        return new StepBuilder(getClassName(this.getClass()), jobRepository)
+        return new StepBuilder(AUDIT_STEP, jobRepository)
                 .<CsvFileRow, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
                 .reader(fileReader)
                 .processor(processor)

@@ -9,6 +9,19 @@ import java.util.List;
 
 public class SpringBatchConstants {
 
+    public static final String FILE_INGESTION_JOB = "fileIngestionJob";
+
+    public static final String AUDIT_STEP = "auditStep";
+    public static final String CARD_STEP = "cardStep";
+    public static final String PROVIDER_STEP = "providerStep";
+    public static final String CARD_PROVIDER_STEP = "cardProviderStep";
+    public static final String TRANSACTION_STEP = "transactionStep";
+
+    public static final String FILE_READER = "fileReader";
+    public static final String MONGO_READER = "mongoReader";
+
+    public static final String LAST_TRANSACTION_DATE = "lastDbDate";
+
     public static final Class <java.lang.Exception> RETRAY_CLASS = Exception.class;
     public static final Integer RETRY_LIMIT = 1;
     public static final Class <java.lang.Exception> SKIP_CLASS = Exception.class;

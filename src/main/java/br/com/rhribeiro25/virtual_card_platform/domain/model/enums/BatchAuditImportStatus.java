@@ -1,5 +1,7 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model.enums;
 
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
+
 public enum BatchAuditImportStatus {
     AUDIT_PERSISTED,
 
@@ -23,5 +25,15 @@ public enum BatchAuditImportStatus {
     TRANSACTION_NO_ACTION,
     TRANSACTION_ERROR,
 
-    SUCCESSFUL
+    SUCCESSFUL;
+
+    public static BatchAuditImportStatus getStatusError(String stepName) {
+        if (stepName.equalsIgnoreCase(CARD_STEP)) return CARD_ERROR;
+        else if (stepName.equalsIgnoreCase(PROVIDER_STEP)) return PROVIDER_ERROR;
+        else if (stepName.equalsIgnoreCase(CARD_PROVIDER_STEP)) return CARD_PROVIDER_ERROR;
+        else if (stepName.equalsIgnoreCase(TRANSACTION_STEP)) return TRANSACTION_ERROR;
+        else return null;
+    }
 }
+
+

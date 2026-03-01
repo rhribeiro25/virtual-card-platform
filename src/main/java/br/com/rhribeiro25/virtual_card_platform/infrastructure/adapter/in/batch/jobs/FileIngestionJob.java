@@ -9,10 +9,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.FILE_INGESTION_JOB;
 
 @Slf4j
-@Configuration
+@Configuration("fileIngestionJobConfig")
 @RequiredArgsConstructor
 public class FileIngestionJob {
     private final JobRepository jobRepository;
@@ -23,9 +23,9 @@ public class FileIngestionJob {
     private final Flow cardProviderFlowConfig;
 
     @Bean
-    public Job fileIngestionJobConfig() {
-        log.warn("Starting: {}", getClassName(this.getClass()));
-        return new JobBuilder(getClassName(this.getClass()), jobRepository)
+    public Job fileIngestionJob() {
+        log.warn("Starting: {}", FILE_INGESTION_JOB);
+        return new JobBuilder(FILE_INGESTION_JOB, jobRepository)
                 .start(auditFlowConfig)
                 .next(cardFlowConfig)
                 .next(providerFlowConfig)

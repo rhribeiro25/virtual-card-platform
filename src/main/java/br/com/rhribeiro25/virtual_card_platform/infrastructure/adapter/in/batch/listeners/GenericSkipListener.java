@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static br.com.rhribeiro25.virtual_card_platform.domain.model.enums.BatchAuditImportStatus.*;
-
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -46,7 +44,7 @@ public class GenericSkipListener implements StepExecutionListener, SkipListener<
     }
 
     private void settingBatchAuditImport(BatchAuditImport item, Throwable t) {
-        item.setStatus(getStatusError());
+        item.setStatus(BatchAuditImportStatus.getStatusError(stepName));
         BatchAuditImportHistory auditImportHistory = BatchAuditImportHistory.builder()
                 .status(item.getStatus())
                 .createdAt(LocalDateTime.now())
@@ -61,21 +59,13 @@ public class GenericSkipListener implements StepExecutionListener, SkipListener<
 
         List<StackTraceElement> stackTraceList = Arrays.stream(e.getStackTrace()).toList();
         StackTraceElement stackTrace = stackTraceList.stream()
-                .filter(st -> st.getClassName().startsWith("com.natixis.osfs")).findFirst().orElse(null);
+                .filter(st -> st.getClassName().startsWith("br.com.rhribeiro25.virtual_card_platform")).findFirst().orElse(null);
 
         if (stackTrace != null) return String.format(
                 "[MESSAGE] - %s \n[CLASS] - %s \n[LOCATION] - %s : %d",
                 e.getMessage(),
                 stackTrace.getClassName(), stackTrace.getMethodName(), stackTrace.getLineNumber());
 
-        else return null;
-    }
-
-    protected BatchAuditImportStatus getStatusError() {
-        if (stepName.equalsIgnoreCase("cardStep")) return CARD_ERROR;
-        else if (stepName.equalsIgnoreCase("providerStep")) return PROVIDER_ERROR;
-        else if (stepName.equalsIgnoreCase("cardProviderStep")) return CARD_PROVIDER_ERROR;
-        else if (stepName.equalsIgnoreCase("transactionStep")) return TRANSACTION_ERROR;
         else return null;
     }
 

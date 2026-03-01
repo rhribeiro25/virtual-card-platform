@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.LAST_TRANSACTION_DATE;
+
 @Component
 @RequiredArgsConstructor
 @StepScope
@@ -24,6 +26,6 @@ public class AuditStepListener implements StepExecutionListener {
                 .findFirstByOrderByActionFileDateDesc()
                 .map(BatchAuditImport::getActionFileDate)
                 .orElse(null);
-        stepExecution.getExecutionContext().put("lastDbDate", lastDbDate);
+        stepExecution.getExecutionContext().put(LAST_TRANSACTION_DATE, lastDbDate);
     }
 }

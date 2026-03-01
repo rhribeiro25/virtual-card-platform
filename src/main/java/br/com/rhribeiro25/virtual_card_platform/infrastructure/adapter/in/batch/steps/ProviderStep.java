@@ -16,9 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
-@Configuration("providerStep")
+@Configuration
 @RequiredArgsConstructor
 public class ProviderStep {
 
@@ -36,7 +35,7 @@ public class ProviderStep {
             GenericChunkListener chunkListener
 
     ) {
-        return new StepBuilder(getClassName(this.getClass()), jobRepository).
+        return new StepBuilder(PROVIDER_STEP, jobRepository).
                 <BatchAuditImport, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
 
                 .reader(mongoReader)

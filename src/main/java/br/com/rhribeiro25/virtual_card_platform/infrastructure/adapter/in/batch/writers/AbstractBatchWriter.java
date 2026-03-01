@@ -11,6 +11,7 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -182,6 +183,8 @@ public abstract class AbstractBatchWriter<E extends AbstractModel, K>
      */
     protected void createLastBatchAuditImportHistory(BatchAuditImport item) {
         var lastHistory = BatchAuditImportHistory.builder()
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .status(item.getStatus())
                 .build();
         item.getChangesHistory().add(lastHistory);

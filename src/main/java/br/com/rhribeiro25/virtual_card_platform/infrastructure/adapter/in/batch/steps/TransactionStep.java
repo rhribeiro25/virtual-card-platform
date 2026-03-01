@@ -16,9 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static br.com.rhribeiro25.virtual_card_platform.shared.contants.SpringBatchConstants.*;
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.SpringBatchUtils.getClassName;
 
-@Configuration("transactionStep")
+@Configuration
 @RequiredArgsConstructor
 public class TransactionStep {
 
@@ -35,7 +34,7 @@ public class TransactionStep {
             GenericSkipListener skipListener,
             GenericChunkListener chunkListener
     ) {
-        return new StepBuilder(getClassName(this.getClass()), jobRepository).
+        return new StepBuilder(TRANSACTION_STEP, jobRepository).
                 <BatchAuditImport, BatchAuditImport>chunk(SPRING_BATCH_SIZE, transactionManager)
 
                 .reader(mongoReader)
