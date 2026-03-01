@@ -26,13 +26,13 @@ public class TransactionProcessor extends AbstractBatchProcessor<Transaction> {
 
     @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
-        return cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).isPresent();
+        return cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()) != null;
     }
 
     @Override
     protected Transaction buildEntity(ActionType actionType, BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        Card card = cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef()).orElseThrow();
+        Card card = cardUsecase.getCardByExternalId(item.getCsvFileRow().getCardRef());
 
         return Transaction.builder()
                 .card(card)
