@@ -31,13 +31,15 @@ public class ProviderProcessor extends AbstractBatchProcessor<Provider> {
     @Override
     protected Provider buildEntity(ActionType actionType, BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        Optional<Provider> provider = providerUsecase.getProviderByCode(row.getProviderCode());
-        return provider.orElse(Provider.builder()
+        Provider provider = providerUsecase.getProviderByCode(row.getProviderCode());
+        if(provider != null)
+            return provider;
+        else return Provider.builder()
                 .code(row.getProviderCode())
                 .createdAt(LocalDateTime.now())
                 .status(providerService.mapStatus(row.getProviderState()))
                 .country(row.getProviderCountry())
-                .build());
+                .build();
     }
 
     @Override

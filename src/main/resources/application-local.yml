@@ -2,6 +2,16 @@ spring:
   config:
     activate:
       on-profile: local
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
+      cache-null-values: false
+      repositories:
+        enabled: false
+  devtools:
+    restart:
+      enabled: false
 
   data:
     mongodb:
@@ -11,6 +21,10 @@ spring:
       username: mongodb
       password: mongodb
       authentication-database: admin
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s
 
   datasource:
     url: jdbc:postgresql://localhost:5432/virtual-card-platform

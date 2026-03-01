@@ -3,7 +3,6 @@ package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.BatchAuditImportUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -21,7 +20,7 @@ public class AuditStepListener implements StepExecutionListener {
     private final BatchAuditImportUsecase batchAuditImportUsecase;
 
     @Override
-    public void beforeStep(@NonNull StepExecution stepExecution) {
+    public void beforeStep(StepExecution stepExecution) {
         LocalDate lastDbDate = batchAuditImportUsecase
                 .findFirstByOrderByActionFileDateDesc()
                 .map(BatchAuditImport::getActionFileDate)

@@ -1,17 +1,16 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
 import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.ProviderStatus;
-import br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(name = "providers")
@@ -20,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Provider extends AbstractModel {
+public class Provider extends AbstractModel implements Serializable {
 
     @Column(nullable = false, unique = true, length = 50)
     private String code;

@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
-import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.*;
 
 @Entity
 @Table(name = "cards")
@@ -23,7 +22,7 @@ import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Card extends AbstractModel {
+public class Card extends AbstractModel implements Serializable {
 
     @Column(unique = true)
     private String externalId;

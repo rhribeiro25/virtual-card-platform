@@ -11,10 +11,14 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.RedisConstants.PROVIDER_CACHE;
 
 @Service
 @AllArgsConstructor
@@ -25,17 +29,8 @@ public class ProviderUsecase {
     /*******************************************************************************************************************
      SPRING BATCH METHODS
      ********************************************************************************************************************/
-    @Cacheable(
-            value = "provider-cache",
-            key = "#code",
-            unless = "#result == null"
-    )
-    public Optional<Provider> getProviderByCode(String code) {
-        return providerRepository.findByCode(code);
-    }
-
     @CachePut(
-            value = "provider-cache",
+            value = PROVIDER_CACHE,
             key = "#provider.code"
     )
     public Provider saveByBatch(Provider provider) {
@@ -46,6 +41,20 @@ public class ProviderUsecase {
         } catch (Exception e) {
             throw new InternalServerErrorException();
         }
+    }
+
+    @Retryable(
+            retryFor = OptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 30, multiplier = 2)
+    )
+    @Cacheable(
+            value = PROVIDER_CACHE,
+            key = "#code",
+            unless = "#result == null"
+    )
+    public Provider getProviderByCode(String code) {
+        return providerRepository.findByCode(code).orElse(null);
     }
 
     public boolean existsByCode(String code) {

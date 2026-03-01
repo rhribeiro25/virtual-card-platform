@@ -22,12 +22,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static br.com.rhribeiro25.virtual_card_platform.shared.contants.RedisConstants.CARD_CACHE;
 import static br.com.rhribeiro25.virtual_card_platform.shared.utils.MergeUtils.mergeField;
 
 @Service
@@ -95,8 +98,13 @@ public class CardUsecase {
      SPRING BATCH METHODS
      ********************************************************************************************************************/
 
+    @Retryable(
+            retryFor = OptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 30, multiplier = 2)
+    )
     @CachePut(
-            value = "card-cache",
+            value = CARD_CACHE,
             key = "#card.externalId"
     )
     public Card saveByBatch(Card card) {
@@ -110,12 +118,12 @@ public class CardUsecase {
     }
 
     @Cacheable(
-            value = "card-cache",
+            value = CARD_CACHE,
             key = "#externalId",
             unless = "#result == null"
     )
-    public Optional<Card> getCardByExternalId(String externalId) {
-        return cardRepository.findByExternalId(externalId);
+    public Card getCardByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId).orElse(null);
     }
 
     public boolean existsByExternalId(String externalId) {
