@@ -1,5 +1,6 @@
 package br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.in.batch.processors;
 
+import br.com.rhribeiro25.virtual_card_platform.application.usecase.ProviderUsecase;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.BatchAuditImport;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.CsvFileRow;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Provider;
@@ -11,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 public class ProviderProcessor extends AbstractBatchProcessor<Provider> {
 
     private final ProviderService providerService;
+    private final ProviderUsecase providerUsecase;
 
     @Override
     protected boolean dependenciesResolved(BatchAuditImport item) {
@@ -28,12 +31,13 @@ public class ProviderProcessor extends AbstractBatchProcessor<Provider> {
     @Override
     protected Provider buildEntity(ActionType actionType, BatchAuditImport item) {
         CsvFileRow row = item.getCsvFileRow();
-        return Provider.builder()
+        Optional<Provider> provider = providerUsecase.getProviderByCode(row.getProviderCode());
+        return provider.orElse(Provider.builder()
                 .code(row.getProviderCode())
                 .createdAt(LocalDateTime.now())
                 .status(providerService.mapStatus(row.getProviderState()))
                 .country(row.getProviderCountry())
-                .build();
+                .build());
     }
 
     @Override
