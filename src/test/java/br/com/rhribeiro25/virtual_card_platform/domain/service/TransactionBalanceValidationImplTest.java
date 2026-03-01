@@ -1,9 +1,10 @@
 
 package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionBalanceValidationImpl;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +36,11 @@ class TransactionBalanceValidationImplTest {
     @Test
     @DisplayName("Should throw BadRequestException when balance is insufficient")
     void shouldThrowWhenBalanceIsInsufficient() {
-        Card card = new Card.Builder()
-                .cardholderName("Test")
+        Card card = Card.builder()
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(50))
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
     }
@@ -47,11 +48,11 @@ class TransactionBalanceValidationImplTest {
     @Test
     @DisplayName("Should not throw when balance is sufficient")
     void shouldNotThrowWhenBalanceIsSufficient() {
-        Card card = new Card.Builder()
-                .cardholderName("Test")
+        Card card = Card.builder()
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(200))
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(100)).type(TransactionType.SPEND).build();
         assertDoesNotThrow(() ->
                 validation.validate(transaction));
     }
@@ -59,12 +60,12 @@ class TransactionBalanceValidationImplTest {
     @Test
     @DisplayName("Should not throw when transaction is SPEND and validation passes")
     void shouldNotThrowWhenSpendTransactionIsValid() {
-        Card card = new Card.Builder()
-                .cardholderName("Test")
+        Card card = Card.builder()
+                .holderName("Test")
                 .balance(BigDecimal.valueOf(200))
                 .build();
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.valueOf(100))
                 .type(TransactionType.SPEND)

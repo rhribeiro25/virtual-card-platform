@@ -5,8 +5,8 @@ import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransa
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.TransactionRequest;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,8 +60,8 @@ class CardUsecaseTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         cardId = UUID.randomUUID();
-        card = new Card.Builder()
-                .cardholderName("Renan")
+        card = Card.builder()
+                .holderName("Renan")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -75,7 +76,7 @@ class CardUsecaseTest {
     void createCardSuccessfully() {
         when(cardRepository.save(any())).thenReturn(card);
         Card result = cardUsecase.create(card);
-        assertEquals("Renan", result.getCardholderName());
+        assertEquals("Renan", result.getHolderName());
         verify(cardRepository).save(card);
     }
 
@@ -116,7 +117,7 @@ class CardUsecaseTest {
         when(cardRepository.findById(any())).thenReturn(Optional.of(card));
         when(spendProcessor.process(any())).thenReturn(card);
 
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID().toString(), LocalDateTime.now());
 
         Card result = cardUsecase.spend(cardId, transaction);
 
@@ -127,7 +128,7 @@ class CardUsecaseTest {
     @DisplayName("Should throw NotFoundException when spending with card not found")
     void spendShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID().toString(), LocalDateTime.now());
         assertThrows(NotFoundException.class, () -> cardUsecase.spend(cardId, transaction));
     }
 
@@ -139,7 +140,7 @@ class CardUsecaseTest {
         when(cardRepository.findById(any())).thenReturn(Optional.of(card));
         when(topUpProcessor.process(any())).thenReturn(card);
 
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID().toString(), LocalDateTime.now());
 
         Card result = cardUsecase.topUp(cardId, transaction);
 
@@ -150,7 +151,7 @@ class CardUsecaseTest {
     @DisplayName("Should throw NotFoundException when top up with card not found")
     void topUpShouldFailWhenCardNotFound() {
         when(cardRepository.findById(any())).thenReturn(Optional.empty());
-        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID());
+        TransactionRequest transaction = new TransactionRequest(BigDecimal.TEN, UUID.randomUUID().toString(), LocalDateTime.now());
         assertThrows(NotFoundException.class, () -> cardUsecase.topUp(cardId, transaction));
     }
 

@@ -1,142 +1,97 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.model;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardBrand;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.StringUtils.*;
 
 @Entity
 @Table(name = "cards")
-public class Card {
+@Getter
+@Setter()
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
+public class Card extends AbstractModel {
 
-    @Id
-    @GeneratedValue
-    private UUID id;
-
-    @Column(nullable = false)
-    private String cardholderName;
-
-    @Column(nullable = false)
-    private BigDecimal balance;
+    @Column(unique = true)
+    private String externalId;
 
     @Enumerated(EnumType.STRING)
     private CardStatus status;
 
-    @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
+    @Enumerated(EnumType.STRING)
+    private CardBrand brand;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private String holderName;
+
+    @Column(nullable = false)
+    private BigDecimal balance;
+
+    @Column(nullable = true)
+    private String pinCode; // optional PIN code
+
+    @Column(nullable = true)
+    private LocalDateTime expiryDate; // expiration date
+
+    @Column(nullable = true)
+    private Integer cvv; // security code
+
+    @Column(nullable = true)
+    private String country; // country of issuance
+
+    @Column(nullable = true)
+    private String currency; // primary currency
+
+    @Column(nullable = false)
+    private Boolean internationalAllowed; // allows international transactions
+
+    @Column(nullable = true)
+    private Integer maxDailyTransactions; // daily transaction limit
+
+    @Column(nullable = true)
+    private BigDecimal maxTransactionAmount; // maximum per transaction
+
+    @Column(nullable = true)
+    private String notes; // internal or administrative notes
+
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
     private List<Transaction> transactions;
 
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    private List<CardProvider> cardProviders;
+
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = new Timestamp(System.currentTimeMillis());
-        this.status = CardStatus.ACTIVE;
-    }
-
-    public Card() {}
-
-    private Card(Builder builder) {
-        this.id = builder.id;
-        this.cardholderName = builder.cardholderName;
-        this.balance = builder.balance;
-        this.createdAt = builder.createdAt;
-        this.transactions = builder.transactions;
-        this.status = builder.status;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getCardholderName() {
-        return cardholderName;
-    }
-
-    public void setCardholderName(String cardholderName) {
-        this.cardholderName = cardholderName;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public CardStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(CardStatus status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    public static class Builder {
-
-        private UUID id;
-        private String cardholderName;
-        private BigDecimal balance;
-        private CardStatus status;
-        private Timestamp createdAt;
-        private List<Transaction> transactions;
-
-        public Builder id(UUID id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder cardholderName(String cardholderName) {
-            this.cardholderName = cardholderName;
-            return this;
-        }
-
-        public Builder balance(BigDecimal balance) {
-            this.balance = balance;
-            return this;
-        }
-
-        public Builder status(CardStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public Builder createdAt(Timestamp createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder transactions(List<Transaction> transactions) {
-            this.transactions = transactions;
-            return this;
-        }
-
-        public Card build() {
-            return new Card(this);
+        if (this.status == null) {
+            this.status = CardStatus.ACTIVE;
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Objects.equals(externalId, card.externalId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(externalId);
+    }
 }

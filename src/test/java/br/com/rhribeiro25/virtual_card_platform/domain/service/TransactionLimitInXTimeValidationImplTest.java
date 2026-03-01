@@ -2,9 +2,10 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionLimitInXTimeValidationImpl;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +34,8 @@ class TransactionLimitInXTimeValidationImplTest {
         transactionUsecase = mock(TransactionUsecase.class);
         validation = new TransactionLimitInXTimeValidationImpl(transactionUsecase);
 
-        card = new Card.Builder()
-                .cardholderName("Test User")
+        card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
     }
@@ -47,7 +48,7 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtils.getMessage(eq("card.spend.rateLimit"), any())).thenReturn("Rate limit exceeded");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(5L);
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertThrows(BadRequestException.class, () ->
                     validation.validate(transaction));
         }
@@ -60,7 +61,7 @@ class TransactionLimitInXTimeValidationImplTest {
             mocked.when(() -> MessageUtils.getMessage("card.spend.limitPerMinute")).thenReturn("5");
 
             when(transactionUsecase.countRecentSpends(any(), any())).thenReturn(3L);
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
             assertDoesNotThrow(() ->
                     validation.validate(transaction));
         }

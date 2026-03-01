@@ -1,10 +1,11 @@
 
 package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.CardStatus;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.CardStatus;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionStatusValidationImpl;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,12 +39,12 @@ class TransactionStatusValidationImplTest {
     @Test
     @DisplayName("Should throw BadRequestException when card is blocked")
     void shouldThrowWhenCardBlocked() {
-        Card card = new Card.Builder()
-                .cardholderName("Blocked User")
+        Card card = Card.builder()
+                .holderName("Blocked User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.BLOCKED)
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
     }
@@ -51,12 +52,12 @@ class TransactionStatusValidationImplTest {
     @Test
     @DisplayName("Should not throw when card is active")
     void shouldNotThrowWhenCardIsActive() {
-        Card card = new Card.Builder()
-                .cardholderName("Active User")
+        Card card = Card.builder()
+                .holderName("Active User")
                 .balance(BigDecimal.TEN)
                 .status(CardStatus.ACTIVE)
                 .build();
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertDoesNotThrow(() ->
                 validation.validate(transaction));
     }

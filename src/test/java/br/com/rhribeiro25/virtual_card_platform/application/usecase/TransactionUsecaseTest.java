@@ -1,11 +1,11 @@
 
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.domain.service.TransactionDuplicateUnexpectedImpl;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.TransactionRepository;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionDuplicateUnexpectedImpl;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.TransactionRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.CacheUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
@@ -51,8 +51,8 @@ class TransactionUsecaseTest {
         MockitoAnnotations.openMocks(this);
 
         cardId = UUID.randomUUID();
-        card = new Card.Builder()
-                .cardholderName("Test User")
+        card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -137,8 +137,8 @@ class TransactionUsecaseTest {
     @Test
     @DisplayName("Should NOT throw exception when existingTransaction is empty")
     void shouldNotThrowWhenNoExistingTransaction() {
-        UUID requestId = UUID.randomUUID();
-        Transaction transaction = new Transaction.Builder()
+        String requestId = UUID.randomUUID().toString();
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .requestId(requestId)
                 .build();

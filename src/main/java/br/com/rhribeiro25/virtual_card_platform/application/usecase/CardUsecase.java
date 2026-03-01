@@ -1,20 +1,21 @@
 package br.com.rhribeiro25.virtual_card_platform.application.usecase;
 
+import br.com.rhribeiro25.virtual_card_platform.application.dto.TransactionRequest;
+import br.com.rhribeiro25.virtual_card_platform.application.port.in.InputTransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.application.template.SpendTransactionProcessor;
 import br.com.rhribeiro25.virtual_card_platform.application.template.TopUpTransactionProcessor;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.rest.dto.TransactionRequest;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BusinessException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.InternalServerErrorException;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.NotFoundException;
-import br.com.rhribeiro25.virtual_card_platform.shared.mapper.TransactionMapper;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,7 +25,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
+
+import static br.com.rhribeiro25.virtual_card_platform.shared.utils.MergeUtils.mergeField;
 
 @Service
 public class CardUsecase {
@@ -62,7 +66,7 @@ public class CardUsecase {
     @Transactional(rollbackFor = BusinessException.class)
     public Card spend(UUID cardId, TransactionRequest transactionRequest) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtils.getMessage("card.notFound")));
-        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.SPEND);
+        Transaction transaction = InputTransactionMapper.toEntity(transactionRequest, card, TransactionType.SPEND);
         return spendProcessor.process(transaction);
     }
 
@@ -72,7 +76,7 @@ public class CardUsecase {
     @Transactional(rollbackFor = BusinessException.class)
     public Card topUp(UUID cardId, TransactionRequest transactionRequest) {
         Card card = cardRepository.findById(cardId).orElseThrow(() -> new NotFoundException(MessageUtils.getMessage("card.notFound")));
-        Transaction transaction = TransactionMapper.toEntity(transactionRequest, card, TransactionType.TOPUP);
+        Transaction transaction = InputTransactionMapper.toEntity(transactionRequest, card, TransactionType.TOPUP);
         return topUpProcessor.process(transaction);
     }
 
@@ -85,6 +89,62 @@ public class CardUsecase {
     public Page<Transaction> getTransactionsByValidCardId(UUID cardId, Pageable pageable) {
         getCardById(cardId);
         return transactionUsecase.getTransactionsByCardId(cardId, pageable);
+    }
+
+    /*******************************************************************************************************************
+     SPRING BATCH METHODS
+     ********************************************************************************************************************/
+
+    @CachePut(
+            value = "card-cache",
+            key = "#card.externalId"
+    )
+    public Card saveByBatch(Card card) {
+        try {
+            return cardRepository.save(card);
+        } catch (OptimisticLockingFailureException | DataIntegrityViolationException e) {
+            throw new ConflictException(MessageUtils.getMessage("card.conflict"));
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Cacheable(
+            value = "card-cache",
+            key = "#externalId",
+            unless = "#result == null"
+    )
+    public Optional<Card> getCardByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId);
+    }
+
+    public boolean existsByExternalId(String externalId) {
+        return cardRepository.existsByExternalId(externalId);
+    }
+
+    public Optional<Card> findByExternalId(String externalId) {
+        return cardRepository.findByExternalId(externalId);
+    }
+
+    public Optional<Card> findById(UUID id) {
+        return cardRepository.findById(id);
+    }
+
+    public Optional<UUID> findIdByExternalId(String externalId) {
+        return cardRepository.findIdByExternalId(externalId);
+    }
+
+    public void merge(Card existing, Card incoming) {
+        if (existing == null || incoming == null) return;
+        mergeField(existing.getExternalId(), incoming.getExternalId(), existing::setExternalId);
+        mergeField(existing.getStatus(), incoming.getStatus(), existing::setStatus);
+        mergeField(existing.getBalance(), incoming.getBalance(), existing::setBalance);
+        mergeField(existing.getCvv(), incoming.getCvv(), existing::setCvv);
+        mergeField(existing.getInternationalAllowed(), incoming.getInternationalAllowed(), existing::setInternationalAllowed);
+        mergeField(existing.getMaxDailyTransactions(), incoming.getMaxDailyTransactions(), existing::setMaxDailyTransactions);
+        mergeField(existing.getMaxTransactionAmount(), incoming.getMaxTransactionAmount(), existing::setMaxTransactionAmount);
+        mergeField(existing.getCountry(), incoming.getCountry(), existing::setCountry);
+        mergeField(existing.getNotes(), incoming.getNotes(), existing::setNotes);
     }
 
 }

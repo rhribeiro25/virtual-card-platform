@@ -1,13 +1,15 @@
 
 package br.com.rhribeiro25.virtual_card_platform.application.template;
 
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
-import br.com.rhribeiro25.virtual_card_platform.domain.service.*;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionBalanceValidationImpl;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionStatusValidationImpl;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionValidation;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
-import br.com.rhribeiro25.virtual_card_platform.infrastructure.persistence.CardRepository;
+import br.com.rhribeiro25.virtual_card_platform.infrastructure.adapter.out.persistence.pgsql.CardRepository;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,12 +49,12 @@ class TransactionTemplateTest {
         CardRepository cardRepository = mock(CardRepository.class);
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
-        Card card = new Card.Builder()
-                .cardholderName("Test User")
+        Card card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
                 .build();
@@ -78,12 +80,12 @@ class TransactionTemplateTest {
         CardRepository cardRepository = mock(CardRepository.class);
         TransactionUsecase transactionUsecase = mock(TransactionUsecase.class);
 
-        Card card = new Card.Builder()
-                .cardholderName("Test User")
+        Card card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
-        Transaction transaction = new Transaction.Builder()
+        Transaction transaction = Transaction.builder()
                 .card(card)
                 .amount(BigDecimal.TEN)
                 .build();
@@ -112,8 +114,8 @@ class TransactionTemplateTest {
         ReflectionTestUtils.setField(spendTransactionProcessor, "cardRepository", cardRepository);
         ReflectionTestUtils.setField(spendTransactionProcessor, "transactionUsecase", transactionUsecase);
 
-        Card card = new Card.Builder()
-                .cardholderName("Test User")
+        Card card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
 
@@ -123,7 +125,7 @@ class TransactionTemplateTest {
             mocked.when(() -> MessageUtils.getMessage("card.conflict"))
                     .thenReturn("Card already updated by another transaction");
 
-            Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.TEN).build();
+            Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.TEN).build();
 
             ConflictException exception = assertThrows(ConflictException.class, () -> spendTransactionProcessor.process(transaction));
             assertEquals("Card already updated by another transaction", exception.getMessage());

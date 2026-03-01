@@ -2,9 +2,10 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionDuplicationBetweenRangeTimeValidationImpl;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,8 +34,8 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        card = new Card.Builder()
-                .cardholderName("Test User")
+        card = Card.builder()
+                .holderName("Test User")
                 .balance(BigDecimal.valueOf(100))
                 .build();
     }
@@ -42,7 +43,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     @Test
     @DisplayName("Should delegate duplication check to TransactionUsecase")
     void shouldCallTransactionUsecaseForDuplicationCheck() {
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         validation.validate(transaction);
 
         verify(transactionUsecase, times(1))
@@ -54,7 +55,7 @@ class TransactionDuplicationBetweenRangeTimeValidationImplTest {
     void shouldThrowExceptionWhenDuplicateTransactionDetected() {
         doThrow(new BadRequestException("duplicate"))
                 .when(transactionUsecase).isDuplicateTransaction(card, BigDecimal.TEN, TransactionType.SPEND);
-        Transaction transaction = new Transaction.Builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
+        Transaction transaction = Transaction.builder().card(card).amount(BigDecimal.valueOf(10)).type(TransactionType.SPEND).build();
         assertThrows(BadRequestException.class, () ->
                 validation.validate(transaction));
     }

@@ -1,9 +1,10 @@
 package br.com.rhribeiro25.virtual_card_platform.domain.service;
 
 import br.com.rhribeiro25.virtual_card_platform.application.usecase.TransactionUsecase;
-import br.com.rhribeiro25.virtual_card_platform.domain.enums.TransactionType;
+import br.com.rhribeiro25.virtual_card_platform.domain.model.enums.TransactionType;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Card;
 import br.com.rhribeiro25.virtual_card_platform.domain.model.Transaction;
+import br.com.rhribeiro25.virtual_card_platform.domain.service.validations.TransactionDuplicateUnexpectedImpl;
 import br.com.rhribeiro25.virtual_card_platform.shared.Exception.ConflictException;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.CacheUtils;
 import br.com.rhribeiro25.virtual_card_platform.shared.utils.MessageUtils;
@@ -27,7 +28,7 @@ class TransactionDuplicateUnexpectedImplTest {
     private TransactionDuplicateUnexpectedImpl validation;
 
     private final UUID cardId = UUID.randomUUID();
-    private final UUID requestId = UUID.randomUUID();
+    private final String requestId = UUID.randomUUID().toString();
     private Card card;
 
     @BeforeEach
@@ -36,22 +37,22 @@ class TransactionDuplicateUnexpectedImplTest {
         transactionUsecase = mock(TransactionUsecase.class);
         validation = new TransactionDuplicateUnexpectedImpl(transactionUsecase);
 
-        card = new Card.Builder().id(cardId).cardholderName("Test User").build();
+        card = Card.builder().id(cardId).holderName("Test User").build();
     }
 
     @Test
     @DisplayName("Should skip validation when requestId is null")
     void shouldSkipValidationWhenRequestIdIsNull() {
-        Transaction transaction = new Transaction.Builder().card(card).requestId(null).build();
+        Transaction transaction = Transaction.builder().card(card).requestId(null).build();
         assertDoesNotThrow(() -> validation.validate(transaction));
     }
 
     @Test
     @DisplayName("Should throw ConflictException when transaction exists in cache")
     void shouldThrowConflictWhenTransactionExistsInCache() {
-        Transaction transaction = new Transaction.Builder().card(card).requestId(requestId).build();
+        Transaction transaction = Transaction.builder().card(card).requestId(requestId).build();
 
-        Transaction duplicate = new Transaction.Builder().card(card).requestId(requestId).build();
+        Transaction duplicate = Transaction.builder().card(card).requestId(requestId).build();
         Page<Transaction> page = new PageImpl<>(Collections.singletonList(duplicate));
 
         try (MockedStatic<CacheUtils> cacheMock = mockStatic(CacheUtils.class);
@@ -71,7 +72,7 @@ class TransactionDuplicateUnexpectedImplTest {
     @Test
     @DisplayName("Should throw ConflictException when transaction exists in database")
     void shouldThrowConflictWhenTransactionExistsInDatabase() {
-        Transaction transaction = new Transaction.Builder().card(card).requestId(requestId).build();
+        Transaction transaction = Transaction.builder().card(card).requestId(requestId).build();
 
         try (MockedStatic<CacheUtils> cacheMock = mockStatic(CacheUtils.class);
              MockedStatic<MessageUtils> msgMock = mockStatic(MessageUtils.class)) {
@@ -93,7 +94,7 @@ class TransactionDuplicateUnexpectedImplTest {
     @Test
     @DisplayName("Should pass validation when no duplicate exists")
     void shouldPassWhenNoDuplicateExists() {
-        Transaction transaction = new Transaction.Builder().card(card).requestId(requestId).build();
+        Transaction transaction = Transaction.builder().card(card).requestId(requestId).build();
 
         try (MockedStatic<CacheUtils> cacheMock = mockStatic(CacheUtils.class)) {
             cacheMock.when(() -> CacheUtils.getFromCache("transactionsByCardId", cardId, Page.class))
@@ -114,8 +115,8 @@ class TransactionDuplicateUnexpectedImplTest {
                 .thenReturn("Duplicated transaction message");
         MessageUtils.setMessageSource(messageSourceMock);
 
-        Transaction transaction = new Transaction.Builder().card(card).requestId(requestId).build();
-        Transaction Transaction2 = new Transaction.Builder().card(card).requestId(UUID.randomUUID()).build();
+        Transaction transaction = Transaction.builder().card(card).requestId(requestId).build();
+        Transaction Transaction2 = Transaction.builder().card(card).requestId(UUID.randomUUID().toString()).build();
         List<Transaction> transactions = Collections.singletonList(transaction);
         Page<Transaction> transactionPage = new PageImpl<>(transactions);
 
